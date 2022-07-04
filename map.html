@@ -7,9 +7,32 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles.css">
-        <script src="client.js"></script>
+        <script src="map-bundle.js"></script>
     </head>
     <body>
+        <div id="cover"></div>
+        <div id="popup">
+            <label for="key">Enter Password:</label>
+            <input id="key" type="password">
+            <input id="subKey" type="submit" value="Enter">
+        </div>
+        <div id="addLink">
+            <span id="linkTop"></span>
+            <span id="linkDown"></span>
+            <span id="linkLeft"></span>
+            <span id="linkRight"></span>
+        </div>
+
+        <div id="addmenu">
+            <span id="xLine"></span>
+            <ul>
+                <li class="addClassObj">Era</li>
+                <li class="addClassObj">Info</li>
+                <li class="addClassObj">Head</li>
+                <li class="addClassObj">Link</li>
+                <li class="addClassObj">Sub</li>
+            </ul>
+        </div>
         <svg style="height: 0; width: 0;">
             <defs>
             <marker id="arrow" markerWidth="13" markerHeight="13" refx="9" refy="6" orient="auto">

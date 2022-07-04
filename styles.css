@@ -6,58 +6,275 @@ body {
     font-family: arial;
 }
 
-.head, .sub, .info {
+#map-menu {
     color: white;
-    border: solid;
-    border-radius: 0.25em;
+}
+
+#map-menu .map {
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.25s;
     padding: 1em;
+    background-color: navy;
+    margin: 0.5em;
+    border-radius: 0.25em;
+}
+
+#map-menu .description {
+    transition: 0.25s;
+    color: dimgray;
+    display: block;
+}
+
+#map-menu .map:hover {
+    transition: 0.25s;
+    background-color: blue;
+    margin-left: 0em;
+    margin-right: 0em;
+}
+
+#map-menu .map:hover .description {
+    transition: 0.25s;
+    color: lightblue;
+}
+
+#map-menu .map[encrypted] h2:after {
+    content: " 🔒";
+}
+
+#cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background-color: black;
+    z-index: 0;
+}
+
+#addmenu {
+    transition: 0.5s;
+    height: 4em;
+    width: 4em;
+    bottom: 1em;
+    right: 1em;
+    position: fixed;
+    background-color: lightslategrey;
+    border-radius: 4em;
+    z-index: 3;
+}
+
+#addmenu #xLine {
+    transition: 0.5s;
+    position: absolute;
+    display: block;
+    background-color: black;
+    border-radius: 0.1em;
+    bottom: 1.75em;
+    right: 0.75em;
+    height: 0.5em;
+    width: 2.5em;
+}
+
+#addmenu ul {
+    transition: 0.25s;
+    position: absolute;
+    transform: translateX(50%);
+    right: 2em;
+    list-style: none;
+    bottom: -0.25em;
+    width: 0.15em;
+    height: 2.25em;
+    background-color: black;
+    border: black solid;
+    border-radius: 0.1em;
+    padding: 0;
+}
+
+#addmenu.open ul {
+    position: absolute;
+    transform: translateX(50%);
+    height: calc(10em + 5px);
+    right: 2em;
+    bottom: 4em;
+    width: 4em;
+    border: lightslategrey solid;
+    border-radius: 0.25em;
+}
+
+#addmenu ul li {
+    background-color: transparent;
+    color: transparent;
+    margin-right: 0.1em;
+    margin-left: 0.1em;
+    text-align: center;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    font-size: 0em;
+    border: solid transparent 0px;
+    width: 100%;
+    height: calc(20% - 5px);
+}
+
+#addmenu.open ul li {
+    height: calc(20% - 5px);
+    width: calc(100% - 0.25em);
+    transition: 0.25s;
+    background-color: white;
+    color: black;
+    margin-right: 0em;
+    margin-bottom: 0.1em;
+    margin-top: 0.1em;
+    font-size: 1.5em;
+    border: solid white 1px;
+}
+
+#addmenu ul li:hover {
+    background-color: black;
+    color: white;
+}
+
+input {
+    border: none;
+    font-size: inherit;
+    background-color: transparent;
+    text-align: center;
+    margin-right: 0;
+    padding: 0;
+}
+
+.sub input {
+    color: white;
+}
+
+.editing {
+    box-shadow: 0 0 0.5em 0 white;
+}
+
+.addLink {
+    padding: 1em;
+    background-color: white;
+    position: absolute;
+    border-radius: 2em;
+    box-shadow: 0 0 0.5em 0.1em grey;
+    transition: 0.25s;
+    opacity: 0.5;
+    z-index: 1;
+}
+
+.addLink:hover {
+    box-shadow: 0 0 0 0.1em grey;
+    opacity: 1;
+}
+
+.addLink:after {
+    content: "+";
+    position: absolute;
+    font-size: 2em;
+    width: 1em;
+    height: 1em;
+    left: 0;
+    top: 0;
+    text-align: center;
+    line-height: 1em;
+}
+
+#linkTop {
+    top: -2.5em; 
+    left: calc(50% - 1em);
+}
+
+#linkBottom {
+    bottom: -2.5em;
+    left: calc(50% - 1em);
+}
+
+#linkLeft {
+    left: -2.5em;
+    top: calc(50% - 1em);
+}
+
+#linkRight {
+    right: -2.5em; 
+    top: calc(50% - 1em);
+}
+
+.tooltip {
+    overflow-wrap: anywhere;
+}
+
+.head, .sub, .info, .era, .link {
+    user-select: none;
+}
+
+.head, .sub, .info {
+    transform-style: preserve-3d;
+    border: solid;
+    padding: 1em 0em 1em 0em;
     width: max-content;
     position: absolute;
-    transform: translate(-50%, 0);
+    transform: translate(-50%);
+    z-index: 2;
+    background-color: black;
 }
 
-.head:before,
-.sub:before,
-.info:before {
-    z-index: 1;
+.head .tooltip,
+.sub .tooltip,
+.info .tooltip {
     background-color: black;
     transition: 0.25s;
-    
-    content: attr(tooltip);
     position: absolute;
-
-    padding: 0.5em;
-    font-size: small;    
+    padding: 1em 0.5em 0em 0.5em;
     top: 50%;
-    transform: scale(0);
     transform: translateX(-50%);
-    
     left: 50%;
     font-size: small;
-    
     width: -webkit-fill-available;
-    border: solid white;
+    border: 0.1em solid white;
     border-radius: 0.5em;
     color: #fff;
-    text-align:center;
+    text-align: center;
     opacity: 0;
+    resize: none;
+    overflow: hidden;
 }
 
-.head:hover:before,
-.sub:hover:before,
-.info:hover:before {
-    display: block;
+.head:hover .tooltip,
+.sub:hover .tooltip,
+.info:hover .tooltip,
+.editing .tooltip {
     opacity: 1;
     height: initial;
     margin-top: 1em;
     top: 100%;
-    transform: scale(1);
-    transform: translateX(-50%);
+}
+
+.era .tooltip {
+    white-space: nowrap;
+    background-color: white;
+    transition: 0.1s;
+    position: absolute;
+    padding: 0.5em 0;
+    left: 100%;
+    font-size: small;
+    color: transparent;
+    width: 0;
+    margin-left: 0em;
+    height: 1em;
+    top: 0;
+    margin-top: 0;
+    transition: 0.25s;
+    color: black;
+    padding: 0.5em 0.75em;
+    width: max-content;
+    height: 1em;
 }
 
 .head {
     color: black;
     background-color: white;
+    border-radius: 0.1em;
 }
 
 .description {
@@ -69,12 +286,13 @@ body {
 }
 
 .era {
-    width: 1em;
+    width: 2em;
     background-color: white;
     height: 100%;
     position: absolute;
     transform: translate(-50%, 0);
     top: 0;
+    margin-left: 0.5em;
 }
 
 svg {
@@ -82,5 +300,43 @@ svg {
     top: 0;
     left: 0;
     overflow: visible;
-    z-index: -1;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#popup {
+    visibility: hidden;
+    pointer-events: visible;
+    z-index: 10;
+    background-color: black;
+    position: fixed;
+    color: white;
+    border: solid;
+    padding: 1em;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5em;
+    width: 10em;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#popup input {
+    margin-top: 0.5em;
+    border: solid slategrey 0.2em;
+    border-radius: 0.5em;
+    color: white;
+    cursor: pointer;
+    padding: 0.25em;
+}
+
+#popup #key {
+    margin-top: 0.75em;
+    border: solid slategrey 0.1em;
+    border-radius: 0.1em;
+    cursor: text;
+    font-size: 0.75em;
 }

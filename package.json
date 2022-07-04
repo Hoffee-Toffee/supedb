@@ -1,13 +1,38 @@
 {
-    "name": "javascript-playground-2022",
-    "version": "1.0.0",
-    "type": "commonjs",
-    "description": "",
-    "main": "client.js",
-    "keywords": [],
-    "author": "Tristan Bulmer",
-    "license": "ISC",
-    "dependencies": {
-        "fs": "^0.0.1-security"
-    }
+  "name": "supe-db",
+  "version": "1.0.0",
+  "engines": {
+    "node": "12.x"
+  },
+  "description": "A database to help with complex story planning",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Tristan Bulmer",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Transit-Lumber/supedb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Transit-Lumber/supedb/issues"
+  },
+  "homepage": "https://github.com/Transit-Lumber/supedb#readme",
+  "dependencies": {
+    "ckey": "^1.0.3",
+    "crypto-js": "^4.1.1",
+    "custom-env": "^2.0.1",
+    "dotenv": "^16.0.1",
+    "envify": "^4.1.0",
+    "if-env": "^1.0.4",
+    "node": "^17.7.2",
+    "node.js": "^0.0.1-security",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "node-env-run": "^4.0.2"
+  }
 }
