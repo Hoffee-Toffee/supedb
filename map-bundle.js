@@ -39612,7 +39612,8 @@ function newObj(type, obj = null) {
             var tag = document.createElement("div")
             tag.id = obj.id
             tag.classList.add("head")
-            tag.addEventListener("dblclick", function() {moveObj(tag)})
+            tag.classList.add("object")
+            tag.addEventListener("dblclick", function() { moveObj(tag) })
             
             tag.style.borderColor = "#" + obj.color
             tag.style.marginLeft = (obj.position[0] + "em")
@@ -39646,14 +39647,14 @@ function newObj(type, obj = null) {
             tooltip.scrollTop = tooltip.scrollHeight
 
             if (!document.getElementById(obj.color + "-arrow")) {
-                var tag = document.getElementById("arrow").cloneNode(true)
+                var arrow = document.getElementById("arrow").cloneNode(true)
 
-                tag.setAttribute("id", obj.color + "-arrow")
+                arrow.setAttribute("id", obj.color + "-arrow")
 
-                tag.children[0].setAttribute("fill", "#" + obj.color)
+                arrow.children[0].setAttribute("fill", "#" + obj.color)
 
                 var element = document.getElementsByTagName("defs")[0]
-                element.appendChild(tag)
+                element.appendChild(arrow)
             }
             break
 
@@ -39676,6 +39677,7 @@ function newObj(type, obj = null) {
             var tag = document.createElement("div")
             tag.id = obj.id
             tag.classList.add("sub")
+            tag.classList.add("object")
             tag.addEventListener("dblclick", function() { moveObj(tag) })
             tag.style.borderColor = "#" + objects[obj.headId].color
             tag.style.marginLeft = (obj.position[0] + "em")
@@ -39741,6 +39743,7 @@ function newObj(type, obj = null) {
             tag.appendChild(tooltip)
 
             tag.classList.add("era")
+            tag.classList.add("object")
             tag.addEventListener("dblclick", function() { moveObj(tag) })
 
             tag.style.left = (obj.position + 0.5) + "em"
@@ -39830,6 +39833,12 @@ document.addEventListener( "click", function (event) {
         return
     }
 
+    if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
+        document.querySelectorAll(".addLink").forEach((button) => {
+            button.remove()
+        })
+    }
+
     if (!(event.target.classList.contains("editing") || event.target.parentElement.classList.contains("editing")) && !event.ctrlKey) {
         document.querySelectorAll(".editing").forEach((edit) => {
             edit.classList.remove("editing")
@@ -39843,12 +39852,42 @@ document.addEventListener( "click", function (event) {
             button.remove()
         })
     }
-    else if (!event.target.classList.contains("editing") && !event.target.parentElement.classList.contains("editing")) {
-        event.target.classList.add("editing")
-        Array.from(event.target.children).forEach(child => {
+    else if (event.target.classList.contains("object") || event.target.parentElement.classList.contains("object")) {
+        var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
+
+        obj.classList.toggle("editing")
+        Array.from(obj.children).forEach(child => {
             child.readOnly = false
         })
         window["editing"] = true
+
+        var els = document.querySelectorAll(".editing")
+
+        document.querySelectorAll(".addLink").forEach((button) => {
+            button.remove()
+        })
+
+        if (els.length == 1 && !els[0].classList.contains("era")) {
+            var linkTop = document.createElement("span")
+            linkTop.classList.add("addLink")
+            linkTop.id = "linkTop"
+            els[0].appendChild(linkTop)
+        
+            var linkBottom = document.createElement("span")
+            linkBottom.classList.add("addLink")
+            linkBottom.id = "linkBottom"
+            els[0].appendChild(linkBottom)
+        
+            var linkLeft = document.createElement("span")
+            linkLeft.classList.add("addLink")
+            linkLeft.id = "linkLeft"
+            els[0].appendChild(linkLeft)
+        
+            var linkRight = document.createElement("span")
+            linkRight.classList.add("addLink")
+            linkRight.id = "linkRight"
+            els[0].appendChild(linkRight)
+        }
     }
     
     if ( event.target.getAttribute("id") == "addmenu" || event.target.parentElement.getAttribute("id") == "addmenu") {
@@ -39901,8 +39940,7 @@ document.onkeydown = (event) => {
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
         var els = document.querySelectorAll(".editing")
 
-
-        if (Array.from(els).includes(document.activeElement)) {
+        if (Array.from(els).includes(document.activeElement.parentElement)) {
             return
         }
 
@@ -39983,11 +40021,39 @@ document.onkeydown = (event) => {
             })
         })
     }
+    else if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
+        setTimeout(function (){
+            var el = document.activeElement.parentElement
 
+            var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
+    
+            toUpdate.forEach(element => {
+                console.log(element.id)
+                var points = []
+    
+                element.line.forEach(line => {
+                    var xreq = document.getElementById(objects[line[0]].id)
+                    var yreq = document.getElementById(objects[line[2]].id)
+    
+                    var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
+                    var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
+                    
+                    points.push([x, y])
+                })
+    
+                document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
+            })
+          }, 10);
+    }
 }
 
 function moveObj(obj) {
-    console.log("Moving something")
+    console.log(obj)
+
+    document.querySelectorAll(".addLink").forEach((button) => {
+        button.remove()
+    })
+
     document.querySelectorAll(".editing").forEach(edit => {
         edit.classList.remove("editing")
         Array.from(edit.children).forEach(child => {
@@ -39997,25 +40063,27 @@ function moveObj(obj) {
 
     obj.classList.add("editing")
 
-    var linkTop = document.createElement("span")
-    linkTop.classList.add("addLink")
-    linkTop.id = "linkTop"
-    obj.appendChild(linkTop)
+    if (obj !== document.activeElement.parentElement && !obj.classList.contains("era") ) {
+        var linkTop = document.createElement("span")
+        linkTop.classList.add("addLink")
+        linkTop.id = "linkTop"
+        obj.appendChild(linkTop)
 
-    var linkBottom = document.createElement("span")
-    linkBottom.classList.add("addLink")
-    linkBottom.id = "linkBottom"
-    obj.appendChild(linkBottom)
+        var linkBottom = document.createElement("span")
+        linkBottom.classList.add("addLink")
+        linkBottom.id = "linkBottom"
+        obj.appendChild(linkBottom)
 
-    var linkLeft = document.createElement("span")
-    linkLeft.classList.add("addLink")
-    linkLeft.id = "linkLeft"
-    obj.appendChild(linkLeft)
+        var linkLeft = document.createElement("span")
+        linkLeft.classList.add("addLink")
+        linkLeft.id = "linkLeft"
+        obj.appendChild(linkLeft)
 
-    var linkRight = document.createElement("span")
-    linkRight.classList.add("addLink")
-    linkRight.id = "linkRight"
-    obj.appendChild(linkRight)
+        var linkRight = document.createElement("span")
+        linkRight.classList.add("addLink")
+        linkRight.id = "linkRight"
+        obj.appendChild(linkRight)
+    }
 
     Array.from(obj.children).forEach(child => {
         child.readOnly = false
