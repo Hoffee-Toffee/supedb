@@ -62,7 +62,7 @@ body {
     position: fixed;
     background-color: lightslategrey;
     border-radius: 4em;
-    z-index: 3;
+    z-index: -1;
 }
 
 #addmenu #xLine {
@@ -200,6 +200,34 @@ input {
     top: calc(50% - 1em);
 }
 
+.addLink.mouseLink {
+    padding: 0.5em;
+}
+
+.addLink.mouseLink:after {
+    content: none;
+}
+
+#linkTop.mouseLink {
+    top: -0.6em;
+    left: calc(50% - 0.5em);
+}
+
+#linkBottom.mouseLink {
+    bottom: -0.6em;
+    left: calc(50% - 0.5em);
+}
+
+#linkLeft.mouseLink {
+    left: -0.6em;
+    top: calc(50% - 0.5em);
+}
+
+#linkRight.mouseLink {
+    right: -0.6em; 
+    top: calc(50% - 0.5em);
+}
+
 .tooltip {
     overflow-wrap: anywhere;
 }
@@ -248,6 +276,20 @@ input {
     height: initial;
     margin-top: 1em;
     top: 100%;
+}
+
+.colorPicker {
+    transition: 0.25s;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    opacity: 0;
+}
+
+.head:hover .colorPicker {
+    transition: 0.25s;
+    left: calc(100% + 0.5em);
+    opacity: 1;
 }
 
 .era .tooltip {

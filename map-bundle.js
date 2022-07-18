@@ -39575,6 +39575,7 @@ var xbias = 0
 var lastid = 0
 window["ready"] = false
 window["editing"] = false
+window["newArrow"] = false
 
 window.onload = function() {
     if (window["ready"]) {
@@ -39585,10 +39586,12 @@ window.onload = function() {
     }
 }
 
-function display () {
+function display() {
     objects.forEach(obj => {
         newObj(obj.class, obj)
     })
+
+    document.getElementById("addmenu").style.zIndex = 3
 }
 
 function newObj(type, obj = null) {
@@ -39626,6 +39629,13 @@ function newObj(type, obj = null) {
             text.size = text.value.length
             text.readOnly = true
             tag.appendChild(text)
+
+            var color = document.createElement("input")
+            color.type = "color"
+            color.classList.add("colorPicker")
+            color.setAttribute("value", "#" + obj.color)
+            color.addEventListener("change", function() { updateColor(color) })
+            tag.appendChild(color)
 
             var tooltip = document.createElement("textarea")
             tooltip.value = (obj.description != null) ? obj.description : ""
@@ -39779,7 +39789,17 @@ function newObj(type, obj = null) {
                 points.push([x, y])
             })
 
-            poly.setAttribute("points", points )
+            if (obj.childId == "mouse") {
+                
+                points.push([window.event.pageX , window.event.pageY])
+
+                document.addEventListener("mousemove", function() {
+                    var el = document.getElementById(objects.find(e => e.childId == "mouse").id).children[1]
+                    el.setAttribute("points", [el.getAttribute("points").split(",").slice(0, 2), [window.event.pageX , window.event.pageY]])
+                })
+            }
+
+            poly.setAttribute("points", points)
 
             if (obj.type != "f"){
                 if (objects[obj.parentId].class == "Head") {
@@ -39809,10 +39829,73 @@ function newObj(type, obj = null) {
 
             break
     }
+
+    tag.addEventListener("mouseover", function() {
+        if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 ) {
+            console.log("Over object cheese")
+            var linkTop = document.createElement("span")
+            linkTop.classList.add("addLink")
+            linkTop.id = "linkTop"
+            this.appendChild(linkTop)
+        
+            var linkBottom = document.createElement("span")
+            linkBottom.classList.add("addLink")
+            linkBottom.id = "linkBottom"
+            this.appendChild(linkBottom)
+        
+            var linkLeft = document.createElement("span")
+            linkLeft.classList.add("addLink")
+            linkLeft.id = "linkLeft"
+            this.appendChild(linkLeft)
+        
+            var linkRight = document.createElement("span")
+            linkRight.classList.add("addLink")
+            linkRight.id = "linkRight"
+            this.appendChild(linkRight)
+
+            var links = [linkTop, linkBottom, linkLeft, linkRight]
+            
+            links.forEach(link => {
+                link.classList.add("mouseLink")
+                link.addEventListener("mouseout", function () {
+                    if ( window["newArrow"] && document.elementFromPoint(window.event.pageX, window.event.pageY).classList.contains("object") ) {
+                        console.log("Left link button")
+                        document.querySelectorAll(".addLink").forEach((button) => {
+                            button.remove()
+                        })
+                    }
+                })
+            })
+
+        }
+    })
+
+    tag.addEventListener("mouseout", function () {
+        if ( window["newArrow"] && !document.elementFromPoint(window.event.pageX, window.event.pageY).classList.contains("addLink") ) {
+            console.log("Left object " + document.elementFromPoint(window.event.pageX, window.event.pageY).id)
+            document.querySelectorAll(".addLink").forEach((button) => {
+                button.remove()
+            })
+        }
+    })
 }
 
 function updateObj(el, attr) {
     objects[el.parentElement.id][attr] = el.value
+}
+
+function updateColor(color) {
+    var head = color.parentElement.id
+
+    objects[head].color = color.value.slice(1)
+
+    var toUpdate = objects.filter(e => e.parentId == parseInt(head) || e.headId == parseInt(head) || (e.parentId && objects[e.parentId].headId == parseInt(head) ) )
+    toUpdate.push(objects[head])
+
+    toUpdate.forEach(obj => {
+        document.getElementById(obj.id).remove()
+        newObj(obj.class, obj)
+    })
 }
 
 document.addEventListener( "click", function (event) {
@@ -39831,6 +39914,81 @@ document.addEventListener( "click", function (event) {
         })
         
         return
+    }
+
+    if ( event.target.classList.contains("addLink") && !window["newArrow"] ) {
+        window["newArrow"] = true
+
+        var coords = [0, 0.5]
+        if ( event.target.id == "linkRight" ) coords = [1, 0.5]
+        if ( event.target.id == "linkTop" ) coords = [0.5, 0]
+        if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
+
+        var obj = {
+            "id": objects.length,
+            "class": "Link",
+            "line": [
+                [
+                    parseInt(event.target.parentElement.id),
+                    coords[0],
+                    parseInt(event.target.parentElement.id),
+                    coords[1]
+                ]
+            ],
+            "parentId": parseInt(event.target.parentElement.id),
+            "childId": "mouse",
+            "type": "c"
+        }
+        objects.push(obj)
+
+        newObj("Link", obj)
+    }
+    else if ( event.target.classList.contains("addLink") && window["newArrow"] ) {
+        window["newArrow"] = false
+
+        var coords = [0, 0.5]
+        if ( event.target.id == "linkRight" ) coords = [1, 0.5]
+        if ( event.target.id == "linkTop" ) coords = [0.5, 0]
+        if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
+
+        var obj = objects.find(obj => obj.childId === "mouse")
+
+        obj.childId = parseInt(event.target.parentElement.id)
+
+        if ( ["linkLeft", "linkRight"].includes(event.target.id) && objects[obj.parentId].position[1] !== objects[obj.childId].position[1] ) {
+            obj.line.push(
+                [
+                    obj.line[0][0],
+                    obj.line[0][1],
+                    parseInt(event.target.parentElement.id),
+                    coords[1]
+                ]
+            )
+
+        }
+        else if ( ["linkTop", "linkBottom"].includes(event.target.id) && objects[obj.parentId].position[0] !== objects[obj.childId].position[0] ) {
+            obj.line.push(
+                [
+                    parseInt(event.target.parentElement.id),
+                    coords[0],
+                    obj.line[0][2],
+                    obj.line[0][3]
+                ]
+            )
+        }
+
+        obj.line.push(
+            [
+                parseInt(event.target.parentElement.id),
+                coords[0],
+                parseInt(event.target.parentElement.id),
+                coords[1]
+            ]
+        )
+
+        document.getElementById(obj.id).remove()
+
+        newObj("Link", obj)
     }
 
     if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
@@ -39889,7 +40047,7 @@ document.addEventListener( "click", function (event) {
             els[0].appendChild(linkRight)
         }
     }
-    
+
     if ( event.target.getAttribute("id") == "addmenu" || event.target.parentElement.getAttribute("id") == "addmenu") {
         if (document.getElementById("addmenu").classList.contains("open")) {
             document.getElementById("addmenu").classList.remove("open")
@@ -39917,7 +40075,7 @@ document.onkeydown = (event) => {
 
         console.log("Saving...")
 
-        var request = require("request");
+        var request = require("request")
 
         var options = { method: 'PATCH',
         url: 'https://timelines-3cbe.restdb.io/rest/timelines/' + window["id"],
@@ -39926,15 +40084,30 @@ document.onkeydown = (event) => {
             'x-apikey': RestDB_API,
             'content-type': 'application/json' },
         body: { map: data },
-        json: true };
+        json: true }
 
         request(options, function (error, response, body) {
-        if (error) throw new Error(error);
+        if (error) throw new Error(error)
 
-        console.log(body);
-        });
+        console.log(body)
+        })
 
         console.log("Saved")
+    }
+
+    if ( window["newArrow"] && ["c", "f", "e"].includes(event.key) ) {
+        var obj = objects.find(obj => obj.childId === "mouse")
+
+        obj.type = event.key
+
+        var el = document.getElementById(obj.id).children[1]
+        points = el.getAttribute("points")
+
+        document.getElementById(obj.id).remove()
+        newObj("Link", obj)
+
+        var el = document.getElementById(obj.id).children[1]
+        el.setAttribute("points", points)
     }
 
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
@@ -40043,7 +40216,7 @@ document.onkeydown = (event) => {
     
                 document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
             })
-          }, 10);
+          }, 10)
     }
 }
 
@@ -40092,73 +40265,6 @@ function moveObj(obj) {
     window["editing"] = true
 }
 
-class Head {
-    constructor(title, description = null, color = null, position = []) {
-        this.id = lastid++
-        this.class = "Head"
-        this.title = title
-        this.description = description
-        this.color = color
-        this.position = position
-        this.position[0] += xbias
-    }
-}
-
-class Sub {
-    constructor(title, description = null, head, position = []) {
-        this.id = lastid++
-        this.class = "Sub"
-        this.title = title
-        this.description = description
-        this.headId = head
-        this.position = position
-        this.position[0] += xbias
-    }
-}
-
-class Info {
-    constructor(title, description = null, position = []) {
-        this.id = lastid++
-        this.class = "Info"
-        this.title = title
-        this.description = description
-        this.position = position
-        this.position[0] += xbias
-    }
-}
-
-class Era {
-    constructor(title, description = null, position = 0) {
-        this.id = lastid++
-        this.class = "Era"
-        this.title = title
-        this.description = description
-        this.position = position + xbias
-    }
-}
-
-class Link {
-    constructor(description = null, parent, child, type = "c", line = []) {
-        this.id = lastid++
-        this.class = "Link"
-        this.description = description
-        this.line = []
-        this.parentId = parent
-        this.childId = child
-        this.type = type /* Parent directly [c]auses Child,
-                             Parent was a [f]actor in causing Child,
-                             Child is an [e]xtension of Parent */
-
-        line.forEach(el => {
-            var x = (el[0] == "p") ? this.parentId : this.childId
-            var y = (el[2] == "p") ? this.parentId : this.childId
-            
-            this.line.push([x, el[1], y, el[3]])
-        })
-
-    }
-}
-
 var objects = []
 
 var options = {
@@ -40188,7 +40294,7 @@ request(options, function (error, response, body) {
     console.log("Encrypted: " + window["encrypted"])
 
     if (window["encrypted"]) {
-        document.getElementById("popup").style = "visibility: visible;"
+        document.getElementById("popup").style = "visibility: visible"
         document.getElementById("subKey").addEventListener("click", function() {
             objects = JSON.parse( decrypt( map.map, document.getElementById("key").value ) )
 
