@@ -40,7 +40,7 @@ body {
 }
 
 #map-menu .map[encrypted] h2:after {
-    content: "ðŸ”’";
+    content: " 🔒";
 }
 
 #cover {
