@@ -12,6 +12,8 @@ var options = {
 }
 
 window.onload = function() {
+  document.getElementById("addmenu").style.zIndex = 3
+  
   request(options, function (error, response, body) {
     if (error) throw new Error(error)
 

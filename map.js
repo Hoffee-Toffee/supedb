@@ -26,6 +26,10 @@ window.onload = function() {
     else {
         window["ready"] = true
     }
+
+    document.getElementById("mapSettings").addEventListener("click", function() {
+        mapMenu()
+    })
 }
 
 function display() {
@@ -511,7 +515,7 @@ document.onkeydown = (event) => {
 
         var data = JSON.stringify(objects)
 
-        if (window["encrypted"]) {
+        if (window["mapSettings"].encrypted) {
             data = encrypt(data, window["key"])
         }
 
@@ -519,14 +523,22 @@ document.onkeydown = (event) => {
 
         var request = require("request")
 
-        var options = { method: 'PATCH',
-        url: 'https://timelines-3cbe.restdb.io/rest/timelines/' + window["id"],
-        headers: 
-        { 'cache-control': 'no-cache',
-            'x-apikey': RestDB_API,
-            'content-type': 'application/json' },
-        body: { map: data },
-        json: true }
+        var options = {
+            method: 'PATCH',
+            url: 'https://timelines-3cbe.restdb.io/rest/timelines/' + window["id"],
+            headers: {
+                'cache-control': 'no-cache',
+                'x-apikey': RestDB_API,
+                'content-type': 'application/json'
+            },
+            body: {
+                title: window["mapSettings"].title,
+                description: window["mapSettings"].description,
+                encrypted: window["mapSettings"].encrypted,
+                map: data
+            },
+            json: true
+        }
 
         request(options, function (error, response, body) {
         if (error) throw new Error(error)
@@ -636,6 +648,9 @@ document.onkeydown = (event) => {
             })
         })
     }
+    else if (event.key == "Enter" && window["decrypt"]) {
+        document.getElementById("subForm").click()
+    }
     else if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
         setTimeout(function (){
             var el = document.activeElement.parentElement
@@ -707,7 +722,151 @@ function moveObj(obj) {
     window["editing"] = true
 }
 
+function mapMenu() {
+    document.getElementById("subForm").addEventListener("click", function() {
+        if (window["decrypt"]) {
+            document.getElementById("keyLabel").classList.remove("error")
+            try {
+                objects = JSON.parse( decrypt( window["map"], document.getElementById("key").value ) )
+
+            } catch (error) {
+                document.getElementById("keyLabel").classList.add("error")
+                return
+            }
+
+            if (window["ready"]) {
+                display()
+            }
+            else {
+                window["ready"] = true
+            }
+
+            window["key"] = document.getElementById("key").value
+            document.getElementById("popup").style = null
+            window["decrypt"] = false
+        }
+        else if (window["onMainMenu"]) {
+            window["mapSettings"].title = document.getElementById("newTitle").value
+            window["mapSettings"].description = document.getElementById("newDesc").value
+    
+            document.getElementById("popup").style = null
+    
+            console.log(window["mapSettings"])
+
+            if (window["id"] == null) {
+                var options = {
+                    method: 'POST',
+                    url: 'https://timelines-3cbe.restdb.io/rest/timelines',
+                    headers: {
+                        'cache-control': 'no-cache',
+                        'x-apikey': RestDB_API,
+                        'content-type': 'application/json'
+                    },
+                    body: window["mapSettings"],
+                    json: true
+                }
+    
+                request(options, function (error, response, body) {
+                    if (error) {
+                        throw new Error(error)
+                    }
+                    else {
+                        location.href = "./map.html?id=" + body._id
+                    }
+                })
+            }
+        }
+        else {
+            window["mapSettings"].encrypted = document.getElementById("isEncrypted").checked
+    
+            var data = JSON.stringify(objects)
+    
+            if (window["mapSettings"].encrypted) {
+                window["key"] = document.getElementById("newKey").value
+                data = encrypt(data, window["key"])
+            }
+    
+            window["mapSettings"].map = data
+    
+            window["onMainMenu"] = true
+            Array.from(document.getElementById("popup").children).forEach(element => {
+                if (!element.classList.length || element.classList.contains("editMenu")) {
+                    element.style.display = "block"
+                }
+                else {
+                    element.style.display = "none"
+                }
+            })
+        }
+    })
+
+    document.getElementById("keyMenu").addEventListener("click", function() {
+        window["onMainMenu"] = false
+        document.getElementById("newTitle").value = window["mapSettings"].title
+        document.getElementById("newDesc").value = window["mapSettings"].description
+        document.getElementById("isEncrypted").checked = window["mapSettings"].encrypted
+        document.getElementById("newKey").value = window["key"]
+
+        Array.from(document.getElementById("popup").children).forEach(element => {
+            if (!element.classList.length || element.classList.contains("editEncrypt")) {
+                element.style.display = "block"
+            }
+            else {
+                element.style.display = "none"
+            }
+        })
+    })
+    
+    document.getElementById("backMenu").addEventListener("click", function() {
+        window["onMainMenu"] = true
+        Array.from(document.getElementById("popup").children).forEach(element => {
+            if (!element.classList.length || element.classList.contains("editMenu")) {
+                element.style.display = "block"
+            }
+            else {
+                element.style.display = "none"
+            }
+        })
+    })
+
+    if (!window["decrypt"]) {
+        window["onMainMenu"] = true
+        if (typeof window["mapSettings"] === 'undefined') {
+            window["mapSettings"] = {
+                title: "Map Title",
+                description: "Map Description",
+                map: "[]",
+                encrypted: false
+            }
+        }
+        else {
+            window["mapSettings"].map = JSON.stringify(objects)
+            document.getElementsByTagName("title")[0].innerText = "New Map"
+        }
+
+        document.getElementById("newTitle").value = window["mapSettings"].title
+        document.getElementById("newDesc").value = window["mapSettings"].description
+        document.getElementById("isEncrypted").checked = window["mapSettings"].encrypted
+        if (typeof window["mapSettings"].encrypted) {
+            document.getElementById("newKey").value = window["key"]
+        }
+
+        document.getElementById("popup").style = "visibility: visible"
+
+        Array.from(document.getElementById("popup").children).forEach(element => {
+            if (!element.classList.length || element.classList.contains("editMenu")) {
+                element.style.display = "block"
+            }
+            else {
+                element.style.display = "none"
+            }
+        })
+    }
+}
+
 var objects = []
+
+window["decrypt"] = false
 
 var options = {
   method: "GET",
@@ -726,30 +885,42 @@ request(options, function (error, response, body) {
   var url = new URL(window.location.href)
   window["id"] = url.searchParams.get("id")
 
+  if (window["id"] == null) {
+    mapMenu()
+  }
+
   var map = maps.find(e => e._id === window["id"])
 
   if (map) {
-    window["encrypted"] = map.encrypted
+
+    document.getElementsByTagName("title")[0].innerText = map.title
 
     console.log("Title: " + map.title)
     console.log("Description: " + map.description)
-    console.log("Encrypted: " + window["encrypted"])
+    console.log("Encrypted: " + map.encrypted)
 
-    if (window["encrypted"]) {
+    window["mapSettings"] = {
+        title: map.title,
+        description: map.description,
+        encrypted: map.encrypted
+    }
+
+    if (window["mapSettings"].encrypted) {
         document.getElementById("popup").style = "visibility: visible"
-        document.getElementById("subKey").addEventListener("click", function() {
-            objects = JSON.parse( decrypt( map.map, document.getElementById("key").value ) )
 
-            if (window["ready"]) {
-                display()
+        Array.from(document.getElementById("popup").children).forEach(element => {
+            if (!element.classList.length || element.classList.contains("enterKey")) {
+                element.style.display = "block"
             }
             else {
-                window["ready"] = true
+                element.style.display = "none"
             }
-
-            window["key"] = document.getElementById("key").value
-            document.getElementById("popup").style = null
         })
+
+        document.getElementById("key").focus()
+        window["decrypt"] = true
+        window["map"] = map.map
+        mapMenu()
     }
     else {
         objects = JSON.parse(map.map)

@@ -40,7 +40,7 @@ body {
 }
 
 #map-menu .map[encrypted] h2:after {
-    content: " 🔒";
+    content: "ðŸ”’";
 }
 
 #cover {
@@ -65,6 +65,11 @@ body {
     z-index: -1;
 }
 
+#addmenu:hover {
+    cursor: pointer;
+    background-color: white;
+}
+
 #addmenu #xLine {
     transition: 0.5s;
     position: absolute;
@@ -75,6 +80,18 @@ body {
     right: 0.75em;
     height: 0.5em;
     width: 2.5em;
+}
+
+#addmenu #yLine {
+    transition: 0.5s;
+    position: absolute;
+    display: block;
+    background-color: black;
+    border-radius: 0.1em;
+    bottom: 0.75em;
+    right: 1.75em;
+    height: 2.5em;
+    width: 0.5em;
 }
 
 #addmenu ul {
@@ -359,26 +376,82 @@ svg {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 5em;
-    width: 10em;
+    height: min-content;
+    width: 15em;
     margin: auto;
     display: flex;
     flex-direction: column;
 }
 
-#popup input {
+#popup input:not([type="checkbox"]),
+textarea {
     margin-top: 0.5em;
-    border: solid slategrey 0.2em;
+    border: solid slategrey 0.15em;
     border-radius: 0.5em;
     color: white;
     cursor: pointer;
     padding: 0.25em;
 }
 
-#popup #key {
+#popup input[type="checkbox"] {
+    align-self: flex-start;
+    margin: 0.25em 0 1em 0;
+}
+
+#popup input[type="text"],
+#popup input[type="password"],
+#popup textarea {
     margin-top: 0.75em;
     border: solid slategrey 0.1em;
+    background-color: black;
     border-radius: 0.1em;
     cursor: text;
     font-size: 0.75em;
+    margin-bottom: 1em;
+}
+
+#isEncrypted:not(:checked) ~ *:not([type="submit"]) {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+#popup input[type="submit"] {
+    border: solid slateblue 0.15em;
+}
+
+#popup input[type="button"],
+#popup input[type="submit"] {
+    transition: 0.2s;
+}
+
+#popup input[type="button"]:hover,
+#popup input[type="submit"]:hover {
+    transition: 0.2s;
+    border-color: red;
+}
+
+#mapSettings {
+    z-index: 10;
+    transition: 0.25s;
+    padding: 0.2em 0.1em 0.2em 0.1em;
+    position: fixed;
+    right: 1em;
+    top: -1em;
+    color: transparent;
+    background: white;
+    border-radius: 0em 0em 0.25em 0.25em;
+    outline: 0.15em solid slategray;
+    
+}
+
+#mapSettings:hover {
+    cursor: pointer;
+    top: 0em;
+    color: black;
+}
+
+#keyLabel.error::after {
+    color: red;
+    content: " (Invalid)";
+    font-size: small;
 }
