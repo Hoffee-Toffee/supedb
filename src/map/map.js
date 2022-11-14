@@ -72,6 +72,7 @@ function newObj(type, obj = null) {
             tag.addEventListener("dblclick", function() { moveObj(tag) })
             
             tag.style.borderColor = "#" + obj.color
+            tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + obj.color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
 
@@ -87,6 +88,7 @@ function newObj(type, obj = null) {
             var menu = document.createElement("div")
             menu.classList.add("nodeMenu")
             menu.style.outlineColor = "#" + obj.color
+            menu.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + obj.color
 
             var menuList = document.createElement("ul")
             menu.appendChild(menuList)
@@ -201,6 +203,7 @@ function newObj(type, obj = null) {
             tag.classList.add("object")
             tag.addEventListener("dblclick", function() { moveObj(tag) })
             tag.style.borderColor = "#" + objects[obj.headId].color
+            tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
 
@@ -236,6 +239,7 @@ function newObj(type, obj = null) {
             var menu = document.createElement("div")
             menu.classList.add("nodeMenu")
             menu.style.outlineColor =  "#" + objects[obj.headId].color
+            menu.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
 
             var menuList = document.createElement("ul")
             menu.appendChild(menuList)
@@ -475,7 +479,7 @@ function updateColor(color) {
     })
 }
 
-document.addEventListener( "click", function (event) {
+document.addEventListener("click", function (event) {
     if (event.target == null) {
         document.querySelectorAll(".editing").forEach((edit) => {
             edit.classList.remove("editing")
