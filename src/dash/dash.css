@@ -5,3 +5,51 @@
     width: 100%;
     line-height: 1.5em;
 }
+
+#map-menu {
+    color: white;
+}
+
+#map-menu .map {
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.25s;
+    padding: 1em;
+    background-color: navy;
+    margin: 0.5em;
+    border-radius: 0.25em;
+}
+
+#map-menu .description {
+    transition: 0.25s;
+    color: dimgray;
+    display: block;
+}
+
+#map-menu .map:hover {
+    transition: 0.25s;
+    background-color: blue;
+    margin-left: 0em;
+    margin-right: 0em;
+}
+
+#map-menu .map:hover .description {
+    transition: 0.25s;
+    color: lightblue;
+}
+
+#map-menu .map[encrypted] h2:after {
+    /* Adds lock emoji */
+    content: "🔒";
+}
+
+#cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background-color: black;
+    z-index: 0;
+}
