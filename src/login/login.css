@@ -83,10 +83,12 @@ body {
 }
 
 #login-error, #signup-error {
-    color: darkred;
+    color: red;
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 20px;
+    padding: 10px;
+    text-align: center;
 }
 
 #login-bottom, #signup-bottom {
