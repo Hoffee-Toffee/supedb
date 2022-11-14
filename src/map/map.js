@@ -1,86 +1,14 @@
 window["ready"] = false
 window["editing"] = false
 window["newArrow"] = false
+window["permissions"] = []
+
 var objects = []
 
 window["decrypt"] = false
 
-window.onload = function() {
-    // Get all 
-    db.collection("timelines").get().then((querySnapshot) => {
-    var url = new URL(window.location.href)
-    window["id"] = url.searchParams.get("id")
-
-    if (window["id"] == null) {
-        mapMenu()
-    }
-
-    var maps = Array.from(querySnapshot.docs)
-    var map = maps.filter(e => e.id == window["id"])[0]
-
-    if (map) {
-        document.getElementsByTagName("title")[0].innerText = map.data().title
-
-        console.log("Title: " + map.data().title)
-        console.log("Description: " + map.data().description)
-        console.log("Encrypted: " + map.data().encrypted)
-        console.log("Map: " + map.data().map)
-
-        window["mapSettings"] = {
-            id: map.id,
-            title: map.data().title,
-            description: map.data().description,
-            encrypted: map.data().encrypted
-        }
-
-        if (window["mapSettings"].encrypted) {
-            document.getElementById("popup").style = "visibility: visible"
-
-            Array.from(document.getElementById("popup").children).forEach(element => {
-                if (!element.classList.length || element.classList.contains("enterKey")) {
-                    element.style.display = "block"
-                }
-                else {
-                    element.style.display = "none"
-                }
-            })
-
-            document.getElementById("key").focus()
-            window["decrypt"] = true
-            window["map"] = map.data().map
-            mapMenu()
-        }
-        else {
-            objects = JSON.parse(map.data().map)
-
-            if (window["ready"]) {
-                display()
-            }
-            else {
-                window["ready"] = true
-            }
-        }
-    }
-    else {
-        console.log("Invalid ID")
-    }
-    })
-
-    if (window["ready"]) {
-        display()
-    }
-    else {
-        window["ready"] = true
-    }
-
-    document.getElementById("mapSettings").addEventListener("click", function() {
-        mapMenu()
-    })
-}
-
 function display() {
     if (objects.includes(null)){
-        console.log(objects)
         // filter all the nulls and loop through them
         var nulls = objects.filter(e => e == null)
         nulls.forEach(obj => {
@@ -107,8 +35,6 @@ function display() {
             })
             objects.splice(pos, 1)
         })
-
-        console.log(objects)
     }
     objects.forEach(obj => {
         try {
@@ -385,7 +311,6 @@ function newObj(type, obj = null) {
             break
 
         case "Info":
-            console.log("Info")
             break
 
         case "Era":
@@ -488,7 +413,6 @@ function newObj(type, obj = null) {
 
     tag.addEventListener("mouseover", function() {
         if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 ) {
-            console.log("Over object cheese")
             var linkTop = document.createElement("span")
             linkTop.classList.add("addLink")
             linkTop.id = "linkTop"
@@ -515,7 +439,6 @@ function newObj(type, obj = null) {
                 link.classList.add("mouseLink")
                 link.addEventListener("mouseout", function () {
                     if ( window["newArrow"] && document.elementFromPoint(window.event.pageX, window.event.pageY).classList.contains("object") ) {
-                        console.log("Left link button")
                         document.querySelectorAll(".addLink").forEach((button) => {
                             button.remove()
                         })
@@ -527,7 +450,6 @@ function newObj(type, obj = null) {
 
     tag.addEventListener("mouseout", function () {
         if ( window["newArrow"] && !document.elementFromPoint(window.event.pageX, window.event.pageY).classList.contains("addLink") ) {
-            console.log("Left object " + document.elementFromPoint(window.event.pageX, window.event.pageY).id)
             document.querySelectorAll(".addLink").forEach((button) => {
                 button.remove()
             })
@@ -729,14 +651,10 @@ document.onkeydown = (event) => {
             // data = encrypt(data, window["key"])
         }
 
-        console.log("Saving...")
-
         // Update firestore document
         db.collection("timelines").doc(window["mapSettings"].id).update({
             map: data
         })
-
-        console.log("Saved")
     }
 
     if ( window["newArrow"] && ["c", "f", "e"].includes(event.key) ) {
@@ -806,7 +724,6 @@ document.onkeydown = (event) => {
             var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
 
             toUpdate.forEach(element => {
-                console.log(element.id)
                 var points = []
 
                 element.line.forEach(line => {
@@ -848,7 +765,6 @@ document.onkeydown = (event) => {
             var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
     
             toUpdate.forEach(element => {
-                console.log(element.id)
                 var points = []
     
                 element.line.forEach(line => {
@@ -868,8 +784,6 @@ document.onkeydown = (event) => {
 }
 
 function moveObj(obj) {
-    console.log(obj)
-
     document.querySelectorAll(".addLink").forEach((button) => {
         button.remove()
     })
@@ -941,8 +855,6 @@ function mapMenu() {
             window["mapSettings"].description = document.getElementById("newDesc").value
     
             document.getElementById("popup").style = null
-    
-            console.log(window["mapSettings"])
 
             if (window["id"] == null) {
                 var options = {
@@ -1056,4 +968,86 @@ function mapMenu() {
             }
         })
     }
+}
+
+function start() {
+    // Check if the user isn't logged in
+    if (!auth.currentUser) {
+        // Redirect to the login page
+        location.href = "/src/login/login.html"
+    }
+
+    // Check if the user has any associated permissions
+    db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            window["permissions"].push(doc.data())
+        })
+    })
+
+    // If they don't have any permissions, redirect them to the dashboard
+    if (window["permissions"] == null) {
+        location.href = "/src/dash/dash.html"
+    }
+
+    // Get all 
+    db.collection("timelines").get().then((querySnapshot) => {
+        var url = new URL(window.location.href)
+        window["id"] = url.searchParams.get("id")
+    
+        if (window["id"] == null) {
+            mapMenu()
+        }
+    
+        var maps = Array.from(querySnapshot.docs)
+        var map = maps.filter(e => e.id == window["id"])[0]
+    
+        if (map) {
+            document.getElementsByTagName("title")[0].innerText = map.data().title
+    
+            window["mapSettings"] = {
+                id: map.id,
+                title: map.data().title,
+                description: map.data().description,
+                encrypted: map.data().encrypted
+            }
+    
+            if (window["mapSettings"].encrypted) {
+                document.getElementById("popup").style = "visibility: visible"
+    
+                Array.from(document.getElementById("popup").children).forEach(element => {
+                    if (!element.classList.length || element.classList.contains("enterKey")) {
+                        element.style.display = "block"
+                    }
+                    else {
+                        element.style.display = "none"
+                    }
+                })
+    
+                document.getElementById("key").focus()
+                window["decrypt"] = true
+                window["map"] = map.data().map
+                mapMenu()
+            }
+            else {
+                objects = JSON.parse(map.data().map)
+    
+                if (window["ready"]) {
+                    display()
+                }
+                else {
+                    window["ready"] = true
+                }
+            }
+        }})
+    
+        if (window["ready"]) {
+            display()
+        }
+        else {
+            window["ready"] = true
+        }
+    
+        document.getElementById("mapSettings").addEventListener("click", function() {
+            mapMenu()
+        })
 }

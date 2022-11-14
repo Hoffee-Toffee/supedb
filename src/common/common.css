@@ -448,7 +448,7 @@ textarea {
     background: white;
     border-radius: 0em 0em 0.25em 0.25em;
     outline: 0.15em solid slategray;
-    
+    width: 1.5em;    
 }
 
 #mapSettings:hover {
