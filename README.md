@@ -35,7 +35,7 @@ Each node has it's own menu that allows the user to perform the following action
 * Change or add the node's head (not for head nodes, coming soon)
 * Change node color (head nodes only)
 
-### Wiki
+### Wiki 
 
 (coming soon)
 
@@ -106,3 +106,49 @@ Icons, borders, and buttons will be rounded to offset the sharp edges of the tex
 | <img alt="Orange TVA logo on a green background, retro style" src="https://cdn.dribbble.com/users/2349641/screenshots/15994954/media/0c090a97b337e46aff656bc29d4bc5b9.jpg?compress=1&resize=768x576&vertical=top" width="400"> | <img alt="Dead Space UI menu prompt design" src="https://www.gameuidatabase.com/uploads/Dead-Space02052021-101017-29148.jpg" width="400"> |
 | <img alt="TVA timeline view, white line with branching orange lines" src="https://steamuserimages-a.akamaihd.net/ugc/1696153791086046919/AF90181D15D7D56CA8A5B13CDFAC12A2E1CECA79/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true" width="400"> | <img alt="Dead Space door UI" src="https://dinoignacio.com/wp-content/uploads/2013/05/ds2_holograms.jpg" width="400"> |
 | <img alt="TVA TemPad UI design" src="https://cdn.dribbble.com/users/1152027/screenshots/16053318/media/6ac38a3b3d403fd6a5bb939d0d624057.jpg?compress=1&resize=768x576&vertical=top" width="400"> | <img alt="Dead Space orange elevator UI" src="https://i.ytimg.com/vi/ycptxNI49d4/maxresdefault.jpg" width="400"> |
+
+## Miss Minutes (site mascot and notification system)
+
+Miss Minutes is a character from the Marvel Cinematic Universe.
+She is an A.I. in the TVA that is responsible for keeping track of timelines.
+She has a southern dialect and is very friendly.
+She is also very helpful and will help users navigate the site.
+
+Here are some events/conditions and what Miss Minutes will say:
+(Note that the responses will be randomized)
+
+| Event/Condition | Response (classic) | Response (miss minutes) |
+| --------------- | ------------------ | ----------------------- |
+| New suggestion  | {user} created a suggestion {suggestion} | {user} has found a branch in the timeline. |
+| Delete suggestion | {user} deleted a suggestion {suggestion} | {user} has pruned a branch in the timeline. |
+| Proposal vote opening | {user} opened a vote for a proposal {proposal} | {user} proposes to change the sacred timeline. |
+| Proposal accepted | {user} accepted a proposal {proposal} | The sacred timeline has been diverted. |
+| Proposal rejected | {user} rejected a proposal {proposal} | The proposal has been rejected. |
+| Change made | {user} made a change {change} | {user} has altered the sacred timeline. |
+| Change appeal opened | {user} opened an appeal for a change {change} | {user} opens review of a change to the sacred timeline. |
+| Change appeal accepted | {user} accepted an appeal for a change {change} | The change to the sacred timeline has been reverted. |
+| Change appeal rejected | {user} rejected an appeal for a change {change} | The appeal has been rejected. |
+| User added to project | {user} was added to a project {project} | {user} has been added to a project as a {role}. |
+
+Here is a list of terminology used by the TVA, their definitions, and what the definitions mean in the context of the site:
+
+* Miss Minutes (the TVA's mascot and computer system) - the site mascot and notification system
+* The Sacred Timeline (the timeline that the TVA is trying to protect) - current canon
+* Reset Charges / Pruning (destroys the timeline) - delete a version/suggestion
+* Branches (the different timelines) - versions/suggestions
+* Monitored Branches (the branches that the TVA is watching) - versions/suggestions that are currently being worked on (i.e. drafts/suggestions that are not yet canon)
+* Diversion Review (the process of reviewing a plan to divert the sacred timeline) - A proposal up for voting
+* Time Variance Authority (monitors timelines in the multiverse) - the site
+* Alioth (trans-temporal creature used to guard the Void) - used to ban people from the site
+* Nexus of all realities (the space between realities) - used to view all universes
+* The Void (the place where all timelines go when they are destroyed) - used to house deleted versions/suggestions before they are permanently deleted (by Alioth)
+* Citadel at the End of Time (where He Who Remains resides) - admin panel
+* He Who Remains (the ruler of the TVA) - the site admin
+* TVA Office (headquarters for the TVA) - main page
+* Minuteman (a solider for the TVA) - read
+* Hunter (commands a team of Minutemen) - read and suggest
+* Consultant (civilian expert on a specific subject) - read, suggest, and vote
+* Analyst (expert timeline analyst) - read, suggest, vote, and edit
+* Agent (command over inner workings) - read, suggest, vote, edit, and admin
+* Judge (runs the TVA) - read, suggest, vote, edit, admin, and project owner
+  (Note: project owners don't have any special permissions except that they cannot be removed from a project unless they transfer ownership to someone else)
