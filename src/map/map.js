@@ -83,6 +83,9 @@ function newObj(type, obj = null) {
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
+            text.addEventListener("input", function() {
+                updateObj(this, "title")
+            })
             tag.appendChild(text)
 
             var menu = document.createElement("div")
@@ -125,6 +128,7 @@ function newObj(type, obj = null) {
                 toAdjust.forEach(obj => {
                     obj.headId = null
                 })
+                save()
             })
 
             deleteButton.addEventListener("mouseover", function() {
@@ -159,8 +163,10 @@ function newObj(type, obj = null) {
                 this.style.height = 'auto'
                 this.style.height = this.scrollHeight+'px'
                 this.scrollTop = this.scrollHeight
-                window.scrollTo(window.scrollLeft,(this.scrollTop+this.scrollHeight))
             `)
+            tooltip.addEventListener("input", function() {
+                updateObj(this, "description")
+            })
             tag.appendChild(tooltip)
             
             document.getElementsByTagName("BODY")[0].appendChild(tag)
@@ -229,7 +235,6 @@ function newObj(type, obj = null) {
                 this.style.height = 'auto'
                 this.style.height = this.scrollHeight+'px'
                 this.scrollTop = this.scrollHeight
-                window.scrollTo(window.scrollLeft,(this.scrollTop+this.scrollHeight))
             `)
             tooltip.addEventListener("input", function() {
                 updateObj(this, "description")
@@ -288,6 +293,7 @@ function newObj(type, obj = null) {
                     document.getElementById(obj.id).remove()
                     objects[obj.id] = null
                 })
+                save()
             })
 
             deleteButton.addEventListener("mouseover", function() {
@@ -463,6 +469,7 @@ function newObj(type, obj = null) {
 
 function updateObj(el, attr) {
     objects[el.parentElement.id][attr] = el.value
+    save()
 }
 
 function updateColor(color) {
@@ -477,6 +484,7 @@ function updateColor(color) {
         document.getElementById(obj.id).remove()
         newObj(obj.class, obj)
     })
+    save()
 }
 
 document.addEventListener("click", function (event) {
@@ -645,22 +653,6 @@ document.addEventListener("click", function (event) {
 }, false)
 
 document.onkeydown = (event) => {
-    if (event.ctrlKey && event.key == "s") {
-        event.preventDefault()
-
-        var data = JSON.stringify(objects)
-
-        if (window["mapSettings"].encrypted) {
-            // Coming soon
-            // data = encrypt(data, window["key"])
-        }
-
-        // Update firestore document
-        db.collection("timelines").doc(window["mapSettings"].id).update({
-            map: data
-        })
-    }
-
     if ( window["newArrow"] && ["c", "f", "e"].includes(event.key) ) {
         var obj = objects.find(obj => obj.childId === "mouse")
 
@@ -785,6 +777,21 @@ document.onkeydown = (event) => {
             })
           }, 10)
     }
+    save()
+}
+
+function save() {
+    var data = JSON.stringify(objects)
+
+    if (window["mapSettings"].encrypted) {
+        // Coming soon
+        // data = encrypt(data, window["key"])
+    }
+
+    // Update firestore document
+    db.collection("timelines").doc(window["mapSettings"].id).update({
+        map: data
+    })
 }
 
 function moveObj(obj) {

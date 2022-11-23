@@ -32,7 +32,7 @@ function try_signup() {
         })
 
         // Redirect to dashboard
-        window.location.href = "/src/dash/dash.html";
+        window.location.href = "../dash/dash.html";
     }).catch((error) => {
         // Display error message
         document.getElementById("signup-error").innerHTML = error.message;
