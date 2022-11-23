@@ -1,8 +1,8 @@
 function start() {
   // Check if the user isn't logged in
   if (!auth.currentUser) {
-    // Redirect to the login page
-    window.location.href = "../login/login.html";
+    // Redirect to the login page (back from url/supedb/dash/dash.html to url/supedb/login/login.html)
+    window.location.href = "/src/login/login.html";
   }
 
   document.getElementById("addmenu").style.zIndex = 3
