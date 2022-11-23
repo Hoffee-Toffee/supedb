@@ -8,6 +8,7 @@
 
 #map-menu {
     color: white;
+    margin-top: 2em;
 }
 
 #map-menu .map {
@@ -52,4 +53,35 @@
     bottom:0;
     background-color: black;
     z-index: 0;
+}
+
+#addmenu {
+    transition: 0.25s;
+}
+
+#addmenu::before {
+    content: "New Map";
+    position: absolute;
+    top: 6em;
+    bottom: 0;
+    color: white;
+    transition: 0.25s;
+    rotate: -90deg;
+    border: 0.1em solid white;
+    border-radius: 0.25em;
+    height: 2em;
+    width: 5em;
+    text-align: center;
+    line-height: 2em;
+    pointer-events: none;
+    transform: translateY(-25%);
+    opacity: 0;
+}
+
+#addmenu:hover {
+    rotate: 90deg;
+}
+
+#addmenu:hover::before {
+    opacity: 1;
 }
