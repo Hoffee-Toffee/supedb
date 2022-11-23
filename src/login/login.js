@@ -6,7 +6,7 @@ function try_login() {
     // Sign in with email and password
     auth.signInWithEmailAndPassword(email, pw).then((userCredential) => {
         // Redirect to dashboard
-        window.location.href = "/src/dash/dash.html";
+        window.location.href = "/supedb/src/dash/dash.html";
     }).catch((error) => {
         // Display error message
         document.getElementById("login-error").innerHTML = error.message;
@@ -32,7 +32,7 @@ function try_signup() {
         })
 
         // Redirect to dashboard
-        window.location.href = "../dash/dash.html";
+        window.location.href = "/supedb/src/dash/dash.html";
     }).catch((error) => {
         // Display error message
         document.getElementById("signup-error").innerHTML = error.message;
@@ -88,12 +88,12 @@ function start() {
         // Log the user out
         auth.signOut().then(() => {
             // Redirect to login page
-            window.location.href = "/src/login/login.html";
+            window.location.href = "/supedb/src/login/login.html";
         })
     }
     // Check if the user is logged in
     if (auth.currentUser) {
         // Redirect to dashboard
-        window.location.href = "/src/dash/dash.html";
+        window.location.href = "/supedb/src/dash/dash.html";
     }
 }
