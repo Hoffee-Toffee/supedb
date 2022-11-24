@@ -67,7 +67,7 @@ Drafts will be shown as lines curving to the right, while changes will be shown 
 ## UI Design
 
 The UI will be retrofuturistic, based on the style of the TVA from the Marvel Cinematic Universe.
-And since I love the retrofuturistic UI from Dead Space so much, I'll also be using that as inspiration.
+And since I love the retrofuturistic UI from Dead Space so much, I'll likely use elements from that as well.
 
 ### Colors
 
@@ -80,8 +80,6 @@ Other colors that will be present, but used less frequently, are:
 * Yellow (accent color)
 * Red (for importance and as an accent color)
 * Green (for success and as an accent color)
-* Brown/Beige (retro aesthetic)
-* Blue/Purple (futuristic aesthetic)
 
 ### Text, icons, borders, and buttons
 
@@ -92,20 +90,31 @@ Icons, borders, and buttons will be rounded to offset the sharp edges of the tex
 
 ### Inspiration images
 
-<!-- ![Orange TVA logo on a green background, retro style](https://cdn.dribbble.com/users/2349641/screenshots/15994954/media/0c090a97b337e46aff656bc29d4bc5b9.jpg?compress=1&resize=768x576&vertical=top)
-![TVA timeline view, white line with branching orange lines](https://steamuserimages-a.akamaihd.net/ugc/1696153791086046919/AF90181D15D7D56CA8A5B13CDFAC12A2E1CECA79/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true)
-![TVA TemPad UI design](https://cdn.dribbble.com/users/1152027/screenshots/16053318/media/6ac38a3b3d403fd6a5bb939d0d624057.jpg?compress=1&resize=768x576&vertical=top)
-![Dead Space UI menu prompt design](https://www.gameuidatabase.com/uploads/Dead-Space02052021-101017-29148.jpg)
-![Dead Space door UI](https://dinoignacio.com/wp-content/uploads/2013/05/ds2_holograms.jpg)
-![Dead Space orange elevator UI](https://i.ytimg.com/vi/ycptxNI49d4/maxresdefault.jpg) -->
-
 <!-- Image grid (2x3) TVA on left and DS on right -->
 
-| TVA | Dead Space |
-| --- | ---------- |
-| <img alt="Orange TVA logo on a green background, retro style" src="https://cdn.dribbble.com/users/2349641/screenshots/15994954/media/0c090a97b337e46aff656bc29d4bc5b9.jpg?compress=1&resize=768x576&vertical=top" width="400"> | <img alt="Dead Space UI menu prompt design" src="https://www.gameuidatabase.com/uploads/Dead-Space02052021-101017-29148.jpg" width="400"> |
-| <img alt="TVA timeline view, white line with branching orange lines" src="https://steamuserimages-a.akamaihd.net/ugc/1696153791086046919/AF90181D15D7D56CA8A5B13CDFAC12A2E1CECA79/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true" width="400"> | <img alt="Dead Space door UI" src="https://dinoignacio.com/wp-content/uploads/2013/05/ds2_holograms.jpg" width="400"> |
-| <img alt="TVA TemPad UI design" src="https://cdn.dribbble.com/users/1152027/screenshots/16053318/media/6ac38a3b3d403fd6a5bb939d0d624057.jpg?compress=1&resize=768x576&vertical=top" width="400"> | <img alt="Dead Space orange elevator UI" src="https://i.ytimg.com/vi/ycptxNI49d4/maxresdefault.jpg" width="400"> |
+|  |  |
+|--|--|
+| <img alt="Uatu in the Nexus of All Realities" src="https://static.wikia.nocookie.net/marvelcinematicuniverse/images/1/14/Uatu_realizes_that_he_was_discovered_by_Ultron3.jpg" width="400"> | <img alt="The Nexus of All Realities from the Marvel Cinematic Universe" src="https://static.wikia.nocookie.net/marvelcinematicuniverse/images/c/c7/Nexus_of_All_Realities.jpg" width="400"> |
+| <img alt="Exterior of the Citadel at the End of Time" src="https://static.wikia.nocookie.net/marvelcinematicuniverse/images/4/41/Loki_and_Sylvie_at_the_Citadel_at_the_End_of_Time.png" width="400"> | <img alt="Loki Multiverse diverging" src="https://static.wikia.nocookie.net/marvelcinematicuniverse/images/c/c2/Loki_multiverse.png" width="400"> |
+| <img alt="TVA timeline view, white line with branching orange lines" src="https://steamuserimages-a.akamaihd.net/ugc/1696153791086046919/AF90181D15D7D56CA8A5B13CDFAC12A2E1CECA79/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true" width="400"> | <img alt="TVA timeline monitor" src="https://preview.redd.it/7rmi0i22qir61.png?width=1920&format=png&auto=webp&s=0508ccc978174ebbdd9e54be1204f2559ea9cca2" width="400"> |
+| <img alt="TVA hourglass wallpaper" src="https://pbs.twimg.com/media/E6OJOnMUcAgkwiH.jpg" width="400"> | <img alt="TVA office reception" src="https://i.redd.it/780374ash1b71.jpg" width="400"> |
+| <img alt="TVA computer UI design" src="https://www.yankodesign.com/images/design_news/2021/12/this-retro-futuristic-multifunctional-computer-from-tva-halls-is-worth-every-sci-fi-fans-appreciation/TVA-multifunctional-computer-inspired-from-Loki-26.jpg" width="400"> | <img alt="TVA TemPad UI design" src="https://cdn.dribbble.com/users/1152027/screenshots/16053318/media/6ac38a3b3d403fd6a5bb939d0d624057.jpg?compress=1&resize=768x576&vertical=top" width="400"> |
+
+### Color palette
+
+<!-- Showing a table displaying each color -->
+<!-- Orange, black, white, yellow, red, green -->
+
+| Color | Hex | Purpose |
+| ----- | --- | ------- |
+| <p style="background-color: #CC4E00; color: black; width: 50px; height: 50px; border-radius: 50%; border: 1px solid black; text-align: center; vertical-align: middle; line-height: 50px;">Orange</p> | #CC4E00 | Main UI elements |
+| <p style="background-color: #000000; color: white; width: 50px; height: 50px; border-radius: 50%; border: 1px solid white; text-align: center; vertical-align: middle; line-height: 50px;">Black</p> | #000000 | Background |
+| <p style="background-color: #ffffff; color: black; width: 50px; height: 50px; border-radius: 50%; border: 1px solid black; text-align: center; vertical-align: middle; line-height: 50px;">White</p> | #ffffff | Text |
+| <p style="background-color: #FCCE14; color: black; width: 50px; height: 50px; border-radius: 50%; border: 1px solid black; text-align: center; vertical-align: middle; line-height: 50px;">Yellow</p> | #FCCE14 | Accent color |
+| <p style="background-color: #E81313; color: black; width: 50px; height: 50px; border-radius: 50%; border: 1px solid black; text-align: center; vertical-align: middle; line-height: 50px;">Red</p> | #E81313 | Importance and accent color |
+| <p style="background-color: #004507; color: white; width: 50px; height: 50px; border-radius: 50%; border: 1px solid white; text-align: center; vertical-align: middle; line-height: 50px;">Green</p> | #004507 | Success and accent color |
+
+
 
 ## Miss Minutes (site mascot and notification system)
 
