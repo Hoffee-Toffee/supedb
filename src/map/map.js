@@ -521,6 +521,8 @@ document.addEventListener("click", function (event) {
         document.querySelectorAll(".addLink").forEach((button) => {
             button.remove()
         })
+
+        save()
         
         return
     }
@@ -618,6 +620,8 @@ document.addEventListener("click", function (event) {
         document.querySelectorAll(".addLink").forEach((button) => {
             button.remove()
         })
+
+        save()
     }
     else if (event.target.classList.contains("object") || event.target.parentElement.classList.contains("object")) {
         var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
@@ -758,6 +762,10 @@ document.onkeydown = (event) => {
                 child.readOnly = true
             })
         })
+
+        window["editing"] = false
+
+        save()
     }
     else if (event.key == "Enter" && window["decrypt"]) {
         document.getElementById("subForm").click()
@@ -785,7 +793,6 @@ document.onkeydown = (event) => {
             })
           }, 10)
     }
-    save()
 }
 
 function updateLinks(element) {
