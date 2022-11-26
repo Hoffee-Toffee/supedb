@@ -47,6 +47,19 @@ function display() {
     })
 
     document.getElementById("addmenu").style.zIndex = 3
+
+    // Get the scrolling height and width of the screen
+    var height = "calc(1em + " + document.scrollingElement.scrollHeight + "px)"
+    var width = "calc(1em + " + document.scrollingElement.scrollWidth + "px)"
+
+    // Set the html to the size of the map
+    document.querySelector("html").style.height = height
+    document.querySelector("html").style.width = width
+
+    // Set the height of each era to the height of the map
+    document.querySelectorAll(".era").forEach(era => {
+        era.style.height = height
+    })
 }
 
 function newObj(type, obj = null) {
