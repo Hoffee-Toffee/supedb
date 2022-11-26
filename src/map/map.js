@@ -49,8 +49,8 @@ function display() {
     document.getElementById("addmenu").style.zIndex = 3
 
     // Get the scrolling height and width of the screen
-    var height = "calc(1em + " + document.scrollingElement.scrollHeight + "px)"
-    var width = "calc(1em + " + document.scrollingElement.scrollWidth + "px)"
+    var height = "calc(5em + " + document.scrollingElement.scrollHeight + "px)"
+    var width = "calc(5em + " + document.scrollingElement.scrollWidth + "px)"
 
     // Set the html to the size of the map
     document.querySelector("html").style.height = height
@@ -508,7 +508,8 @@ function updateColor(color) {
 }
 
 document.addEventListener("click", function (event) {
-    if (event.target == null) {
+    // Check if you clicked nothing or the html element
+    if (event.target == null || event.target.tagName == "HTML") {
         document.querySelectorAll(".editing").forEach((edit) => {
             edit.classList.remove("editing")
             Array.from(edit.children).forEach(child => {
@@ -693,6 +694,41 @@ document.onkeydown = (event) => {
     }
 
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
+        // If the user is also holding the shift key (and only editing one node) then toogle the selection of all the nodes in the direction of the arrow key
+        if (event.shiftKey && document.querySelectorAll(".editing").length == 1) {
+            // Get the id of the node that is being edited
+            var id = document.querySelector(".editing").id
+
+            // Get the x and y position of the selected node
+            var position = objects.find(obj => obj.id == id).position
+
+            // Run get a set of nodes in the direction of the arrow key
+            var nodes = []
+
+            // First check runs for sub, head, and info nodes
+            var objs = objects.filter(obj => ["Sub", "Head", "Info"].includes(obj.class))
+
+            if (event.key == "ArrowUp") nodes = objs.filter(obj => obj.position[1] <= position[1])
+            else if (event.key == "ArrowDown") nodes = objs.filter(obj => obj.position[1] >= position[1])
+            else if (event.key == "ArrowLeft") nodes = objs.filter(obj => obj.position[0] <= position[0])
+            else if (event.key == "ArrowRight") nodes = objs.filter(obj => obj.position[0] >= position[0])
+
+            // Second check runs for era nodes (only for left and right arrow keys)
+            objs = objects.filter(obj => obj.class == "Era")
+
+            if (event.key == "ArrowLeft") nodes = nodes.concat(objs.filter(obj => obj.position <= position[0]))
+            else if (event.key == "ArrowRight") nodes = nodes.concat(objs.filter(obj => obj.position >= position[0]))
+
+            // Toggle the selection of each in the set of nodes (except the selected node)
+            nodes.forEach(node => {
+                if (node.id != id) {
+                    document.getElementById(node.id).classList.toggle("editing")
+                }
+            })
+
+            return
+        }
+
         var els = document.querySelectorAll(".editing")
 
         if (Array.from(els).includes(document.activeElement.parentElement)) {
