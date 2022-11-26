@@ -151,6 +151,7 @@ input {
 
 .tooltip {
     overflow-wrap: anywhere;
+    pointer-events: none;
 }
 
 .head, .sub, .info, .era, .link {
@@ -172,6 +173,22 @@ input {
     transform: translate3d(-50%, 0px, 0px);
     z-index: 2;
     background-color: black;
+}
+
+/* Will add an area below for you to hover over */
+.object::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 0.8em;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.object:hover::after {
+    pointer-events: auto;
 }
 
 .head .tooltip,
@@ -203,19 +220,22 @@ input {
     height: initial;
     margin-top: 1em;
     top: 100%;
+    pointer-events: auto;
 }
 
 .colorPicker {
     transition: 0.25s;
     position: absolute;
-    left: 50%;
+    left: calc(50% - 1em);
     bottom: 0;
     opacity: 0;
+    cursor: pointer;
+    z-index: 1;
 }
 
 .head:hover .colorPicker {
     transition: 0.25s;
-    left: calc(100% + 0.3em);
+    left: calc(100% + 0.25em);
     opacity: 1;
 }
 
