@@ -84,7 +84,15 @@ function newObj(type, obj = null) {
             tag.id = obj.id
             tag.classList.add("head")
             tag.classList.add("object")
-            tag.addEventListener("dblclick", function() { moveObj(tag) })
+            tag.addEventListener("dblclick", (e) => {
+                // Make sure the user clicked on the object and not one of its children
+                if (e.target == tag) {
+                    moveObj(tag)
+                } else {
+                    // Make child not read-only
+                    e.target.readOnly = false
+                }
+            })
             
             tag.style.borderColor = "#" + obj.color
             tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + obj.color
@@ -224,7 +232,14 @@ function newObj(type, obj = null) {
             tag.id = obj.id
             tag.classList.add("sub")
             tag.classList.add("object")
-            tag.addEventListener("dblclick", function() { moveObj(tag) })
+            tag.addEventListener("dblclick", (e) => {
+                // Make sure the user clicked on the object and not one of its children
+                if (e.target == tag) {
+                    moveObj(tag)
+                } else {
+                    e.target.readOnly = false
+                }
+            })
             tag.style.borderColor = "#" + objects[obj.headId].color
             tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
             tag.style.marginLeft = (obj.position[0] + "em")
@@ -363,8 +378,14 @@ function newObj(type, obj = null) {
 
             tag.classList.add("era")
             tag.classList.add("object")
-            tag.addEventListener("dblclick", function() { moveObj(tag) })
-
+            tag.addEventListener("dblclick", (e) => {
+                // Make sure the user clicked on the object and not one of its children
+                if (e.target == tag) {
+                    moveObj(tag)
+                } else {
+                    e.target.readOnly = false
+                }
+            })
             tag.style.left = (obj.position + 0.5) + "em"
 
             var element = document.getElementsByTagName("BODY")[0]
@@ -384,8 +405,14 @@ function newObj(type, obj = null) {
             tooltip.innerText = desc
             tag.appendChild(tooltip)
 
-            tag.addEventListener("dblclick", function() { moveObj(tag) })
-
+            tag.addEventListener("dblclick", (e) => {
+                // Make sure the user clicked on the object and not one of its children
+                if (e.target == tag) {
+                    moveObj(tag)
+                } else {
+                    e.target.readOnly = false
+                }
+            })
             var points = []
 
             obj.line.forEach(el => {

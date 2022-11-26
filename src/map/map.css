@@ -214,7 +214,10 @@ input {
 
 .head:not(.editing):hover .tooltip,
 .sub:not(.editing):hover .tooltip,
-.info:not(.editing):hover .tooltip {
+.info:not(.editing):hover .tooltip,
+.head:not(.editing) .tooltip:focus,
+.sub:not(.editing) .tooltip:focus,
+.info:not(.editing) .tooltip:focus {
     opacity: 1;
     height: initial;
     margin-top: 1em;
