@@ -48,6 +48,10 @@ function display() {
 
     document.getElementById("addmenu").style.zIndex = 3
 
+    // Reset the html size
+    document.querySelector("html").style.height = "initial"
+    document.querySelector("html").style.width = "initial"
+
     // Get the scrolling height and width of the screen
     var height = "calc(5em + " + document.scrollingElement.scrollHeight + "px)"
     var width = "calc(5em + " + document.scrollingElement.scrollWidth + "px)"
@@ -386,7 +390,7 @@ function newObj(type, obj = null) {
                     e.target.readOnly = false
                 }
             })
-            tag.style.left = (obj.position + 0.5) + "em"
+            tag.style.left = obj.position + "em"
 
             var element = document.getElementsByTagName("BODY")[0]
             element.appendChild( tag )

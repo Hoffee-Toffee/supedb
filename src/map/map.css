@@ -281,7 +281,6 @@ input {
     background-color: white;
     height: 100vh;
     position: absolute;
-    transform: translate(-50%, 0);
     top: 0;
     z-index: 2;
 }
