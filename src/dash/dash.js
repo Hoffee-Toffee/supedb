@@ -1,8 +1,8 @@
 function start() {
   // Check if the user isn't logged in
   if (!auth.currentUser) {
-    // Redirect to the login page (back from url/supedb/dash/dash.html to url/supedb/login/login.html)
-    window.location.href = "/supedb/src/login/login.html";
+    // Redirect to the login page
+    window.location.href = "../login/login.html";
   }
 
   document.getElementById("addmenu").style.zIndex = 3
@@ -20,7 +20,7 @@ function start() {
         db.collection("timelines").doc(change.doc.data().map).get().then((doc) => {
           var tag = document.createElement("a")
           tag.id = doc.id
-          tag.href = "/supedb/src/map/map.html?id=" + doc.id
+          tag.href = "../map/map.html?id=" + doc.id
           tag.classList.add("map")
 
           var text = document.createElement("h2")

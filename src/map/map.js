@@ -36,11 +36,13 @@ function display() {
             objects.splice(pos, 1)
         })
     }
+    // Delete all the objects and svgs (except for the first svg) to recreate them using the objects array
+    document.querySelectorAll(".object").forEach((obj) => { obj.remove() })
+    document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
+
+
+    // Add the objects
     objects.forEach(obj => {
-        try {
-            getElementById(obj.id).remove()
-        }
-        catch (e) {}
         newObj(obj.class, obj)
     })
 
@@ -79,11 +81,13 @@ function newObj(type, obj = null) {
             var text = document.createElement("input")
             text.type = "text"
             text.setAttribute("oninput", "this.size = this.value.length")
+            text.setAttribute("onchange", "updateLinks(this.parentElement)")
             text.value = obj.title
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
-            text.addEventListener("input", function() {
+            // Update the object once it loses focus
+            text.addEventListener("blur", function() {
                 updateObj(this, "title")
             })
             tag.appendChild(text)
@@ -164,7 +168,7 @@ function newObj(type, obj = null) {
                 this.style.height = this.scrollHeight+'px'
                 this.scrollTop = this.scrollHeight
             `)
-            tooltip.addEventListener("input", function() {
+            tooltip.addEventListener("blur", function() {
                 updateObj(this, "description")
             })
             tag.appendChild(tooltip)
@@ -216,7 +220,8 @@ function newObj(type, obj = null) {
             var text = document.createElement("input")
             text.type = "text"
             text.setAttribute("oninput", "this.size = this.value.length")
-            text.addEventListener("input", function() {
+            text.setAttribute("onchange", "updateLinks(this.parentElement)")
+            text.addEventListener("blur", function() {
                 updateObj(this, "title")
             })
 
@@ -236,7 +241,7 @@ function newObj(type, obj = null) {
                 this.style.height = this.scrollHeight+'px'
                 this.scrollTop = this.scrollHeight
             `)
-            tooltip.addEventListener("input", function() {
+            tooltip.addEventListener("blur", function() {
                 updateObj(this, "description")
             })
             tag.appendChild(tooltip)
@@ -467,9 +472,11 @@ function newObj(type, obj = null) {
     })
 }
 
-function updateObj(el, attr) {
+function updateObj(el, attr, save = true) {
     objects[el.parentElement.id][attr] = el.value
-    save()
+    if (save) {
+        save()
+    }
 }
 
 function updateColor(color) {
@@ -720,19 +727,7 @@ document.onkeydown = (event) => {
             var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
 
             toUpdate.forEach(element => {
-                var points = []
-
-                element.line.forEach(line => {
-                    var xreq = document.getElementById(objects[line[0]].id)
-                    var yreq = document.getElementById(objects[line[2]].id)
-
-                    var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
-                    var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
-                    
-                    points.push([x, y])
-                })
-
-                document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
+                updateLinks(element)
             })
         })
 
@@ -778,6 +773,22 @@ document.onkeydown = (event) => {
           }, 10)
     }
     save()
+}
+
+function updateLinks(element) {
+    var points = []
+
+    element.line.forEach(line => {
+        var xreq = document.getElementById(objects[line[0]].id)
+        var yreq = document.getElementById(objects[line[2]].id)
+
+        var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
+        var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
+        
+        points.push([x, y])
+    })
+
+    document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
 }
 
 function save() {
@@ -866,29 +877,6 @@ function mapMenu() {
             window["mapSettings"].description = document.getElementById("newDesc").value
     
             document.getElementById("popup").style = null
-
-            if (window["id"] == null) {
-                var options = {
-                    method: 'POST',
-                    url: 'https://timelines-3cbe.restdb.io/rest/timelines',
-                    headers: {
-                        'cache-control': 'no-cache',
-                        'x-apikey': RestDB_API,
-                        'content-type': 'application/json'
-                    },
-                    body: window["mapSettings"],
-                    json: true
-                }
-    
-                request(options, function (error, response, body) {
-                    if (error) {
-                        throw new Error(error)
-                    }
-                    else {
-                        location.href = "./map.html?id=" + body._id
-                    }
-                })
-            }
         }
         else {
             window["mapSettings"].encrypted = document.getElementById("isEncrypted").checked
@@ -985,7 +973,7 @@ function start() {
     // Check if the user isn't logged in
     if (!auth.currentUser) {
         // Redirect to the login page
-        location.href = "/src/login/login.html"
+        location.href = "../login/login.html"
     }
 
     // Check if the user has any associated permissions
@@ -997,21 +985,19 @@ function start() {
 
     // If they don't have any permissions, redirect them to the dashboard
     if (window["permissions"] == null) {
-        location.href = "/src/dash/dash.html"
+        location.href = "../dash/dash.html"
     }
 
-    // Get all 
-    db.collection("timelines").get().then((querySnapshot) => {
-        var url = new URL(window.location.href)
-        window["id"] = url.searchParams.get("id")
-    
-        if (window["id"] == null) {
-            mapMenu()
-        }
-    
-        var maps = Array.from(querySnapshot.docs)
-        var map = maps.filter(e => e.id == window["id"])[0]
-    
+    // Get the map ID from the URL
+    var url = new URL(window.location.href)
+    window["id"] = url.searchParams.get("id")
+
+    if (window["id"] == null) {
+        mapMenu()
+    }
+
+    // Sync all data from the timeline
+    db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
         if (map) {
             document.getElementsByTagName("title")[0].innerText = map.data().title
     

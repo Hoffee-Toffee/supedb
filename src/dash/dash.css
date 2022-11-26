@@ -79,6 +79,7 @@
 }
 
 #addmenu:hover {
+    transition: 0.25s;
     rotate: 90deg;
 }
 
