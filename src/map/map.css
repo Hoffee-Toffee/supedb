@@ -412,6 +412,7 @@ textarea {
 .info:not(.editing):hover .nodeMenu {
     left: 100%;
     opacity: 1;
+    pointer-events: auto;
 }
 
 .sub .nodeMenu ul {
