@@ -46,7 +46,7 @@ function display() {
         newObj(obj.class, obj)
     })
 
-    document.getElementById("addmenu").style.zIndex = 3
+    document.getElementById("addmenu").style.zIndex = 5
 
     // Reset the html size
     document.querySelector("html").style.height = "initial"
@@ -163,7 +163,7 @@ function newObj(type, obj = null) {
             deleteButton.addEventListener("mouseover", function() {
                 var toFade = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
                 toFade.forEach(obj => {
-                    document.getElementById(obj.id).style.transition = "0.5s"
+                    document.getElementById(obj.id).style.transition = "opacity 0.5s"
                     document.getElementById(obj.id).style.opacity = 0.25
                 })
             })
@@ -336,7 +336,7 @@ function newObj(type, obj = null) {
             deleteButton.addEventListener("mouseover", function() {
                 var toFade = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
                 toFade.forEach(obj => {
-                    document.getElementById(obj.id).style.transition = "0.5s"
+                    document.getElementById(obj.id).style.transition = "opacity 0.5s"
                     document.getElementById(obj.id).style.opacity = 0.25
                 })
             })

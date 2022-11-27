@@ -148,6 +148,7 @@ input {
 .tooltip {
     overflow-wrap: anywhere;
     pointer-events: none;
+    cursor: text;
 }
 
 .head, .sub, .info, .era, .link {
@@ -244,15 +245,10 @@ input {
 .era .tooltip {
     white-space: nowrap;
     background-color: white;
-    transition: 0.1s;
     position: sticky;
-    padding: 0.5em 0;
     left: 100%;
     font-size: small;
-    color: transparent;
-    width: 0;
     margin-left: 2em;
-    height: 1em;
     top: 0;
     margin-top: 0;
     transition: 0.25s;
