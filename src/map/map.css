@@ -242,7 +242,7 @@ input {
     opacity: 1;
 }
 
-.era .tooltip {
+.era .title {
     white-space: nowrap;
     background-color: white;
     position: sticky;
@@ -253,9 +253,10 @@ input {
     margin-top: 0;
     transition: 0.25s;
     color: black;
-    padding: 0.5em 0.75em;
+    padding: 0.5em 0;
     width: max-content;
     height: 1em;
+    pointer-events: all;
 }
 
 .head {

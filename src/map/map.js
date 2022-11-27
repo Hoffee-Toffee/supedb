@@ -375,10 +375,20 @@ function newObj(type, obj = null) {
             var tag = document.createElement("div")
             tag.setAttribute( "id", obj.id )
             var desc = (obj.title != null) ? obj.title : ""
-            var tooltip = document.createElement("div")
-            tooltip.classList.add("tooltip")
-            tooltip.innerText = desc
-            tag.appendChild(tooltip)
+
+            var text = document.createElement("input")
+            text.type = "text"
+            text.setAttribute("oninput", "this.size = this.value.length")
+            text.setAttribute("onchange", "updateLinks(this.parentElement)")
+            text.addEventListener("blur", function() {
+                updateObj(this, "title")
+            })
+
+            text.value = obj.title
+            text.size = text.value.length
+            text.readOnly = true
+            text.classList.add("title")
+            tag.appendChild(text)
 
             tag.classList.add("era")
             tag.classList.add("object")
@@ -388,6 +398,7 @@ function newObj(type, obj = null) {
                     moveObj(tag)
                 } else {
                     e.target.readOnly = false
+                    console.log(e.target)
                 }
             })
             tag.style.left = obj.position + "em"
