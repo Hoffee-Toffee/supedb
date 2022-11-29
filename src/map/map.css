@@ -434,5 +434,23 @@ textarea {
 }
 
 .editing {
-    border-style: dashed;
+    outline-style: dashed;
+    outline-color: #88888888;
+}
+
+#infobar {
+    background-color: #CCCCCCCC;
+    position: fixed;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    padding: 0.5em;
+    font-size: xx-small;
+    height: 1em;
+}
+
+/* Stylize the scrollbar */
+::-webkit-scrollbar {
+    display: none;
 }
