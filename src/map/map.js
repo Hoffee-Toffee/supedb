@@ -102,11 +102,16 @@ function newObj(type, obj = null) {
             tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + obj.color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
+            // If mouse over but not over it's nodemenu
+            tag.addEventListener("mouseover", (e) => { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links." } })
+            tag.addEventListener("mouseout", (e) => { infobar.innerHTML = ""; console.log("mouseout") })
 
             var text = document.createElement("input")
             text.type = "text"
             text.setAttribute("oninput", "this.size = this.value.length")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
+            text.addEventListener("mouseover", (e) => { infobar.innerHTML = "Double click to edit title." })
+            text.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
             text.value = obj.title
             text.size = text.value.length
             text.readOnly = true
@@ -128,18 +133,8 @@ function newObj(type, obj = null) {
             var linkButton = document.createElement("li")
             linkButton.innerHTML = "🖇️"
             linkButton.addEventListener("click", function() { editLinks(tag) })
-            linkButton.addEventListener("mouseover", function() {
-                var toFade = objects.filter(e => e.id !== obj.id && ( e.class !== "Link" || (e.parentId !== obj.id && e.childId !== obj.id) ) )
-                toFade.forEach(obj => {
-                        document.getElementById(obj.id).style.transition = "opacity 0.5s"
-                        document.getElementById(obj.id).style.opacity = 0.25
-                })
-            })
-            linkButton.addEventListener("mouseout", function() {
-                objects.forEach(obj => {
-                    document.getElementById(obj.id).style.opacity = 1
-                })
-            })
+            linkButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to edit the links of this node." })
+            linkButton.addEventListener("mouseout", function() { infobar.innerHTML = ""})
             linkButton.classList.add("linkButton")
             menuList.appendChild(linkButton)
 
@@ -160,18 +155,8 @@ function newObj(type, obj = null) {
                 save()
             })
 
-            deleteButton.addEventListener("mouseover", function() {
-                var toFade = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
-                toFade.forEach(obj => {
-                    document.getElementById(obj.id).style.transition = "opacity 0.5s"
-                    document.getElementById(obj.id).style.opacity = 0.25
-                })
-            })
-            deleteButton.addEventListener("mouseout", function() {
-                objects.forEach(obj => {
-                    document.getElementById(obj.id).style.opacity = 1
-                })
-            })
+            deleteButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to delete this node." })
+            deleteButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             menuList.appendChild(deleteButton)
 
             tag.appendChild(menu)
@@ -181,6 +166,8 @@ function newObj(type, obj = null) {
             color.classList.add("colorPicker")
             color.setAttribute("value", "#" + obj.color)
             color.addEventListener("change", function() { updateColor(color) })
+            color.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the color of this node, it's links, and it's subnodes." })
+            color.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(color)
 
             var tooltip = document.createElement("textarea")
@@ -196,6 +183,8 @@ function newObj(type, obj = null) {
             tooltip.addEventListener("blur", function() {
                 updateObj(this, "description")
             })
+            tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
+            tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(tooltip)
             
             document.getElementsByTagName("BODY")[0].appendChild(tag)
@@ -248,6 +237,9 @@ function newObj(type, obj = null) {
             tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
+            tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node." } })
+            tag.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+
 
             var text = document.createElement("input")
             text.type = "text"
@@ -261,6 +253,8 @@ function newObj(type, obj = null) {
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
+            text.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the title of this node." })
+            text.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(text)
 
             var tooltip = document.createElement("textarea")
@@ -276,6 +270,8 @@ function newObj(type, obj = null) {
             tooltip.addEventListener("blur", function() {
                 updateObj(this, "description")
             })
+            tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
+            tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(tooltip)
 
             var menu = document.createElement("div")
@@ -289,36 +285,15 @@ function newObj(type, obj = null) {
             var linkButton = document.createElement("li")
             linkButton.innerHTML = "🖇️"
             linkButton.addEventListener("click", function() { editLinks(tag) })
-            linkButton.addEventListener("mouseover", function() {
-                var toFade = objects.filter(e => e.id !== obj.id && ( e.class !== "Link" || (e.parentId !== obj.id && e.childId !== obj.id) ) )
-                toFade.forEach(obj => {
-                    document.getElementById(obj.id).style.transition = "opacity 0.5s"
-                    document.getElementById(obj.id).style.opacity = 0.25
-                })
-            })
-            linkButton.addEventListener("mouseout", function() {
-                objects.forEach(obj => {
-                    document.getElementById(obj.id).style.opacity = 1
-                })
-            })
+            linkButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to edit the links of this node." })
+            linkButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             linkButton.classList.add("linkButton")
             menuList.appendChild(linkButton)
 
             var changeParentButton = document.createElement("li")
             changeParentButton.innerHTML = "🔗"
-            changeParentButton.addEventListener("mouseover", function() {
-                // fades everything but this node's head and the link to the head
-                var toFade = objects.filter(e => e.id !== obj.headId && !(e.parentId == obj.headId && e.childId == obj.id) )
-                toFade.forEach(obj => {
-                    document.getElementById(obj.id).style.transition = "opacity 0.5s"
-                    document.getElementById(obj.id).style.opacity = 0.25
-                })
-            })
-            changeParentButton.addEventListener("mouseout", function() {
-                objects.forEach(obj => {
-                    document.getElementById(obj.id).style.opacity = 1
-                })
-            })
+            changeParentButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the parent of this node." })
+            changeParentButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             changeParentButton.classList.add("changeParentButton")
             menuList.appendChild(changeParentButton)
 
@@ -333,18 +308,8 @@ function newObj(type, obj = null) {
                 save()
             })
 
-            deleteButton.addEventListener("mouseover", function() {
-                var toFade = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
-                toFade.forEach(obj => {
-                    document.getElementById(obj.id).style.transition = "opacity 0.5s"
-                    document.getElementById(obj.id).style.opacity = 0.25
-                })
-            })
-            deleteButton.addEventListener("mouseout", function() {
-                objects.forEach(obj => {
-                    document.getElementById(obj.id).style.opacity = 1
-                })
-            })
+            deleteButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to delete this node." })
+            deleteButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             menuList.appendChild(deleteButton)
 
 
@@ -388,6 +353,8 @@ function newObj(type, obj = null) {
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
+            text.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the title of this era." })
+            text.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(text)
 
             tag.classList.add("era")
@@ -402,6 +369,8 @@ function newObj(type, obj = null) {
                 }
             })
             tag.style.left = obj.position + "em"
+            tag.addEventListener("mouseover", function(e) { infobar.innerHTML = "Double click to move this era." })
+            tag.addEventListener("mouseout", function() { infobar.innerHTML = "" })
 
             var element = document.getElementsByTagName("BODY")[0]
             element.appendChild( tag )
@@ -1068,6 +1037,8 @@ function mapMenu() {
 }
 
 function start() {
+    const infobar = document.getElementById("infobar")
+
     // Check if the user isn't logged in
     if (!auth.currentUser) {
         // Redirect to the login page

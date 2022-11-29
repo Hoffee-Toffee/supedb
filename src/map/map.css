@@ -428,13 +428,8 @@ textarea {
 .nodeMenu ul li {
     padding: 0.1em;
     padding-top: 0em;
-    display:initial
-}
-
-.nodeMenu ul li:hover {
-    transition: 0.25s;
+    display: initial;
     cursor: pointer;
-    margin-top: -0.05em;
 }
 
 .editing {
