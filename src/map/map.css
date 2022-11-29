@@ -1,3 +1,7 @@
+body #addmenu {
+    bottom: 2em;
+}
+
 #addmenu ul {
     transition: 0.25s;
     position: absolute;
