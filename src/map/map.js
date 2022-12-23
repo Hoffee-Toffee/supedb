@@ -104,7 +104,11 @@ function newObj(type, obj = null) {
             tag.style.marginTop = (obj.position[1] + "em")
             // If mouse over but not over it's nodemenu
             tag.addEventListener("mouseover", (e) => { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links." } })
-            tag.addEventListener("mouseout", (e) => { infobar.innerHTML = ""; console.log("mouseout") })
+            tag.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
+            
+            // If hovered over itself or any recursive children
+            tag.addEventListener("mouseover", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = 5 } })
+            tag.addEventListener("mouseout", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = "" } })
 
             var text = document.createElement("input")
             text.type = "text"
@@ -237,8 +241,12 @@ function newObj(type, obj = null) {
             tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
-            tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node." } })
-            tag.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node."; tag.style.zIndex = 5 } })
+            tag.addEventListener("mouseout", function() { infobar.innerHTML = ""; tag.style.zIndex = "" })
+
+            // If hovered over itself or a child
+            tag.addEventListener("mouseover", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = 5 } })
+            tag.addEventListener("mouseout", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = "" } })
 
 
             var text = document.createElement("input")

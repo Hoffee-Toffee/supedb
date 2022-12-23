@@ -445,8 +445,9 @@ textarea {
     left: 0;
     width: 100vw;
     padding: 0.5em;
-    font-size: xx-small;
-    height: 1em;
+    font-size: 0.75em;
+    height: 0.75em;
+    line-height: 1em;
 }
 
 /* Stylize the scrollbar */
