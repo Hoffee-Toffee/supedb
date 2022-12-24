@@ -6,6 +6,10 @@ A database to help with complex story planning
 ## Design
 
 The application will have 3 main parts as follows:
+map: Shows relationships between events in time
+wiki: Shows information about characters, locations, and other things
+versions: Allows for multiple versions of the story to be created and compared
+
 ### Node map
 
 The node map will be a visual representation of the storylines and events.

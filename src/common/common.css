@@ -66,3 +66,11 @@ body {
     top: 0em;
     color: black;
 }
+
+#mapSettings i {
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    line-height: 1.5em;
+}
