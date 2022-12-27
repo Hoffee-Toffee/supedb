@@ -7,6 +7,18 @@ function start() {
 
   // Run the genLine function every 50 milliseconds
   setInterval(genLine, 50);
+
+  let canvas = document.getElementById("canvas");
+
+  // Make clickable points on the line
+  // Clicking a line will alert the user of the line's index
+  // 0 is the main line, and the off-shoots are from 1 onwards
+
+  // Add a new event listener for the mouse down event
+  canvas.addEventListener("mousedown", (event) => check(event, false));
+
+  // Add a new event listener for the mouse move event
+  canvas.addEventListener("mousemove", (event) => check(event));  
 }
 
 var offshoots = 4;
@@ -36,8 +48,9 @@ function genLine() {
   // Start the line
   ctx.beginPath();
 
-  // Create an array for the coordinates
+  // Create the arrays for the coordinates
   let coords = [];
+  let offCoords = [];
 
   // To allow change over time, we need to use the current time as a base
   let time = Date.now();
@@ -82,6 +95,9 @@ function genLine() {
     ctx.strokeStyle = "#ff7f3f";
     ctx.shadowColor = "#ff7f3f";
 
+    // Make an array for the off-shoot coordinates
+    var offshootCoords = [];
+
     // Make points for the off-shoot
     for (let j = 0; j < 15; j++) {
       // Get the x value
@@ -103,10 +119,16 @@ function genLine() {
 
       // Draw the line
       ctx.lineTo(x2, y2);
+
+      // Add the coordinates to the array
+      offshootCoords.push({ x: x2, y: y2 });
     }
 
     // Finish the line
     ctx.stroke();
+
+    // Add the off-shoot coordinates to the array
+    offCoords.push(offshootCoords);
   }
 
   // Draw a blue line going through all of the points in the array
@@ -125,4 +147,58 @@ function genLine() {
 
   // Finish the line
   ctx.stroke();
+
+  // Save the coordinates
+  window["coords"] = coords;
+  window["offCoords"] = offCoords;
+}
+
+function check(event, e = true) {
+  let x = event.clientX;
+  let y = event.clientY;
+
+  let index = null;
+
+  // Get window vars
+  let coords = window["coords"];
+  let offCoords = window["offCoords"];
+
+  // Get the range of the click so that it doesn't have to be exact
+  let range = 5;
+  let xMin = x - range;
+  let xMax = x + range;
+  let yMin = y - range;
+  let yMax = y + range;
+
+  // Check if the click is on the main line
+  let onMain = coords.some((coord) => { return coord.x > xMin && coord.x < xMax && coord.y > yMin && coord.y < yMax; });
+
+  // Check if the click is on the main line
+  if (onMain) {
+    // Set the index to 0
+    index = 0;
+  } else {
+    // Loop through the off-shoots
+    offCoords.forEach((offshoot, i) => {
+      // Check if the click is on the off-shoot
+      let onOff = offshoot.some((coord) => { return coord.x > xMin && coord.x < xMax && coord.y > yMin && coord.y < yMax; });
+
+      // If it is, alert the user of the index of the line
+      if (onOff) {
+        index = i + 1;
+      }
+    });
+  }
+
+  // If the index is null, then the user hasn't clicked or hovered on a line
+  if (index == null) {
+    // Reset the cursor
+    document.body.style.cursor = "default";
+    return;
+  }
+
+  // If the user has clicked, then alert the user of the index
+  if (!e) alert("You clicked on line " + index + "!");
+  // If the user has hovered, then change the cursor to a pointer
+  else document.body.style.cursor = "pointer";
 }
