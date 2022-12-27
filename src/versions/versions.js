@@ -21,7 +21,7 @@ function start() {
   canvas.addEventListener("mousemove", (event) => check(event));  
 }
 
-var offshoots = 4;
+var offshoots = 6;
 
 // Generate the line
 function genLine() {
@@ -43,7 +43,7 @@ function genLine() {
   // Set basic line styles
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
-  ctx.shadowBlur = 25;
+  ctx.shadowBlur = 15;
 
   // Start the line
   ctx.beginPath();
@@ -63,9 +63,9 @@ function genLine() {
     // Get three sets of y values (from 3 sine waves)
     // Time will change the height of the waves, not the position
 
-    let y1 = Math.sin(time / 3000 + i / 13) * 15 + window.innerHeight / 2;
-    let y2 = Math.sin(time / 3000 + i / 7 + 2) * 2 + window.innerHeight / 2;
-    let y3 = Math.sin(time / 3000 + i / 5 + 3) * 7 + window.innerHeight / 2;
+    let y1 = Math.sin(time / 3000 + i / 13) * 15 + window.innerHeight / 4;
+    let y2 = Math.sin(time / 3000 + i / 7 + 2) * 3 + window.innerHeight / 4;
+    let y3 = Math.sin(time / 3000 + i / 5 + 3) * 7 + window.innerHeight / 4;
 
     // Get the average of the three y values
     let y = (y1 + y2 + y3) / 3;
@@ -84,7 +84,7 @@ function genLine() {
   // Will be a random number of off-shoots, each with a random number of points
   for (let i = 0; i < offshoots; i++) {
     // Get the index of the coordinate to start from
-    let coord = coords[i * Math.round(coords.length / offshoots)];
+    let coord = coords[(i * Math.round(coords.length / offshoots) + 30) % (coords.length - 15)];
 
     // Get the x and y values
     let x = coord.x;
