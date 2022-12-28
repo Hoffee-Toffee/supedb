@@ -49,8 +49,9 @@ function start() {
 
     // Click
     row.addEventListener("click", () => {
-      // Alert the user of the index
-      alert(`You clicked on line ${index - 1}!`)
+      // Trigger that index
+      trigger(index - 1);
+
     });
   });
 }
@@ -277,8 +278,8 @@ function check(event, e = true) {
     // Reset the cursor
     event.target.style.cursor = "auto";
   }
-  // If the user has clicked, then alert the user of the index
-  else if (!e) alert("You clicked on line " + index + "!");
+  // If the user has clicked, then trigger that index
+  else if (!e) trigger(index);
   // If the user has hovered, then change the cursor
   else {
     event.target.style.cursor = "pointer";
@@ -298,4 +299,15 @@ function check(event, e = true) {
       row.scrollIntoView({ block: "center" });
     }
   });
+}
+
+function trigger(id) {
+  // Get the table
+  let table = document.getElementById("versionsTable");
+
+  // Get the idth row
+  let row = table.querySelectorAll("tr")[id + 1];
+
+  // Alert the first cell in the row
+  alert(`You clicked on "${row.querySelectorAll("td")[1].innerText}"`);
 }
