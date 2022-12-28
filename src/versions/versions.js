@@ -32,6 +32,9 @@ function start() {
 
   // Add a event listeners for each table row
   document.querySelectorAll("#versionsTable tr").forEach((row, index) => {
+    // Ignore the first row
+    if (index == 0) return;
+    
     // Mouseover
     row.addEventListener("mouseover", () => {
       // Set the index
