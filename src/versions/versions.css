@@ -51,6 +51,11 @@
     box-shadow: 0 0 0.5em #300;
 }
 
+#list table tr:not(:first-child):hover {
+    background-color: #ff884433;
+    cursor: pointer;
+}
+
 #list table tr th {
     width: 50%;
     height: 100%;

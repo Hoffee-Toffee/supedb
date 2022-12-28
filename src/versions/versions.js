@@ -8,17 +8,48 @@ function start() {
   // Run the genLine function every 50 milliseconds
   setInterval(genLine, 50);
 
-  let canvas = document.getElementById("canvas");
+  let body = document.querySelector("body");
 
   // Make clickable points on the line
   // Clicking a line will alert the user of the line's index
   // 0 is the main line, and the off-shoots are from 1 onwards
 
   // Add a new event listener for the mouse down event
-  canvas.addEventListener("mousedown", (event) => check(event, false));
+  body.addEventListener("mousedown", (event) => check(event, false));
 
   // Add a new event listener for the mouse move event
-  canvas.addEventListener("mousemove", (event) => check(event));  
+  body.addEventListener("mousemove", (event) => {
+    check(event, true);
+
+    // Clear the interval (if it exists)
+    if (window["interval"]) clearInterval(window["interval"]);
+
+    // Run the check function every 50 milliseconds
+    window["interval"] = setInterval(() => {
+      check(event, true)
+    }, 50);
+  });
+
+  // Add a event listeners for each table row
+  document.querySelectorAll("#versionsTable tr").forEach((row, index) => {
+    // Mouseover
+    row.addEventListener("mouseover", () => {
+      // Set the index
+      window["index"] = index - 1; 
+    });
+
+    // Mouseout
+    row.addEventListener("mouseout", () => {
+      // Set the index
+      window["index"] = -1;
+    });
+
+    // Click
+    row.addEventListener("click", () => {
+      // Alert the user of the index
+      alert(`You clicked on line ${index - 1}!`)
+    });
+  });
 }
 
 var offshoots = 6;
@@ -90,10 +121,18 @@ function genLine() {
     let x = coord.x;
     let y = coord.y;
 
-    // Make a new line with a red color
+    // Make a new line with a red/orange color
     ctx.beginPath();
-    ctx.strokeStyle = "#ff7f3f";
-    ctx.shadowColor = "#ff7f3f";
+
+    // Make red if hovered and orange if not
+    if (window["index"] == i + 1) {
+      ctx.strokeStyle = "#ff4f3f";
+      ctx.shadowColor = "#ff4f3f";
+
+    } else {
+      ctx.strokeStyle = "#ff7f3f";
+      ctx.shadowColor = "#ff7f3f";
+    }
 
     // Make an array for the off-shoot coordinates
     var offshootCoords = [];
@@ -133,8 +172,15 @@ function genLine() {
 
   // Draw a blue line going through all of the points in the array
   ctx.beginPath();
-  ctx.strokeStyle = "#dfffff";
-  ctx.shadowColor = "#dfffff";
+
+  // Set the color to blue if hovered and white if not
+  if (window["index"] == 0) {
+    ctx.strokeStyle = "#8fffff";
+    ctx.shadowColor = "#8fffff";
+  } else {
+    ctx.strokeStyle = "#dfffff";
+    ctx.shadowColor = "#dfffff";
+  }
 
   // Loop through the array
   coords.forEach((coord, i) => {
@@ -154,6 +200,12 @@ function genLine() {
 }
 
 function check(event, e = true) {
+  // Clear the interval if the mouse isn't over the canvas
+  if (event.target.id != "canvas") {
+    clearInterval(window["interval"]);
+    return;
+  }
+
   let x = event.clientX;
   let y = event.clientY;
 
@@ -164,7 +216,11 @@ function check(event, e = true) {
   let offCoords = window["offCoords"];
 
   // Get the range of the click so that it doesn't have to be exact
-  let range = 5;
+  // The range will be deduced by the screen size
+  let xRange = window.innerWidth / 100;
+  let yRange = window.innerHeight / 100;
+  let range = Math.max(xRange, yRange);
+
   let xMin = x - range;
   let xMax = x + range;
   let yMin = y - range;
@@ -190,15 +246,35 @@ function check(event, e = true) {
     });
   }
 
+  console.log(index)
+
+  // Set the window variable to the index
+  window["index"] = index;
+
   // If the index is null, then the user hasn't clicked or hovered on a line
   if (index == null) {
     // Reset the cursor
-    document.body.style.cursor = "default";
-    return;
+    event.target.style.cursor = "auto";
+  }
+  // If the user has clicked, then alert the user of the index
+  else if (!e) alert("You clicked on line " + index + "!");
+  // If the user has hovered, then change the cursor
+  else {
+    event.target.style.cursor = "pointer";
   }
 
-  // If the user has clicked, then alert the user of the index
-  if (!e) alert("You clicked on line " + index + "!");
-  // If the user has hovered, then change the cursor to a pointer
-  else document.body.style.cursor = "pointer";
+  // Change the style of the ith row in the table
+  let table = document.getElementById("versionsTable");
+
+  // Reset the style of all of the rows (except for the index row)
+  table.querySelectorAll("tr").forEach((row, i) => {
+    if ((i - 1) != index) {
+      row.style = "";
+    }
+    else {
+      row.style.backgroundColor = "#ff884433";
+      // Scroll the list so this row is in the middle
+      row.scrollIntoView({ block: "center" });
+    }
+  });
 }
