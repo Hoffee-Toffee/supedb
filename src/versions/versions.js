@@ -126,8 +126,8 @@ function genLine() {
 
     // Make red if hovered and orange if not
     if (window["index"] == i + 1) {
-      ctx.strokeStyle = "#ff4f3f";
-      ctx.shadowColor = "#ff4f3f";
+      ctx.strokeStyle = "#ff2f3f";
+      ctx.shadowColor = "#ff2f3f";
 
     } else {
       ctx.strokeStyle = "#ff7f3f";
@@ -175,8 +175,8 @@ function genLine() {
 
   // Set the color to blue if hovered and white if not
   if (window["index"] == 0) {
-    ctx.strokeStyle = "#8fffff";
-    ctx.shadowColor = "#8fffff";
+    ctx.strokeStyle = "#6fffff";
+    ctx.shadowColor = "#6fffff";
   } else {
     ctx.strokeStyle = "#dfffff";
     ctx.shadowColor = "#dfffff";
@@ -219,12 +219,11 @@ function check(event, e = true) {
   // The range will be deduced by the screen size
   let xRange = window.innerWidth / 100;
   let yRange = window.innerHeight / 100;
-  let range = Math.max(xRange, yRange);
 
-  let xMin = x - range;
-  let xMax = x + range;
-  let yMin = y - range;
-  let yMax = y + range;
+  let xMin = x - xRange;
+  let xMax = x + xRange;
+  let yMin = y - yRange;
+  let yMax = y + yRange;
 
   // Check if the click is on the main line
   let onMain = coords.some((coord) => { return coord.x > xMin && coord.x < xMax && coord.y > yMin && coord.y < yMax; });
