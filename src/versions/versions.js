@@ -34,7 +34,7 @@ function start() {
   document.querySelectorAll("#versionsTable tr").forEach((row, index) => {
     // Ignore the first row
     if (index == 0) return;
-    
+
     // Mouseover
     row.addEventListener("mouseover", () => {
       // Set the index
@@ -228,25 +228,44 @@ function check(event, e = true) {
   let yMin = y - yRange;
   let yMax = y + yRange;
 
-  // Check if the click is on the main line
-  let onMain = coords.some((coord) => { return coord.x > xMin && coord.x < xMax && coord.y > yMin && coord.y < yMax; });
+  // Get the shortest distance between the click and a point on the main line
+  let main = coords.reduce((shortest, coord) => {
+    // Return the shortest distance if the click is outside of the range
+    if (coord.x < xMin || coord.x > xMax || coord.y < yMin || coord.y > yMax) return shortest;
 
-  // Check if the click is on the main line
-  if (onMain) {
-    // Set the index to 0
-    index = 0;
-  } else {
-    // Loop through the off-shoots
-    offCoords.forEach((offshoot, i) => {
-      // Check if the click is on the off-shoot
-      let onOff = offshoot.some((coord) => { return coord.x > xMin && coord.x < xMax && coord.y > yMin && coord.y < yMax; });
+    // If not then get the distance
+    let dist = Math.sqrt(Math.pow(coord.x - x, 2) + Math.pow(coord.y - y, 2));
+    
+    if (dist < shortest) return dist;
+    else return shortest;
+  }, Infinity);
 
-      // If it is, alert the user of the index of the line
-      if (onOff) {
-        index = i + 1;
-      }
-    });
-  }
+  // Get the each off-shoot's shortest distance to the click
+  let off = offCoords.map((offshoot) => {
+    return offshoot.reduce((shortest, coord) => {
+      // Return the shortest distance if the click is outside of the range
+      if (coord.x < xMin || coord.x > xMax || coord.y < yMin || coord.y > yMax) return shortest;
+
+      // If not then get the distance
+      let dist = Math.sqrt(Math.pow(coord.x - x, 2) + Math.pow(coord.y - y, 2));
+      
+      if (dist < shortest) return dist;
+      else return shortest;
+    }, Infinity);
+  });
+
+  // Join the results together
+  let dists = [main, ...off];
+
+  // Get the index of the shortest distance
+  let min = Math.min(...dists);
+  let minIndex = dists.indexOf(min);
+
+  // If the shortest distance is Infinity, then set the index to null
+  if (min == Infinity) minIndex = null;
+
+  // Set the index
+  index = minIndex;
 
   console.log(index)
 
