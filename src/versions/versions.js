@@ -78,7 +78,7 @@ function genLine() {
   // Set basic line styles
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
-  ctx.shadowBlur = 15;
+  ctx.shadowBlur = 10;
 
   // Start the line
   ctx.beginPath();
@@ -131,11 +131,11 @@ function genLine() {
     // Make red if hovered and orange if not
     if (window["index"] == i + 1) {
       ctx.strokeStyle = "#ff2f3f";
-      ctx.shadowColor = "#ff2f3f";
+      ctx.shadowColor = "#ff2f3faa";
 
     } else {
       ctx.strokeStyle = "#ff7f3f";
-      ctx.shadowColor = "#ff7f3f";
+      ctx.shadowColor = "#ff7f3faa";
     }
 
     // Make an array for the off-shoot coordinates
@@ -180,10 +180,10 @@ function genLine() {
   // Set the color to blue if hovered and white if not
   if (window["index"] == 0) {
     ctx.strokeStyle = "#6fffff";
-    ctx.shadowColor = "#6fffff";
+    ctx.shadowColor = "#6fffffaa";
   } else {
     ctx.strokeStyle = "#dfffff";
-    ctx.shadowColor = "#dfffff";
+    ctx.shadowColor = "#dfffffaa";
   }
 
   // Loop through the array

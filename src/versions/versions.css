@@ -1,15 +1,53 @@
+:root {
+    --col-dark-brown: #221100aa;
+    --col-brown: #ff884408;
+    --col-black-red: #100;
+    --col-brown-red: #200;
+    --col-blood-red: #300;
+
+    --col-red: #f00;
+    --col-red-shadow: #ff000088;
+    --col-red-hover: #ff220033;
+
+    --col-red-orange: #e30;
+    --col-red-orange-shadow: #ee3300aa;
+    --col-red-orange-hover: #ee550033;
+
+    --col-orange: #f60;
+    --col-orange-shadow: #ff6600cc;
+    --col-orange-hover: #ff884433;
+}
+
 #canvas {
     width: calc(100% + 2em);
     height: calc(100% + 3em);
     margin: -1em;
     background: 
+        repeating-linear-gradient(
+            to right,
+            transparent 0px,
+            transparent 20px,
+            var(--col-brown) 20px,
+            var(--col-brown) 22px
+        ),
         linear-gradient(
             to bottom,
-            #000 0%,
-            #210 25%,
-            #000 50%,
-            #000 100%
+            black 0%,
+            var(--col-dark-brown) 25%,
+            black 50%,
+            black 100%
         );
+    background-repeat: repeat-x;
+    animation: bg-shift 5s alternate infinite ease-in-out;
+}
+
+@keyframes bg-shift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 11px 0;
+    }
 }
 
 #list {
@@ -18,9 +56,9 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    background-color: #100;
-    outline: 0.2em solid #300;
-    border-top: 0.2em solid #300;
+    background-color: var(--col-black-red);
+    outline: 0.2em solid var(--col-blood-red);
+    border-top: 0.2em solid var(--col-blood-red);
     overflow-y: scroll;
     font-family: "Courier New", Courier, monospace;
     box-shadow: 0 0 0.5em #300;
@@ -30,12 +68,12 @@
     font-size: 1.5em;
     margin: 0;
     padding: 0.5em;
-    background-color: #200;
-    color: #f00;
+    background-color: var(--col-brown-red);
+    color: var(--col-red);
     position: sticky;
     top: 0;
-    text-shadow: 0 0 0.5em #ff000088;
-    box-shadow: 0 0 0.5em #200;
+    text-shadow: 0 0 0.5em var(--col-red-shadow);
+    box-shadow: 0 0 0.5em var(--col-brown-red);;
 }
 
 #list table {
@@ -47,30 +85,30 @@
 
 #list table tr {
     height: 50%;
-    border: 0.2em solid #300;
-    box-shadow: 0 0 0.5em #300;
+    border: 0.2em solid var(--col-blood-red);
+    box-shadow: 0 0 0.5em var(--col-blood-red);
 }
 
 #list table tr:not(:first-child):hover {
-    background-color: #ff884433;
+    background-color: var(--col-orange-hover);
     cursor: pointer;
 }
 
 #list table tr th {
     width: 50%;
     height: 100%;
-    color: #e30;
+    color: var(--col-red-orange);
     text-align: left;
     font-size: 1.5em;
     padding: 0.5em;
-    text-shadow: 0 0 0.5em #ee3300aa;
+    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
 }
 
 #list table tr td {
     width: 50%;
     height: 100%;
-    color: #f60;
+    color: var(--col-orange);
     text-align: left;
     padding: 0.5em;
-    text-shadow: 0 0 0.5em #ff6600cc;
+    text-shadow: 0 0 0.5em var(--col-orange-shadow);
 }
