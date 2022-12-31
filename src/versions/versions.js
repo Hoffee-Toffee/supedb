@@ -5,6 +5,108 @@ function start() {
     window.location.href = "../login/login.html";
   }
 
+  // Check if the user has any associated permissions
+  db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        window["permissions"].push(doc.data())
+    })
+
+    // If empty, redirect to the dashboard
+    if (window["permissions"].length == 0) {
+        location.href = "../dash/dash.html"
+    }
+  })
+
+  // Get the project ID from the URL
+  var url = new URL(window.location.href)
+  window["id"] = url.searchParams.get("id")
+
+  // If null, redirect to the dashboard
+  if (window["id"] == null) {
+      location.href = "../dash/dash.html"
+  }
+
+  // Check if the user has access to the project
+  db.collection("permissions").where("user", "==", auth.currentUser.email).where("project", "==", window["id"]).get().then((querySnapshot) => {
+    if (querySnapshot.empty) {
+      // Redirect to the dashboard
+      location.href = "../dash/dash.html"
+    }
+
+    // Get all the timelines under this project ID
+    db.collection("timelines").where("project", "==", window["id"]).get().then((querySnapshot) => {
+      // Get the body of the versions table
+      var table = document.getElementById("versionsTable").childNodes[0]
+
+      // Set offshoots to the number of timelines
+      window["offshoots"] = querySnapshot.size - 1
+
+      // Loop through each timeline
+      querySnapshot.forEach((doc) => {
+
+        let types = {
+          "M": "Main",
+          "D": "Draft",
+          "S": "Suggestion",
+          "P": "Proposal",
+          "A": "Archived"
+        }
+
+        // Create a table row for the timeline
+        var row = document.createElement("tr")
+
+        // Give the row three cells for the ID, title, and type
+        var id = document.createElement("td")
+        id.innerHTML = doc.id
+        row.appendChild(id)
+
+        var title = document.createElement("td")
+        title.innerHTML = doc.data().title
+        row.appendChild(title)
+
+        var type = document.createElement("td")
+        type.innerHTML = types[doc.data().type]
+        row.appendChild(type)
+
+        // If it's the main timeline, and the table already has a row, add this to the top
+        if (doc.data().type == "M" && table.rows.length > 1) {
+          table.insertBefore(row, table.rows[0])
+        } else {
+          // Otherwise, add it to the bottom
+          table.appendChild(row)
+        }
+      });
+
+      // Add a event listeners for each table row
+      document.querySelectorAll("#versionsTable tr").forEach((row, index) => {
+        // Ignore the first row
+        if (index == 0) return;
+
+        // Mouseover
+        row.addEventListener("mouseover", () => {
+          // Set the index
+          window["index"] = index - 1; 
+        });
+
+        // Mouseout
+        row.addEventListener("mouseout", () => {
+          // Set the index
+          window["index"] = -1;
+        });
+
+        // Click
+        row.addEventListener("click", () => {
+          // Trigger that index
+          trigger(index - 1);
+
+        });
+
+        // Show the table
+        document.getElementById("list").style.opacity = 1;
+      });
+    });
+  });
+
   // Run the genLine function every 50 milliseconds
   setInterval(genLine, 50);
 
@@ -29,34 +131,7 @@ function start() {
       check(event, true)
     }, 50);
   });
-
-  // Add a event listeners for each table row
-  document.querySelectorAll("#versionsTable tr").forEach((row, index) => {
-    // Ignore the first row
-    if (index == 0) return;
-
-    // Mouseover
-    row.addEventListener("mouseover", () => {
-      // Set the index
-      window["index"] = index - 1; 
-    });
-
-    // Mouseout
-    row.addEventListener("mouseout", () => {
-      // Set the index
-      window["index"] = -1;
-    });
-
-    // Click
-    row.addEventListener("click", () => {
-      // Trigger that index
-      trigger(index - 1);
-
-    });
-  });
 }
-
-var offshoots = 6;
 
 // Generate the line
 function genLine() {
@@ -117,9 +192,9 @@ function genLine() {
 
   // Draw the off-shoots
   // Will be a random number of off-shoots, each with a random number of points
-  for (let i = 0; i < offshoots; i++) {
+  for (let i = 0; i < window["offshoots"]; i++) {
     // Get the index of the coordinate to start from
-    let coord = coords[(i * Math.round(coords.length / offshoots) + 30) % (coords.length - 15)];
+    let coord = coords[(i * Math.round(coords.length / window["offshoots"]) + 30) % (coords.length - 15)];
 
     // Get the x and y values
     let x = coord.x;
@@ -308,6 +383,9 @@ function trigger(id) {
   // Get the idth row
   let row = table.querySelectorAll("tr")[id + 1];
 
-  // Alert the first cell in the row
-  alert(`You clicked on "${row.querySelectorAll("td")[1].innerText}"`);
+  // Get the value of the first cell in the row
+  let value = row.querySelectorAll("td")[0].innerHTML;
+
+  // Redirect to the timeline page
+  window.location = `../map/map.html?id=${value}`;
 }

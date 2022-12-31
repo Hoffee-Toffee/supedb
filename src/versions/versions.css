@@ -1,23 +1,3 @@
-:root {
-    --col-dark-brown: #221100aa;
-    --col-brown: #ff884408;
-    --col-black-red: #100;
-    --col-brown-red: #200;
-    --col-blood-red: #300;
-
-    --col-red: #f00;
-    --col-red-shadow: #ff000088;
-    --col-red-hover: #ff220033;
-
-    --col-red-orange: #e30;
-    --col-red-orange-shadow: #ee3300aa;
-    --col-red-orange-hover: #ee550033;
-
-    --col-orange: #f60;
-    --col-orange-shadow: #ff6600cc;
-    --col-orange-hover: #ff884433;
-}
-
 #canvas {
     width: calc(100% + 2em);
     height: calc(100% + 3em);
@@ -61,7 +41,8 @@
     border-top: 0.2em solid var(--col-blood-red);
     overflow-y: scroll;
     font-family: "Courier New", Courier, monospace;
-    box-shadow: 0 0 0.5em #300;
+    box-shadow: 0 0 0.5em var(--col-blood-red);
+    opacity: 0;
 }
 
 #list h1 {
@@ -78,13 +59,12 @@
 
 #list table {
     width: calc(100% - 2em);
-    height: 50%;
+    max-height: 50vh;
     border-collapse: collapse;
     margin: 1em;
 }
 
 #list table tr {
-    height: 50%;
     border: 0.2em solid var(--col-blood-red);
     box-shadow: 0 0 0.5em var(--col-blood-red);
 }

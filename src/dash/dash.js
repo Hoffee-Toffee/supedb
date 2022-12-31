@@ -17,11 +17,11 @@ function start() {
       if (change.type === "added") {
         console.log("Added: ", change.doc.data());
         // Add the map to the list
-        db.collection("timelines").doc(change.doc.data().map).get().then((doc) => {
+        db.collection("projects").doc(change.doc.data().project).get().then((doc) => {
           var tag = document.createElement("a")
           tag.id = doc.id
-          tag.href = "../map/map.html?id=" + doc.id
-          tag.classList.add("map")
+          tag.href = "../versions/versions.html?id=" + doc.id
+          tag.classList.add("project")
 
           var text = document.createElement("h2")
           text.innerText = doc.data().title
@@ -31,37 +31,33 @@ function start() {
           descbox.innerText = doc.data().description
           descbox.classList.add("description")
           tag.appendChild(descbox)
-
-          if (doc.data().encrypted) tag.setAttribute("encrypted", true)
           
-          document.getElementById("map-menu").appendChild(tag)
+          document.getElementById("project-menu").appendChild(tag)
         })
       }
       if (change.type === "modified") {
         console.log("Modified: ", change.doc.data());
         // Update the map in the list (if the title, description, encrypted status, or timeline ref has changed)
-        db.collection("timelines").doc(change.doc.data().map).get().then((doc) => {
-          document.getElementById(doc.id).href = "../map/map.html?id=" + doc.id
+        db.collection("projects").doc(change.doc.data().project).get().then((doc) => {
+          document.getElementById(doc.id).href = "../versions/versions.html?id=" + doc.id
           document.getElementById(doc.id).children[0].innerText = doc.data().title
           document.getElementById(doc.id).children[1].innerText = doc.data().description
-          if (doc.data().encrypted) document.getElementById(doc.id).setAttribute("encrypted", true)
-          else document.getElementById(doc.id).removeAttribute("encrypted")
         })
       }
       if (change.type === "removed") {
         console.log("Removed: ", change.doc.data());
         // Remove the map from the list
-        db.collection("timelines").doc(change.doc.data().map).get().then((doc) => {
+        db.collection("projects").doc(change.doc.data().project).get().then((doc) => {
           document.getElementById(doc.id).remove()
         })
       }
     })
   })
   // Also sync whenever any documents are changed
-  db.collection("timelines").onSnapshot((querySnapshot) => {
+  db.collection("projects").onSnapshot((querySnapshot) => {
     // Check if the user has access to the map
     querySnapshot.docChanges().forEach((change) => {
-      db.collection("permissions").where("user", "==", auth.currentUser.email).where("map", "==", change.doc.id).get().then((querySnapshot) => {
+      db.collection("permissions").where("user", "==", auth.currentUser.email).where("project", "==", change.doc.id).get().then((querySnapshot) => {
         if (querySnapshot.empty) {
           // If the user doesn't have access to the map, leave the function
           return
@@ -69,12 +65,10 @@ function start() {
         if (change.type === "modified") {
           console.log("Modified: ", change.doc.data());
           // Update the map in the list (if the title, description, encrypted status, or timeline ref has changed)
-          db.collection("timelines").doc(change.doc.id).get().then((doc) => {
-            document.getElementById(doc.id).href = "../map/map.html?id=" + doc.id
+          db.collection("projects").doc(change.doc.id).get().then((doc) => {
+            document.getElementById(doc.id).href = "../versions/versions.html?id=" + doc.id
             document.getElementById(doc.id).children[0].innerText = doc.data().title
             document.getElementById(doc.id).children[1].innerText = doc.data().description
-            if (doc.data().encrypted) document.getElementById(doc.id).setAttribute("encrypted", true)
-            else document.getElementById(doc.id).removeAttribute("encrypted")
           })
         }
         if (change.type === "removed" || change.type === "added") {

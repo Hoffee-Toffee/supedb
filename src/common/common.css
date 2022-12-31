@@ -1,3 +1,23 @@
+:root {
+    --col-dark-brown: #221100aa;
+    --col-brown: #ff884408;
+    --col-black-red: #100;
+    --col-brown-red: #200;
+    --col-blood-red: #300;
+
+    --col-red: #f00;
+    --col-red-shadow: #ff000088;
+    --col-red-hover: #ff220033;
+
+    --col-red-orange: #e30;
+    --col-red-orange-shadow: #ee3300aa;
+    --col-red-orange-hover: #ee550033;
+
+    --col-orange: #f60;
+    --col-orange-shadow: #ff6600cc;
+    --col-orange-hover: #ff884433;
+}
+
 body {
     margin: 1em 0em 0em 1em;
     height: calc(100vh - 3em);

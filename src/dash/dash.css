@@ -1,9 +1,9 @@
-#map-menu {
+#project-menu {
     color: white;
     margin-top: 2em;
 }
 
-#map-menu .map {
+#project-menu .project {
     text-decoration: none;
     color: white;
     display: block;
@@ -14,27 +14,22 @@
     border-radius: 0.25em;
 }
 
-#map-menu .description {
+#project-menu .description {
     transition: 0.25s;
     color: dimgray;
     display: block;
 }
 
-#map-menu .map:hover {
+#project-menu .project:hover {
     transition: 0.25s;
     background-color: blue;
     margin-left: 0em;
     margin-right: 0em;
 }
 
-#map-menu .map:hover .description {
+#project-menu .project:hover .description {
     transition: 0.25s;
     color: lightblue;
-}
-
-#map-menu .map[encrypted] h2:after {
-    /* Adds lock emoji */
-    content: "🔒";
 }
 
 #cover {
@@ -52,9 +47,9 @@
 }
 
 #addmenu::before {
-    content: "New Map";
+    content: "New Project";
     position: absolute;
-    top: 6em;
+    top: 7em;
     bottom: 0;
     color: white;
     transition: 0.25s;
@@ -62,11 +57,11 @@
     border: 0.1em solid white;
     border-radius: 0.25em;
     height: 2em;
-    width: 5em;
+    width: 7em;
     text-align: center;
     line-height: 2em;
     pointer-events: none;
-    transform: translateY(-25%);
+    transform: translateY(-1.5em);
     opacity: 0;
 }
 
