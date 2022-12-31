@@ -5,6 +5,8 @@ function start() {
     window.location.href = "../login/login.html";
   }
 
+  window["permissions"] = []
+
   // Check if the user has any associated permissions
   db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
@@ -36,7 +38,7 @@ function start() {
     // Get all the timelines under this project ID
     db.collection("timelines").where("project", "==", window["id"]).get().then((querySnapshot) => {
       // Get the body of the versions table
-      var table = document.getElementById("versionsTable").childNodes[0]
+      var table = document.getElementById("versionsTable").getElementsByTagName("tbody")[0]
 
       // Set offshoots to the number of timelines
       window["offshoots"] = querySnapshot.size - 1
@@ -69,8 +71,8 @@ function start() {
         row.appendChild(type)
 
         // If it's the main timeline, and the table already has a row, add this to the top
-        if (doc.data().type == "M" && table.rows.length > 1) {
-          table.insertBefore(row, table.rows[0])
+        if (doc.data().type == "M" && table.childNodes.length > 1) {
+          table.insertBefore(row, table.rows[1])
         } else {
           // Otherwise, add it to the bottom
           table.appendChild(row)
