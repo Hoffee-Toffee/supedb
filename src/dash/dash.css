@@ -9,27 +9,32 @@
     display: block;
     transition: 0.25s;
     padding: 1em;
-    background-color: navy;
+    background-color: var(--col-dark-red);
     margin: 0.5em;
     border-radius: 0.25em;
+    border: 0.1em solid var(--col-red-hover);
+    box-shadow: 0em 0em 0.3em var(--col-red-shadow);
+    text-shadow: 0em 0em 0.2em var(--col-red-shadow);
 }
 
 #project-menu .description {
     transition: 0.25s;
-    color: dimgray;
+    color: var(--col-red-orange);
     display: block;
+    text-shadow: 0em 0em 0.1em var(--col-red-orange-shadow);
 }
 
 #project-menu .project:hover {
+    color: black;
     transition: 0.25s;
-    background-color: blue;
+    background-color: var(--col-red-orange);
     margin-left: 0em;
     margin-right: 0em;
 }
 
 #project-menu .project:hover .description {
     transition: 0.25s;
-    color: lightblue;
+    color: var(--col-brown-red);
 }
 
 #cover {
