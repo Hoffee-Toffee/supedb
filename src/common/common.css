@@ -1,9 +1,10 @@
 :root {
     --col-dark-brown: #221100aa;
     --col-brown: #ff884408;
+
     --col-black-red: #100;
     --col-brown-red: #200;
-    --col-blood-red: #300;
+    --col-dark-red: #300;
 
     --col-red: #f00;
     --col-red-shadow: #ff000088;
@@ -16,6 +17,35 @@
     --col-orange: #f60;
     --col-orange-shadow: #ff6600cc;
     --col-orange-hover: #ff884433;
+
+    --col-black-orange: #330;
+    --col-brown-orange: #440;
+    --col-dark-orange: #550;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+}
+
+*::-webkit-scrollbar-track {
+    border: solid var(--col-orange-hover) 1px;
+    border-radius: 10px;
+    margin: 20px 15px 15px 20px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--col-orange);
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--col-orange-shadow);
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 body {

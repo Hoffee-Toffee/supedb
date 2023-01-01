@@ -1,5 +1,6 @@
 body #addmenu {
     bottom: 2em;
+    display: none;
 }
 
 #addmenu ul {
@@ -438,6 +439,7 @@ textarea {
 }
 
 #infobar {
+    display: none;
     background-color: #CCCCCCCC;
     position: fixed;
     z-index: 5;
@@ -448,9 +450,4 @@ textarea {
     font-size: 0.75em;
     height: 0.75em;
     line-height: 1em;
-}
-
-/* Stylize the scrollbar */
-::-webkit-scrollbar {
-    display: none;
 }
