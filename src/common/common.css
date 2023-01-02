@@ -30,14 +30,11 @@
 }
 
 *::-webkit-scrollbar-track {
-    border: solid var(--col-orange-hover) 1px;
-    border-radius: 10px;
-    margin: 20px 15px 15px 20px;
+    background-color: var(--col-orange-hover);
 }
 
 *::-webkit-scrollbar-thumb {
     background-color: var(--col-orange);
-    border-radius: 10px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -45,7 +42,7 @@
 }
 
 *::-webkit-scrollbar-corner {
-    background: transparent;
+    background: var(--col-orange-hover);
 }
 
 body {
