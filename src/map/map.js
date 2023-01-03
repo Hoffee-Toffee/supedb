@@ -1125,3 +1125,25 @@ function start() {
             mapMenu()
         })
 }
+
+function contextMenu(e) {
+    e.preventDefault()
+
+    var attr = [
+        {
+            text: "Test",
+            onclick: () => console.log("Test")
+        },
+        {
+            text: "Delete",
+            onclick: () => console.log("Delete"),
+            key: "Del"
+        },
+        {
+            text: "Test 2",
+            onclick: () => console.log("Test 2")
+        }
+    ]
+
+    return attr
+}

@@ -121,3 +121,43 @@ body {
     width: 100%;
     line-height: 1.5em;
 }
+
+#context-menu {
+    z-index: 10;
+    position: absolute;
+    background: #333;
+    color: white;
+    border-radius: 0.5em;
+    padding: 0.5em 0;
+    margin: 0px;
+    min-width: 150px;
+    list-style: none;
+    font-size: 0.75em;
+}
+
+#context-menu li {
+    padding-bottom: 7px;
+    padding-top: 7px;
+    padding-left: 15px;
+    -webkit-user-select: none;
+}
+
+#context-menu li:hover {
+    background: #555;
+}
+
+#context-menu li[data-key]::after {
+    position: relative;
+    content: attr(data-key);
+    float: right;
+    margin-right: 10px;
+    background-color: #222;
+    padding: 2px 5px;
+    border-radius: 3px;
+    top: -2px;
+    font-weight: bold;
+}
+
+#context-menu li[data-key]:hover::after {
+    background-color: #333;
+}
