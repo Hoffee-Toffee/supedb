@@ -113,3 +113,4 @@ function toogleContextMenu(e) {
 // Add the event listeners
 document.addEventListener("click", toogleContextMenu);
 document.addEventListener("contextmenu", toogleContextMenu);
+document.addEventListener("scroll", toogleContextMenu);

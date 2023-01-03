@@ -66,7 +66,34 @@ function display() {
     })
 }
 
-function newObj(type, obj = null) {
+function newObj(type, obj = null, e = null, headId = null) {
+    if (e) {
+        // Get the coordinates of the mouse including the scroll
+        var x = e.clientX + document.scrollingElement.scrollLeft
+        var y = e.clientY + document.scrollingElement.scrollTop
+
+        // Create a blank element
+        var test = document.createElement("div")
+        test.style.width = "1000em"
+        document.body.appendChild(test)
+
+        // Get the width of the element in pixels
+        var em = test.offsetWidth
+
+        // Remove the element
+        test.remove()
+
+        em /= 1000
+
+        // Convert the mouse coordinates to em
+        x /= em
+        y /= em
+
+        // Round the coordinates to the nearest multiple of 5 (must be positive)
+        x = (x <= 0.25) ? 0 : Math.round(x / 5) * 5
+        y = (y <= 0.25) ? 0 : Math.round(y / 5) * 5
+    }
+
     switch (type) {
         case "Head":
             if (obj == null) {
@@ -77,8 +104,8 @@ function newObj(type, obj = null) {
                     "description": "A storyline, event or person.",
                     "color": "FFFFFF",
                     "position": [
-                        5,
-                        5
+                        x,
+                        y
                     ]
                 }
                 objects.push(obj)
@@ -216,10 +243,10 @@ function newObj(type, obj = null) {
                     "class": "Sub",
                     "title": "New Sub Block",
                     "description": "A specific event",
-                    "headId": 1,
+                    "headId": headId,
                     "position": [
-                        5,
-                        5
+                        x + 5,
+                        y + 5
                     ]
                 }
                 objects.push(obj)
@@ -340,7 +367,7 @@ function newObj(type, obj = null) {
                     "class": "Era",
                     "title": "New Era",
                     "description": "Description of this era",
-                    "position": 0
+                    "position": x
                 }
                 objects.push(obj)
             }
@@ -1129,21 +1156,38 @@ function start() {
 function contextMenu(e) {
     e.preventDefault()
 
-    var attr = [
-        {
-            text: "Test",
-            onclick: () => console.log("Test")
-        },
-        {
-            text: "Delete",
-            onclick: () => console.log("Delete"),
-            key: "Del"
-        },
-        {
-            text: "Test 2",
-            onclick: () => console.log("Test 2")
-        }
-    ]
+    // For clicking on the body/html
+    if (["BODY", "HTML"].includes(e.target.tagName)) {
+        var attr = [
+            { // Era
+                text: "New Era",
+                onclick: () => newObj("Era", null, e)
+            },
+            {
+                text: "New Head",
+                onclick: () => newObj("Head", null, e)
+            }
+        ]
+    }
+
+    // For clicking on a head or sub (clicked element or its parent must have a class of "head" or "sub")
+    // Note that the clicked element or its parent might not exist
+    var tList = (e.target.classList) ? Array.from(e.target.classList) : []
+    var pList = (e.target.parentElement) ? Array.from(e.target.parentElement.classList) : []
+
+    if (tList.concat(pList).includes("head") || tList.concat(pList).includes("sub")) {
+        // Get the parent/child that is the sub/head
+        var el = (tList.includes("head") || tList.includes("sub")) ? e.target.id : e.target.parentElement.id
+
+        el = (el.classList && el.classList.includes("head")) ? el : objects[el].headId
+
+        var attr = [
+            { // Sub
+                text: "New Sub",
+                onclick: () => newObj("Sub", null, e, el)
+            }
+        ]
+    }
 
     return attr
 }
