@@ -1177,9 +1177,9 @@ function contextMenu(e) {
 
     if (tList.concat(pList).includes("head") || tList.concat(pList).includes("sub")) {
         // Get the parent/child that is the sub/head
-        var el = (tList.includes("head") || tList.includes("sub")) ? e.target.id : e.target.parentElement.id
+        var el = (tList.includes("head") || tList.includes("sub")) ? e.target : e.target.parentElement
 
-        el = (el.classList && el.classList.includes("head")) ? el : objects[el].headId
+        el = (el.classList && el.classList.contains("head")) ? el.id : objects[el.id].headId
 
         var attr = [
             { // Sub
