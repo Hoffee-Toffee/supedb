@@ -482,6 +482,7 @@ function newObj(type, obj = null, e = null, headId = null) {
     }
 
     tag.addEventListener("mouseover", function() {
+        console.log("mouse over " + obj.title)
         if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 ) {
             var linkTop = document.createElement("span")
             linkTop.classList.add("addLink")
@@ -507,8 +508,10 @@ function newObj(type, obj = null, e = null, headId = null) {
             
             links.forEach(link => {
                 link.classList.add("mouseLink")
-                link.addEventListener("mouseout", function () {
-                    if ( window["newArrow"] && document.elementFromPoint(window.event.pageX, window.event.pageY).classList.contains("object") ) {
+                link.addEventListener("mouseout", function (e) {
+                    console.log(e.target.id)
+                    // Get the element at the location of the mouse
+                    if (window["newArrow"]) {
                         document.querySelectorAll(".addLink").forEach((button) => {
                             button.remove()
                         })
@@ -518,8 +521,9 @@ function newObj(type, obj = null, e = null, headId = null) {
         }
     })
 
-    tag.addEventListener("mouseout", function () {
-        if ( window["newArrow"] && !document.elementFromPoint(window.event.pageX, window.event.pageY).classList.contains("addLink") ) {
+    tag.addEventListener("mouseout", function (e) {
+        console.log("mouse out " + obj.title)
+        if (window["newArrow"] && e.target.classList.contains("addLink")) {
             document.querySelectorAll(".addLink").forEach((button) => {
                 button.remove()
             })
@@ -1195,4 +1199,10 @@ window.addEventListener("scroll", function() {
 
     // Update the url without reloading the page
     window.history.replaceState(null, null, "?id=" + window["id"] + "&x=" + x + "&y=" + y)
+
+    if (window["newArrow"] && e.target.classList.contains("addLink")) {
+        document.querySelectorAll(".addLink").forEach((button) => {
+            button.remove()
+        })
+    }
 })
