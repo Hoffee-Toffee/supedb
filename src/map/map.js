@@ -8,35 +8,6 @@ var objects = []
 window["decrypt"] = false
 
 function display() {
-    if (objects.includes(null)){
-        // filter all the nulls and loop through them
-        var nulls = objects.filter(e => e == null)
-        nulls.forEach(obj => {
-            var pos = objects.indexOf(obj)
-
-            objects.forEach(e => {
-                if (e !== null) {
-                    e.id -= (e.id > pos) ? 1 : 0
-
-                    if (e.class == "sub") {
-                        e.headId -= (e.headId > pos) ? 1 : 0
-                        e.headId = (e.headId == pos) ? null : e.headId
-                    }
-
-                    if (e.class == "link") {
-                        e.line.forEach(point => {
-                            point[0] -= (point[0] > pos) ? 1 : 0
-                            point[2] -= (point[1] > pos) ? 1 : 0
-                        })
-                        e.parentId -= (e.parentId > pos) ? 1 : 0
-                        e.childId -= (e.childId > pos) ? 1 : 0
-                    }
-                }
-            })
-            objects.splice(pos, 1)
-        })
-    }
-
     var scrollX = null
     var scrollY = null
 
@@ -118,8 +89,14 @@ function newObj(type, obj = null, e = null, headId = null) {
     switch (type) {
         case "Head":
             if (obj == null) {
+                // Get the first ID that isn't already in use
+                var id = 0
+                while (objects.some(obj => obj.id == id)) {
+                    id++
+                }
+
                 var obj = {
-                    "id": objects.length,
+                    "id": id,
                     "class": "Head",
                     "title": "New Head Block",
                     "description": "A storyline, event or person.",
@@ -196,14 +173,12 @@ function newObj(type, obj = null, e = null, headId = null) {
                 var toRemove = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
                 toRemove.forEach(obj => {
                     document.getElementById(obj.id).remove()
-                    objects[obj.id] = null
+                    objects.splice(objects.indexOf(obj), 1)
                 })
 
                 // Remove all links to the now deleted nodes
-                var toAdjust = objects.filter(e => e.headId == tag.id)
-                toAdjust.forEach(obj => {
-                    obj.headId = null
-                })
+                var toAdjust = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id))
+                toAdjust.forEach(obj => objects.splice(objects.indexOf(obj), 1))
                 save()
             })
 
@@ -285,8 +260,8 @@ function newObj(type, obj = null, e = null, headId = null) {
                     e.target.readOnly = false
                 }
             })
-            tag.style.borderColor = "#" + objects[obj.headId].color
-            tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
+            tag.style.borderColor = "#" + objects.find(e => e.id == obj.headId).color
+            tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects.find(e => e.id == obj.headId).color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
             tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node."; tag.style.zIndex = 5 } })
@@ -332,8 +307,8 @@ function newObj(type, obj = null, e = null, headId = null) {
 
             var menu = document.createElement("div")
             menu.classList.add("nodeMenu")
-            menu.style.outlineColor =  "#" + objects[obj.headId].color
-            menu.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects[obj.headId].color
+            menu.style.outlineColor =  "#" + objects.find(e => e.id == obj.headId).color
+            menu.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects.find(e => e.id == obj.headId).color
 
             var menuList = document.createElement("ul")
             menu.appendChild(menuList)
@@ -359,7 +334,7 @@ function newObj(type, obj = null, e = null, headId = null) {
                 var toRemove = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
                 toRemove.forEach(obj => {
                     document.getElementById(obj.id).remove()
-                    objects[obj.id] = null
+                    objects.splice(objects.indexOf(obj), 1)
                 })
                 save()
             })
@@ -456,8 +431,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             var points = []
 
             obj.line.forEach(el => {
-                var xreq = document.getElementById(objects[el[0]].id)
-                var yreq = document.getElementById(objects[el[2]].id)
+                var xreq = document.getElementById(objects.find(e => e.id == el[0]).id)
+                var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
 
                 var x = xreq.offsetLeft + (xreq.offsetWidth * (el[1] - 0.5) )
                 var y = yreq.offsetTop + (yreq.offsetHeight * el[3])
@@ -478,11 +453,11 @@ function newObj(type, obj = null, e = null, headId = null) {
             poly.setAttribute("points", points)
 
             if (obj.type != "f"){
-                if (objects[obj.parentId].class == "Head") {
-                    poly.style.stroke = "#" + objects[obj.parentId].color
+                if (objects.find(e => e.id == obj.parentId).class == "Head") {
+                    poly.style.stroke = "#" + objects.find(e => e.id == obj.parentId).color
                 }
                 else {
-                    poly.style.stroke = "#" + objects[objects[obj.parentId].headId].color
+                    poly.style.stroke = "#" + objects.find(e => e.id == objects.find(e => e.id == obj.parentId).headId).color
                 }
             }
             
@@ -491,11 +466,11 @@ function newObj(type, obj = null, e = null, headId = null) {
                 poly.style.stroke = "grey"
             }
             else if (obj.type == "c") {
-                if (objects[obj.parentId].class == "Head") {
-                    poly.setAttribute("marker-end", "url(#" + objects[obj.parentId].color + "-arrow)")
+                if (objects.find(e => e.id == obj.parentId).class == "Head") {
+                    poly.setAttribute("marker-end", "url(#" + objects.find(e => e.id == obj.parentId).color + "-arrow)")
                 }
                 else {
-                    poly.setAttribute("marker-end", "url(#" + objects[objects[obj.parentId].headId].color + "-arrow)")
+                    poly.setAttribute("marker-end", "url(#" + objects.find(e => e.id == objects.find(e => e.id == obj.parentId).headId).color + "-arrow)")
                 }
             }
 
@@ -553,7 +528,7 @@ function newObj(type, obj = null, e = null, headId = null) {
 }
 
 function updateObj(el, attr, save = true) {
-    objects[el.parentElement.id][attr] = el.value
+    objects.find(e => e.id == el.parentElement.id)[attr] = el.value
     if (save) {
         save()
     }
@@ -562,10 +537,10 @@ function updateObj(el, attr, save = true) {
 function updateColor(color) {
     var head = color.parentElement.id
 
-    objects[head].color = color.value.slice(1)
+    objects.find(e => e.id == head).color = color.value.slice(1)
 
-    var toUpdate = objects.filter(e => e.parentId == parseInt(head) || e.headId == parseInt(head) || (e.parentId && objects[e.parentId].headId == parseInt(head) ) )
-    toUpdate.push(objects[head])
+    var toUpdate = objects.filter(e => e.parentId == parseInt(head) || e.headId == parseInt(head) || (e.parentId && objects.find(e => e.id == e.parentId).headId == parseInt(head) ) )
+    toUpdate.push(objects.find(e => e.id == head))
 
     toUpdate.forEach(obj => {
         document.getElementById(obj.id).remove()
@@ -634,7 +609,7 @@ document.addEventListener("click", function (event) {
 
         obj.childId = parseInt(event.target.parentElement.id)
 
-        if ( ["linkLeft", "linkRight"].includes(event.target.id) && objects[obj.parentId].position[1] !== objects[obj.childId].position[1] ) {
+        if ( ["linkLeft", "linkRight"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[1] !== objects.find(e => e.id == obj.childId).position[1] ) {
             obj.line.push(
                 [
                     obj.line[0][0],
@@ -645,7 +620,7 @@ document.addEventListener("click", function (event) {
             )
 
         }
-        else if ( ["linkTop", "linkBottom"].includes(event.target.id) && objects[obj.parentId].position[0] !== objects[obj.childId].position[0] ) {
+        else if ( ["linkTop", "linkBottom"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[0] !== objects.find(e => e.id == obj.childId).position[0] ) {
             obj.line.push(
                 [
                     parseInt(event.target.parentElement.id),
@@ -811,7 +786,7 @@ document.onkeydown = (event) => {
                 updated = -5
             }
 
-            var elObj = objects[el.getAttribute("id")]
+            var elObj = objects.find(obj => obj.id == el.id)
 
             if ( ["ArrowLeft","ArrowRight"].includes(event.key) ) {
                 if (elObj.class != "Era") {
@@ -883,8 +858,8 @@ document.onkeydown = (event) => {
                 var points = []
     
                 element.line.forEach(line => {
-                    var xreq = document.getElementById(objects[line[0]].id)
-                    var yreq = document.getElementById(objects[line[2]].id)
+                    var xreq = document.getElementById(objects.find(obj => obj.id == line[0]).id)
+                    var yreq = document.getElementById(objects.find(obj => obj.id == line[2]).id)
     
                     var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
                     var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
@@ -902,8 +877,8 @@ function updateLinks(element) {
     var points = []
 
     element.line.forEach(line => {
-        var xreq = document.getElementById(objects[line[0]].id)
-        var yreq = document.getElementById(objects[line[2]].id)
+        var xreq = document.getElementById(objects.find(obj => obj.id == line[0]).id)
+        var yreq = document.getElementById(objects.find(obj => obj.id == line[2]).id)
 
         var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
         var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
@@ -1200,7 +1175,7 @@ function contextMenu(e) {
         // Get the parent/child that is the sub/head
         var el = (tList.includes("head") || tList.includes("sub")) ? e.target : e.target.parentElement
 
-        el = (el.classList && el.classList.contains("head")) ? el.id : objects[el.id].headId
+        el = (el.classList && el.classList.contains("head")) ? el.id : objects.find(obj => obj.id == el.id).headId
 
         var attr = [
             { // Sub
