@@ -36,10 +36,24 @@ function display() {
             objects.splice(pos, 1)
         })
     }
-    // Delete all the objects and svgs (except for the first svg) to recreate them using the objects array
-    document.querySelectorAll(".object").forEach((obj) => { obj.remove() })
-    document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
 
+    var scrollX = null
+    var scrollY = null
+
+    // Check if any objects already exist
+    if (document.querySelectorAll(".object").length + document.querySelectorAll("svg").length > 1) {
+        // Delete all the objects and svgs (except for the first svg) to recreate them using the objects array
+        document.querySelectorAll(".object").forEach((obj) => { obj.remove() })
+        document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
+    }
+    else {
+        // Get the scroll position from the url
+        var url = new URL(window.location.href)
+        if (url.searchParams.get("x") && url.searchParams.get("y")) {
+            scrollX = url.searchParams.get("x")
+            scrollY = url.searchParams.get("y")
+        }
+    }
 
     // Add the objects
     objects.forEach(obj => {
@@ -64,6 +78,13 @@ function display() {
     document.querySelectorAll(".era").forEach(era => {
         era.style.height = height
     })
+
+    // Scroll to the position from the url (if supplied)
+    if (scrollX && scrollY) {
+        console.log("Scrolling to " + scrollX + ", " + scrollY)
+        document.scrollingElement.scrollLeft = scrollX
+        document.scrollingElement.scrollTop = scrollY
+    }
 }
 
 function newObj(type, obj = null, e = null, headId = null) {
@@ -1191,3 +1212,12 @@ function contextMenu(e) {
 
     return attr
 }
+
+window.addEventListener("scroll", function() {
+    // Get the current scroll position
+    var x = window.scrollX
+    var y = window.scrollY
+
+    // Update the url without reloading the page
+    window.history.replaceState(null, null, "?id=" + window["id"] + "&x=" + x + "&y=" + y)
+})
