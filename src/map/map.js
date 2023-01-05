@@ -1162,6 +1162,7 @@ function contextMenu(e) {
             { // Era
                 text: "New Era",
                 onclick: () => newObj("Era", null, e)
+
             },
             {
                 text: "New Head",
@@ -1182,11 +1183,58 @@ function contextMenu(e) {
         el = (el.classList && el.classList.contains("head")) ? el.id : objects.find(obj => obj.id == el.id).headId
 
         var attr = [
-            { // Sub
+            // Sub
+            {
                 text: "New Sub",
                 onclick: () => newObj("Sub", null, e, el)
+            },
+            // Links
+            {
+                text: "Edit Links",
+                onclick: () => editLinks(el)
+            },
+            // Change Head (if the clicked element is a sub)
+            {
+                text: "Change Head",
+                onclick: () => changeHead(el)
+            },
+            // Delete
+            {
+                text: "Delete",
+                onclick: () => deleteObj(el)
             }
         ]
+
+        // If the clicked element (or it's parent) is a head, remove the "Change Head"
+        if (tList.includes("head") || pList.includes("head")) {
+            attr.splice(2, 1)
+        }
+
+    }
+    else if (tList.concat(pList).includes("era")) {
+        // Get the parent/child that is the era
+        var el = (tList.includes("era")) ? e.target : e.target.parentElement
+
+        var attr = [
+            // Wiki
+            {
+                text: "Era Wiki",
+                onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + el.id
+            },
+            // Delete
+            {
+                text: "Delete",
+                onclick: () => objects.splice(objects.findIndex(obj => obj.id == el.id), 1)
+            }
+        ]
+    }
+
+    // If it or it's parent is a head, add the "Wiki" option at the top
+    if (tList.concat(pList).includes("head")) {
+        attr.unshift({
+            text: "Event Wiki",
+            onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + el
+        })
     }
 
     return attr

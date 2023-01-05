@@ -57,7 +57,7 @@ function start() {
         // Create a table row for the timeline
         var row = document.createElement("tr")
 
-        // Give the row three cells for the ID, title, and type
+        // Give the row four cells for the ID, title, options, and type
         var id = document.createElement("td")
         id.innerHTML = doc.id
         row.appendChild(id)
@@ -65,6 +65,19 @@ function start() {
         var title = document.createElement("td")
         title.innerHTML = doc.data().title
         row.appendChild(title)
+
+        var options = document.createElement("td")
+        var wiki = document.createElement("button")
+        wiki.innerHTML = "Wiki"
+        wiki.addEventListener("click", () => window.location.href = "../wiki/wiki.html?id=" + doc.id)
+        options.appendChild(wiki)
+
+        var del = document.createElement("button")
+        del.innerHTML = "Delete"
+        del.addEventListener("click", () => alert("Will delete timeline " + doc.id))
+        if (doc.data().type == "M") del.disabled = true
+        options.appendChild(del)
+        row.appendChild(options)
 
         var type = document.createElement("td")
         type.innerHTML = types[doc.data().type]
@@ -97,10 +110,9 @@ function start() {
         });
 
         // Click
-        row.addEventListener("click", () => {
-          // Trigger that index
-          trigger(index - 1);
-
+        row.addEventListener("click", (e) => {
+          // Trigger that index unless they clicked a button
+          if (e.target.tagName != "BUTTON") trigger(index - 1);
         });
 
         // Show the table

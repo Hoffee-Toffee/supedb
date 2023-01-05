@@ -75,20 +75,44 @@
 }
 
 #list table tr th {
-    width: 50%;
+    width: 35%;
     height: 100%;
     color: var(--col-red-orange);
     text-align: left;
     font-size: 1.5em;
-    padding: 0.5em;
     text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
 }
 
 #list table tr td {
-    width: 50%;
+    width: 35%;
     height: 100%;
     color: var(--col-orange);
     text-align: left;
     padding: 0.5em;
+    padding-right: 0;
     text-shadow: 0 0 0.5em var(--col-orange-shadow);
+    white-space: nowrap;
+}
+
+#list table tr td button {
+    border-radius: 0.5em;
+    color: var(--col-orange);
+    background-color: transparent;
+    border: 0.1em solid var(--col-red-orange);
+    padding: 0.5em;
+    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+}
+
+/* Add a gap between buttons */
+#list table tr td button:not(:first-child) {
+    margin-left: 0.5em;
+}
+
+#list table tr td button:disabled {
+    filter: grayscale(100%);
+}
+
+#list table tr td button:not(:disabled):hover {
+    background-color: var(--col-orange-hover);
+    cursor: pointer;
 }
