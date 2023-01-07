@@ -144,6 +144,7 @@ body {
 
 #context-menu li:hover {
     background: #555;
+    cursor: pointer;
 }
 
 #context-menu li[data-key]::after {

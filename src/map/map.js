@@ -52,7 +52,6 @@ function display() {
 
     // Scroll to the position from the url (if supplied)
     if (scrollX && scrollY) {
-        console.log("Scrolling to " + scrollX + ", " + scrollY)
         document.scrollingElement.scrollLeft = scrollX
         document.scrollingElement.scrollTop = scrollY
     }
@@ -86,15 +85,18 @@ function newObj(type, obj = null, e = null, headId = null) {
         y = (y <= 0.25) ? 0 : Math.round(y / 5) * 5
     }
 
+    // Get the first ID that isn't already in use
+    var id = 0
+    while (objects.some(obj => obj.id == id)) {
+        id++
+    }
+
+    // Add 1 again if the id already exists
+    if (objects.some(obj => obj.id == id)) id++
+
     switch (type) {
         case "Head":
             if (obj == null) {
-                // Get the first ID that isn't already in use
-                var id = 0
-                while (objects.some(obj => obj.id == id)) {
-                    id++
-                }
-
                 var obj = {
                     "id": id,
                     "class": "Head",
@@ -132,8 +134,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             tag.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
             
             // If hovered over itself or any recursive children
-            tag.addEventListener("mouseover", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = 5 } })
-            tag.addEventListener("mouseout", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = "" } })
+            tag.addEventListener("mouseover", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = 5 } })
+            tag.addEventListener("mouseout", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = "" } })
 
             var text = document.createElement("input")
             text.type = "text"
@@ -227,7 +229,7 @@ function newObj(type, obj = null, e = null, headId = null) {
         case "Sub":
             if (obj == null) {
                 var obj = {
-                    "id": objects.length,
+                    "id": id,
                     "class": "Sub",
                     "title": "New Sub Block",
                     "description": "A specific event",
@@ -259,9 +261,9 @@ function newObj(type, obj = null, e = null, headId = null) {
             tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node."; tag.style.zIndex = 5 } })
             tag.addEventListener("mouseout", function() { infobar.innerHTML = ""; tag.style.zIndex = "" })
 
-            // If hovered over itself or a child
-            tag.addEventListener("mouseover", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = 5 } })
-            tag.addEventListener("mouseout", (e) => { if (e.target == tag || e.target.parentElement == tag || e.target.parentElement.parentElement == tag || e.target.parentElement.parentElement.parentElement == tag) { tag.style.zIndex = "" } })
+            // If hovered over itself or any recursive children
+            tag.addEventListener("mouseover", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = 5 } })
+            tag.addEventListener("mouseout", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = "" } })
 
 
             var text = document.createElement("input")
@@ -343,7 +345,7 @@ function newObj(type, obj = null, e = null, headId = null) {
         case "Era":
             if (obj == null) {
                 var obj =     {
-                    "id": objects.length,
+                    "id": id,
                     "class": "Era",
                     "title": "New Era",
                     "description": "Description of this era",
@@ -380,7 +382,6 @@ function newObj(type, obj = null, e = null, headId = null) {
                     moveObj(tag)
                 } else {
                     e.target.readOnly = false
-                    console.log(e.target)
                 }
             })
             tag.style.left = obj.position + "em"
@@ -451,22 +452,57 @@ function newObj(type, obj = null, e = null, headId = null) {
             button.style.backgroundColor = "black"
             button.style.borderColor = color
 
-            button.addEventListener("click", function() {
-                console.log("Edit link " + obj.id)
-            })
-
-            linkPoints(button, obj, points)
+            // Run the linkPoints function unless the link child is the mouse
+            if (obj.childId != "mouse") linkPoints(button, obj, points)
     
-            // When hovered, color the background only
+            // When hovered, show the context menu
             button.addEventListener("mouseover", function() {
-                button.style.borderColor = "black"
-                button.style.backgroundColor = color
-            })
-    
-            // When stopped hovering, revert to default
-            button.addEventListener("mouseout", function() {
-                button.style.borderColor = color
-                button.style.backgroundColor = "black"
+                // Return if the context menu is already open elsewhere
+                if (document.getElementById("context-menu")) return
+
+                // Get the position of the button
+                var mid = linkPoints(button, obj, points)
+
+                // Create the event object
+                var e = {
+                    clientX: mid[0] - window.scrollX,
+                    clientY: mid[1] - window.scrollY
+                }
+
+                // Get the buttons for the context menu
+                var buttons = [
+                    {
+                        text: "Delete",
+                        onclick: () => { objects.splice(objects.indexOf(obj), 1); tag.remove(); button.remove() }
+                    },
+                    {
+                        text: "Change type",
+                        onclick: () => { console.log("Change type") }
+                    },
+                    {
+                        text: "Make Factor",
+                        onclick: () => {
+                            obj.type = "f"
+                            newObj(obj.class, obj)
+                        }
+                    },
+                    {
+                        text: "Make Cause",
+                        onclick: () => {
+                            obj.type = "c"
+                            newObj(obj.class, obj)
+                        }
+                    },
+                    {
+                        text: "Make Extension",
+                        onclick: () => {
+                            obj.type = "e"
+                            newObj(obj.class, obj)
+                        }
+                    }
+                ]
+
+                genContextMenu(e, buttons, true)
             })
 
             if (obj.childId == "mouse") {
@@ -474,6 +510,7 @@ function newObj(type, obj = null, e = null, headId = null) {
                 points.push([window.event.pageX , window.event.pageY])
 
                 document.addEventListener("mousemove", function() {
+                    if (objects.find(e => e.childId == "mouse") == undefined) return
                     var el = document.getElementById(objects.find(e => e.childId == "mouse").id).children[1]
                     el.setAttribute("points", [el.getAttribute("points").split(",").slice(0, 2), [window.event.pageX , window.event.pageY]])
                 })
@@ -513,7 +550,6 @@ function newObj(type, obj = null, e = null, headId = null) {
     }
 
     tag.addEventListener("mouseover", function() {
-        console.log("mouse over " + obj.title)
         if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 ) {
             var linkTop = document.createElement("span")
             linkTop.classList.add("addLink")
@@ -540,7 +576,6 @@ function newObj(type, obj = null, e = null, headId = null) {
             links.forEach(link => {
                 link.classList.add("mouseLink")
                 link.addEventListener("mouseout", function (e) {
-                    console.log(e.target.id)
                     // Get the element at the location of the mouse
                     if (window["newArrow"]) {
                         document.querySelectorAll(".addLink").forEach((button) => {
@@ -553,8 +588,8 @@ function newObj(type, obj = null, e = null, headId = null) {
     })
 
     tag.addEventListener("mouseout", function (e) {
-        console.log("mouse out " + obj.title)
-        if (window["newArrow"] && e.target.classList.contains("addLink")) {
+        if (window["newArrow"] && e.relatedTarget && !e.relatedTarget.classList.contains("addLink")) {
+            // Delete the buttons
             document.querySelectorAll(".addLink").forEach((button) => {
                 button.remove()
             })
@@ -562,9 +597,9 @@ function newObj(type, obj = null, e = null, headId = null) {
     })
 }
 
-function updateObj(el, attr, save = true) {
+function updateObj(el, attr, toSave = true) {
     objects.find(e => e.id == el.parentElement.id)[attr] = el.value
-    if (save) {
+    if (toSave) {
         save()
     }
 }
@@ -614,7 +649,7 @@ document.addEventListener("click", function (event) {
         if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
 
         var obj = {
-            "id": objects.length,
+            "id": getNew(),
             "class": "Link",
             "line": [
                 [
@@ -739,7 +774,7 @@ document.addEventListener("click", function (event) {
         }
     }
 
-    if ( event.target.getAttribute("id") == "addmenu" || event.target.parentElement.getAttribute("id") == "addmenu") {
+    if (event.target.id == "addmenu" || (event.target.parentElement && event.target.parentElement.id == "addmenu")) {
         if (document.getElementById("addmenu").classList.contains("open")) {
             document.getElementById("addmenu").classList.remove("open")
         }
@@ -921,8 +956,10 @@ function updateLinks(element) {
         points.push([x, y])
     })
 
-    // Run the linkPoints function to update the points of the link
-    linkPoints(document.getElementById("editLink" + element.id), objects.find(obj => obj.id == element.id), points)
+    // Run the linkPoints function to update the points of the link unless it's pointing to the mouse
+    if (element.childId != "mouse") {
+        linkPoints(document.getElementById("editLink" + element.id), objects.find(obj => obj.id == element.id), points)
+    }
 
     document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
 }
@@ -1285,7 +1322,7 @@ window.addEventListener("scroll", function() {
     }
 })
 
-function linkPoints(button, obj, points) {
+function linkPoints(button, obj, points) {    
     // If the line has only two points, the midpoint is the average of the two points
     if (points.length == 2) {
         var midX = (parseInt(points[0][0]) + parseInt(points[1][0])) / 2
@@ -1304,4 +1341,16 @@ function linkPoints(button, obj, points) {
     // Position the button at the midpoint
     button.style.left = mid[0] + "px"
     button.style.top = mid[1] + "px"
+
+    // Return the midpoint
+    return mid
+}
+
+function getNew() {
+    var id = 0
+    while (objects.some(obj => obj.id == id)) {
+        id++
+    }
+
+    return id
 }

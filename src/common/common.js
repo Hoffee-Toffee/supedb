@@ -28,7 +28,7 @@ document.oncontextmenu = function (e) {
     }
 }
 
-function genContextMenu(e, attr) {
+function genContextMenu(e, attr, hoverOnly = false) {
     // attr will be like this:
     // [
     //     {
@@ -43,6 +43,8 @@ function genContextMenu(e, attr) {
     let contextMenu = document.createElement("ul");
     contextMenu.id = "context-menu";
     contextMenu.style.position = "absolute";
+
+    if (hoverOnly) contextMenu.classList.add("hoverOnly");
 
     // Add the items to the context menu
     attr.forEach(item => {
@@ -93,6 +95,16 @@ function genContextMenu(e, attr) {
 // Remove the context menu when the user left or right clicks anywhere except the context menu
 function toogleContextMenu(e) {
     let cm = document.getElementById("context-menu");
+
+    if (e && e.type == "mousemove" && cm && cm.classList.contains("hoverOnly")) {
+        // If the user is hovering over the context menu, it's children, or the id begins with 'editLink', do nothing
+        if (e.target.id == "context-menu" || e.target.id.startsWith("editLink") || (e.target.parentElement && e.target.parentElement.id == "context-menu")) return;
+        
+        // They must be out of the context menu, so remove it
+        e.button = 0;
+    }
+    else if (e && e.type == "mousemove") return;
+
     // Delete if menu is open and the user clicks outside of the menu
     // Unless the user right clicks, in which case it will open a new menu
     if (cm && (e.target != cm || e.button == 2)) {
@@ -104,7 +116,6 @@ function toogleContextMenu(e) {
 
         // If the user right clicked, open a new menu
         if (e.button == 2) {
-            console.log("Right click");
             genContextMenu(e, contextMenu(e));
         }
     }
@@ -114,3 +125,4 @@ function toogleContextMenu(e) {
 document.addEventListener("click", toogleContextMenu);
 document.addEventListener("contextmenu", toogleContextMenu);
 document.addEventListener("scroll", toogleContextMenu);
+document.addEventListener("mousemove", toogleContextMenu);
