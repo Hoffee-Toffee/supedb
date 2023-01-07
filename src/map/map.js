@@ -156,7 +156,9 @@ function newObj(type, obj = null, e = null, headId = null) {
             var color = document.createElement("input")
             color.type = "color"
             color.classList.add("colorPicker")
+            color.style.backgroundColor = "#" + obj.color
             color.setAttribute("value", "#" + obj.color)
+            color.setAttribute("list", "colors")
             color.addEventListener("change", function() { updateColor(color) })
             color.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the color of this node, it's links, and it's subnodes." })
             color.addEventListener("mouseout", function() { infobar.innerHTML = "" })
@@ -575,20 +577,13 @@ function updateColor(color) {
     var head = color.parentElement.id
 
     objects.find(e => e.id == head).color = color.value.slice(1)
-
-    var toUpdate = objects.filter(e => e.parentId == parseInt(head) || e.headId == parseInt(head) || (e.parentId && objects.find(e => e.id == e.parentId).headId == parseInt(head) ) )
-    toUpdate.push(objects.find(e => e.id == head))
-
-    toUpdate.forEach(obj => {
-        document.getElementById(obj.id).remove()
-        newObj(obj.class, obj)
-    })
+    
     save()
 }
 
 document.addEventListener("click", function (event) {
     // Check if you clicked nothing or the html element
-    if (event.target == null || event.target.tagName == "HTML") {
+    if ((event.target == null || event.target.tagName == "HTML") && window["editing"]) {
         document.querySelectorAll(".editing").forEach((edit) => {
             edit.classList.remove("editing")
             Array.from(edit.children).forEach(child => {
