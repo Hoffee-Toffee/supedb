@@ -159,14 +159,6 @@ function newObj(type, obj = null, e = null, headId = null) {
             var menuList = document.createElement("ul")
             menu.appendChild(menuList)
 
-            var linkButton = document.createElement("li")
-            linkButton.innerHTML = "🖇️"
-            linkButton.addEventListener("click", function() { editLinks(tag) })
-            linkButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to edit the links of this node." })
-            linkButton.addEventListener("mouseout", function() { infobar.innerHTML = ""})
-            linkButton.classList.add("linkButton")
-            menuList.appendChild(linkButton)
-
             var deleteButton = document.createElement("li")
             deleteButton.innerHTML = "🗑️"
             deleteButton.addEventListener("click", function() {
@@ -313,14 +305,6 @@ function newObj(type, obj = null, e = null, headId = null) {
             var menuList = document.createElement("ul")
             menu.appendChild(menuList)
 
-            var linkButton = document.createElement("li")
-            linkButton.innerHTML = "🖇️"
-            linkButton.addEventListener("click", function() { editLinks(tag) })
-            linkButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to edit the links of this node." })
-            linkButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
-            linkButton.classList.add("linkButton")
-            menuList.appendChild(linkButton)
-
             var changeParentButton = document.createElement("li")
             changeParentButton.innerHTML = "🔗"
             changeParentButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the parent of this node." })
@@ -428,16 +412,61 @@ function newObj(type, obj = null, e = null, headId = null) {
                     e.target.readOnly = false
                 }
             })
+
             var points = []
 
             obj.line.forEach(el => {
                 var xreq = document.getElementById(objects.find(e => e.id == el[0]).id)
                 var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
-
+        
                 var x = xreq.offsetLeft + (xreq.offsetWidth * (el[1] - 0.5) )
                 var y = yreq.offsetTop + (yreq.offsetHeight * el[3])
-                
+        
                 points.push([x, y])
+            })
+
+            // Delete the button if it already exists
+            var old = document.getElementById("editLink" + obj.id)
+
+            if (old) old.remove()
+
+            // Create the button
+            var button = document.createElement("button")
+            button.classList.add("editLink")
+            button.id = "editLink" + obj.id
+
+            var color = "grey"
+
+            // Get the color of the line
+            if (obj.type != "f"){
+                if (objects.find(e => e.id == obj.parentId).class == "Head") {
+                    color = "#" + objects.find(e => e.id == obj.parentId).color
+                }
+                else {
+                    color = "#" + objects.find(e => e.id == objects.find(e => e.id == obj.parentId).headId).color
+                }
+            }
+        
+            // Color the border by default
+            button.style.backgroundColor = "black"
+            button.style.borderColor = color
+
+            button.addEventListener("click", function() {
+                console.log("Edit link " + obj.id)
+            })
+
+            linkPoints(button, obj, points)
+    
+            // When hovered, color the background only
+            button.addEventListener("mouseover", function() {
+                button.style.borderColor = "black"
+                button.style.backgroundColor = color
+            })
+    
+            // When stopped hovering, revert to default
+            button.addEventListener("mouseout", function() {
+                button.style.borderColor = color
+                button.style.backgroundColor = "black"
             })
 
             if (obj.childId == "mouse") {
@@ -452,7 +481,7 @@ function newObj(type, obj = null, e = null, headId = null) {
 
             poly.setAttribute("points", points)
 
-            if (obj.type != "f"){
+            if (obj.type != "f") {
                 if (objects.find(e => e.id == obj.parentId).class == "Head") {
                     poly.style.stroke = "#" + objects.find(e => e.id == obj.parentId).color
                 }
@@ -475,8 +504,10 @@ function newObj(type, obj = null, e = null, headId = null) {
             }
 
             tag.appendChild(poly)
+            
             var element = document.getElementsByTagName("BODY")[0]
             element.appendChild(tag)
+            element.appendChild(button)
 
             break
     }
@@ -890,6 +921,9 @@ function updateLinks(element) {
         points.push([x, y])
     })
 
+    // Run the linkPoints function to update the points of the link
+    linkPoints(document.getElementById("editLink" + element.id), objects.find(obj => obj.id == element.id), points)
+
     document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
 }
 
@@ -1180,28 +1214,24 @@ function contextMenu(e) {
         // Get the parent/child that is the sub/head
         var el = (tList.includes("head") || tList.includes("sub")) ? e.target : e.target.parentElement
 
-        el = (el.classList && el.classList.contains("head")) ? el.id : objects.find(obj => obj.id == el.id).headId
+        // Get the head ID (or itself if it's a head)
+        var head = (el.classList && el.classList.contains("head")) ? el.id : objects.find(obj => obj.id == el.id).headId
 
         var attr = [
             // Sub
             {
                 text: "New Sub",
-                onclick: () => newObj("Sub", null, e, el)
-            },
-            // Links
-            {
-                text: "Edit Links",
-                onclick: () => editLinks(el)
+                onclick: () => newObj("Sub", null, e, head)
             },
             // Change Head (if the clicked element is a sub)
             {
                 text: "Change Head",
-                onclick: () => changeHead(el)
+                onclick: () => changeHead(el.id)
             },
             // Delete
             {
                 text: "Delete",
-                onclick: () => deleteObj(el)
+                onclick: () => deleteObj(el.id)
             }
         ]
 
@@ -1224,7 +1254,7 @@ function contextMenu(e) {
             // Delete
             {
                 text: "Delete",
-                onclick: () => objects.splice(objects.findIndex(obj => obj.id == el.id), 1)
+                onclick: () => deleteObj(el.id)
             }
         ]
     }
@@ -1254,3 +1284,24 @@ window.addEventListener("scroll", function() {
         })
     }
 })
+
+function linkPoints(button, obj, points) {
+    // If the line has only two points, the midpoint is the average of the two points
+    if (points.length == 2) {
+        var midX = (parseInt(points[0][0]) + parseInt(points[1][0])) / 2
+        var midY = (parseInt(points[0][1]) + parseInt(points[1][1])) / 2
+        
+        var mid = [midX, midY]
+    }
+    // If not then the line must have three points, so the midpoint is the middle point
+    else {
+        var midX = parseInt(points[1][0])
+        var midY = parseInt(points[1][1])
+
+        var mid = [midX, midY]
+    }
+    
+    // Position the button at the midpoint
+    button.style.left = mid[0] + "px"
+    button.style.top = mid[1] + "px"
+}
