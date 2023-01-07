@@ -153,35 +153,6 @@ function newObj(type, obj = null, e = null, headId = null) {
             })
             tag.appendChild(text)
 
-            var menu = document.createElement("div")
-            menu.classList.add("nodeMenu")
-            menu.style.outlineColor = "#" + obj.color
-            menu.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + obj.color
-
-            var menuList = document.createElement("ul")
-            menu.appendChild(menuList)
-
-            var deleteButton = document.createElement("li")
-            deleteButton.innerHTML = "🗑️"
-            deleteButton.addEventListener("click", function() {
-                var toRemove = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
-                toRemove.forEach(obj => {
-                    document.getElementById(obj.id).remove()
-                    objects.splice(objects.indexOf(obj), 1)
-                })
-
-                // Remove all links to the now deleted nodes
-                var toAdjust = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id))
-                toAdjust.forEach(obj => objects.splice(objects.indexOf(obj), 1))
-                save()
-            })
-
-            deleteButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to delete this node." })
-            deleteButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
-            menuList.appendChild(deleteButton)
-
-            tag.appendChild(menu)
-
             var color = document.createElement("input")
             color.type = "color"
             color.classList.add("colorPicker")
@@ -298,39 +269,6 @@ function newObj(type, obj = null, e = null, headId = null) {
             tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
             tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(tooltip)
-
-            var menu = document.createElement("div")
-            menu.classList.add("nodeMenu")
-            menu.style.outlineColor =  "#" + objects.find(e => e.id == obj.headId).color
-            menu.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects.find(e => e.id == obj.headId).color
-
-            var menuList = document.createElement("ul")
-            menu.appendChild(menuList)
-
-            var changeParentButton = document.createElement("li")
-            changeParentButton.innerHTML = "🔗"
-            changeParentButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the parent of this node." })
-            changeParentButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
-            changeParentButton.classList.add("changeParentButton")
-            menuList.appendChild(changeParentButton)
-
-            var deleteButton = document.createElement("li")
-            deleteButton.innerHTML = "🗑️"
-            deleteButton.addEventListener("click", function() {
-                var toRemove = objects.filter(e => e.class == "Link" && (e.childId == tag.id || e.parentId == tag.id) || e.id == tag.id)
-                toRemove.forEach(obj => {
-                    document.getElementById(obj.id).remove()
-                    objects.splice(objects.indexOf(obj), 1)
-                })
-                save()
-            })
-
-            deleteButton.addEventListener("mouseover", function() { infobar.innerHTML = "Click to delete this node." })
-            deleteButton.addEventListener("mouseout", function() { infobar.innerHTML = "" })
-            menuList.appendChild(deleteButton)
-
-
-            tag.appendChild(menu)
             
             document.getElementsByTagName("BODY")[0].appendChild(tag)
 
@@ -426,93 +364,120 @@ function newObj(type, obj = null, e = null, headId = null) {
                 points.push([x, y])
             })
 
-            // Delete the button if it already exists
-            var old = document.getElementById("editLink" + obj.id)
-
-            if (old) old.remove()
-
-            // Create the button
-            var button = document.createElement("button")
-            button.classList.add("editLink")
-            button.id = "editLink" + obj.id
-
-            var color = "grey"
-
-            // Get the color of the line
-            if (obj.type != "f"){
-                if (objects.find(e => e.id == obj.parentId).class == "Head") {
-                    color = "#" + objects.find(e => e.id == obj.parentId).color
-                }
-                else {
-                    color = "#" + objects.find(e => e.id == objects.find(e => e.id == obj.parentId).headId).color
-                }
-            }
-        
-            // Color the border by default
-            button.style.backgroundColor = "black"
-            button.style.borderColor = color
-
-            // Run the linkPoints function unless the link child is the mouse
-            if (obj.childId != "mouse") linkPoints(button, obj, points)
-    
-            // When hovered, show the context menu
-            button.addEventListener("mouseover", function() {
-                // Return if the context menu is already open elsewhere
-                if (document.getElementById("context-menu")) return
-
-                // Get the position of the button
-                var mid = linkPoints(button, obj, points)
-
-                // Create the event object
-                var e = {
-                    clientX: mid[0] - window.scrollX,
-                    clientY: mid[1] - window.scrollY
-                }
-
-                // Get the buttons for the context menu
-                var buttons = [
-                    {
-                        text: "Delete",
-                        onclick: () => { objects.splice(objects.indexOf(obj), 1); tag.remove(); button.remove() }
-                    },
-                    {
-                        text: "Change type",
-                        onclick: () => { console.log("Change type") }
-                    },
-                    {
-                        text: "Make Factor",
-                        onclick: () => {
-                            obj.type = "f"
-                            newObj(obj.class, obj)
-                        }
-                    },
-                    {
-                        text: "Make Cause",
-                        onclick: () => {
-                            obj.type = "c"
-                            newObj(obj.class, obj)
-                        }
-                    },
-                    {
-                        text: "Make Extension",
-                        onclick: () => {
-                            obj.type = "e"
-                            newObj(obj.class, obj)
-                        }
-                    }
-                ]
-
-                genContextMenu(e, buttons, true)
-            })
-
             if (obj.childId == "mouse") {
-                
-                points.push([window.event.pageX , window.event.pageY])
+                try {
+                    points.push([window.event.pageX , window.event.pageY])
+                }
+                catch {
+                    // Delete the link
+                    objects.splice(objects.indexOf(obj), 1)
+                    tag.remove()
+                    window["newArrow"] = false
+
+                    save()
+
+                    return
+                }
 
                 document.addEventListener("mousemove", function() {
                     if (objects.find(e => e.childId == "mouse") == undefined) return
                     var el = document.getElementById(objects.find(e => e.childId == "mouse").id).children[1]
                     el.setAttribute("points", [el.getAttribute("points").split(",").slice(0, 2), [window.event.pageX , window.event.pageY]])
+                })
+            }
+            else { // If the link is not being created, then it needs an edit button
+
+                // Delete the button if it already exists
+                var old = document.getElementById("editLink" + obj.id)
+
+                if (old) old.remove()
+
+                // Create the button
+                var button = document.createElement("button")
+                button.classList.add("editLink")
+                button.id = "editLink" + obj.id
+
+                var color = "grey"
+
+                // Get the color of the line
+                if (obj.type != "f"){
+                    if (objects.find(e => e.id == obj.parentId).class == "Head") {
+                        color = "#" + objects.find(e => e.id == obj.parentId).color
+                    }
+                    else {
+                        color = "#" + objects.find(e => e.id == objects.find(e => e.id == obj.parentId).headId).color
+                    }
+                }
+            
+                // Color the border by default
+                button.style.backgroundColor = "black"
+                button.style.borderColor = color
+
+                // Run the linkPoints function unless the link child is the mouse
+                if (obj.childId != "mouse") linkPoints(button, obj, points)
+        
+                // When hovered, show the context menu
+                button.addEventListener("mouseover", function() {
+                    // Return if the context menu is already open elsewhere
+                    if (document.getElementById("context-menu")) return
+
+                    // Get the position of the button
+                    var mid = linkPoints(button, obj, points)
+
+                    // Create the event object
+                    var e = {
+                        clientX: mid[0] - window.scrollX,
+                        clientY: mid[1] - window.scrollY
+                    }
+
+                    // Get the buttons for the context menu
+                    var buttons = [
+                        {
+                            text: "Delete",
+                            onclick: () => { objects.splice(objects.indexOf(obj), 1); tag.remove(); button.remove() },
+                            key: "Del"
+                        },
+                        {
+                            text: "Make Factor",
+                            onclick: () => {
+                                obj.type = "f"
+                                newObj(obj.class, obj)
+                            },
+                            key: "F"
+                        },
+                        {
+                            text: "Make Cause",
+                            onclick: () => {
+                                obj.type = "c"
+                                newObj(obj.class, obj)
+                            },
+                            key: "C"
+                        },
+                        {
+                            text: "Make Extension",
+                            onclick: () => {
+                                obj.type = "e"
+                                newObj(obj.class, obj)
+                            },
+                            key: "E"
+                        },
+                        {
+                            text: "Flip Direction",
+                            onclick: () => {
+                                // Swap the parent and child
+                                var temp = obj.parentId
+                                obj.parentId = obj.childId
+                                obj.childId = temp
+                                newObj(obj.class, obj)
+
+                                // Reverse the points
+                                obj.line = obj.line.reverse()
+                                newObj(obj.class, obj)
+                            }
+                        }
+                    ]
+
+                    genContextMenu(e, buttons, true)
                 })
             }
 
@@ -544,13 +509,15 @@ function newObj(type, obj = null, e = null, headId = null) {
             
             var element = document.getElementsByTagName("BODY")[0]
             element.appendChild(tag)
-            element.appendChild(button)
+
+            // Append the button if it exists
+            if (button) element.appendChild(button)
 
             break
     }
 
     tag.addEventListener("mouseover", function() {
-        if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 ) {
+        if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 && obj.class != "Era") {
             var linkTop = document.createElement("span")
             linkTop.classList.add("addLink")
             linkTop.id = "linkTop"
@@ -1268,13 +1235,14 @@ function contextMenu(e) {
             // Delete
             {
                 text: "Delete",
-                onclick: () => deleteObj(el.id)
+                onclick: () => deleteObj(el.id),
+                key: "Del"
             }
         ]
 
         // If the clicked element (or it's parent) is a head, remove the "Change Head"
         if (tList.includes("head") || pList.includes("head")) {
-            attr.splice(2, 1)
+            attr.splice(1, 1)
         }
 
     }
@@ -1353,4 +1321,15 @@ function getNew() {
     }
 
     return id
+}
+
+function deleteObj(toDel) {
+    var toRemove = objects.filter(e => e.class == "Link" && (e.childId == toDel || e.parentId == toDel) || e.id == toDel)
+    toRemove.forEach(obj => {
+        document.getElementById(obj.id).remove()
+        objects.splice(objects.indexOf(obj), 1)
+        
+        if (obj.class == "Link") document.getElementById("editLink" + obj.id).remove()
+    })
+    save()
 }

@@ -177,7 +177,7 @@ input {
     background-color: black;
 }
 
-/* Will add an area below for you to hover over */
+/* Will add an area below for you to hover over, only when already hovering */
 .head::after,
 .sub::after,
 .info::after {
@@ -191,9 +191,9 @@ input {
     pointer-events: none;
 }
 
-.head:not(.editing)::after,
-.sub:not(.editing)::after,
-.info:not(.editing)::after {
+.head:not(.editing):hover::after,
+.sub:not(.editing):hover::after,
+.info:not(.editing):hover::after {
     pointer-events: auto;
 }
 
@@ -235,7 +235,7 @@ input {
     transition: 0.25s;
     position: absolute;
     left: calc(50% - 1em);
-    bottom: 0;
+    top: 0;
     opacity: 0;
     cursor: pointer;
     z-index: 1;
