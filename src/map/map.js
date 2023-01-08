@@ -1312,7 +1312,7 @@ function contextMenu(e) {
     if (tList.concat(pList).includes("head")) {
         attr.unshift({
             text: "Event Wiki",
-            onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + el
+            onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + el.id
         })
     }
 
