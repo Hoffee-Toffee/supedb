@@ -6,6 +6,7 @@ window["permissions"] = []
 var objects = []
 
 window["decrypt"] = false
+window["subId"] = null
 
 function display() {
     var scrollX = null
@@ -577,7 +578,7 @@ function updateColor(color) {
     var head = color.parentElement.id
 
     objects.find(e => e.id == head).color = color.value.slice(1)
-    
+
     save()
 }
 
@@ -748,6 +749,54 @@ document.addEventListener("click", function (event) {
     if (event.target.classList.contains("addClassObj")) {
         document.getElementById("addmenu").classList.remove("open")
         newObj(event.target.innerHTML)
+    }
+
+    // Check if updating a head (first click)
+    if (window["subId"] && !window["subId"].endsWith("-")) {
+        window["subId"] += "-"
+    }
+    // If clicking on a head (second click)
+    else if (event.target && event.target.classList.contains("head")) {
+        // Get the subId
+        var subId = window["subId"].split("-")[0]
+
+        // Loop through all objects
+        objects.forEach(obj => {
+            var el = document.getElementById(obj.id)
+    
+            // Reset all filters and pointer events
+            if (obj.class != "Head") {
+                el.style.filter = "none"
+                el.style.pointerEvents = "initial"
+    
+                // If a link then remove the filter from the edit button
+                if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "none"
+            }
+
+            // Check if this is the subId
+            if (obj.id == subId) {
+                obj.headId = event.target.id
+                el.remove()
+
+                newObj("Sub", obj)
+            }
+        })
+    }
+    // Else if clicking nothing (second click)
+    else if ([null, document.body].includes(event.target)) {
+        // Loop through all objects
+        objects.forEach(obj => {
+            var el = document.getElementById(obj.id)
+    
+            // Reset all filters and pointer events
+            if (obj.class != "Head") {
+                el.style.filter = "none"
+                el.style.pointerEvents = "initial"
+    
+                // If a link then remove the filter from the edit button
+                if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "none"
+            }
+        })
     }
 }, false)
 
@@ -1327,4 +1376,24 @@ function deleteObj(toDel) {
         if (obj.class == "Link") document.getElementById("editLink" + obj.id).remove()
     })
     save()
+}
+
+function changeHead(id) {
+    // Set the changeHead variable to the ID of the sub
+    window["subId"] = id
+
+    // Run different code depending on the object types
+    objects.forEach(obj => {
+        // Change all to unclickable
+        var el = document.getElementById(obj.id)
+
+        // Set greyscale and brightness to 0.5 unless a head
+        if (obj.class != "Head") {
+            el.style.filter = "grayscale(0.5) brightness(0.5)"
+            el.style.pointerEvents = "none"
+
+            // If a link then apply the same filter to it
+            if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "grayscale(0.5) brightness(0.5)"
+        }
+    })
 }
