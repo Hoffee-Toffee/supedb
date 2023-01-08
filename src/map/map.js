@@ -1158,8 +1158,8 @@ function start() {
 
     // Check if the user isn't logged in
     if (!auth.currentUser) {
-        // Redirect to the login page
-        location.href = "../login/login.html"
+        // Redirect to the login page with redirect params
+        location.href = "../login/login.html?redirect=.." + location.pathname + location.search
     }
 
     // Check if the user has any associated permissions

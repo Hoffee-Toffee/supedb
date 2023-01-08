@@ -5,8 +5,8 @@ function try_login() {
 
     // Sign in with email and password
     auth.signInWithEmailAndPassword(email, pw).then((userCredential) => {
-        // Redirect to dashboard
-        window.location.href = "../dash/dash.html";
+        // Redirect to dashboard or window["redirect"] if it exists
+        window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
     }).catch((error) => {
         // Display error message
         document.getElementById("login-error").innerHTML = error.message;
@@ -31,8 +31,8 @@ function try_signup() {
             displayName: name
         })
 
-        // Redirect to dashboard
-        window.location.href = "../dash/dash.html";
+        // Redirect to dashboard or window["redirect"] if it exists
+        window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
     }).catch((error) => {
         // Display error message
         document.getElementById("signup-error").innerHTML = error.message;
@@ -93,7 +93,11 @@ function start() {
     }
     // Check if the user is logged in
     if (auth.currentUser) {
-        // Redirect to dashboard
-        window.location.href = "../dash/dash.html";
+        // Redirect to dashboard or window["redirect"] if it exists
+        window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
+    }
+    // Get the redirect url if it exists
+    if (window.location.search.includes('redirect')) {
+        window["redirect"] = window.location.search.split('redirect=')[1];
     }
 }

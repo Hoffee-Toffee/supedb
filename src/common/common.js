@@ -126,3 +126,8 @@ document.addEventListener("click", toogleContextMenu);
 document.addEventListener("contextmenu", toogleContextMenu);
 document.addEventListener("scroll", toogleContextMenu);
 document.addEventListener("mousemove", toogleContextMenu);
+
+function redir() {
+    // Return the last two parts of the url plus the query string
+    return  "../" + window.location.pathname.split("/").slice(-2).join("/") + window.location.search;
+}
