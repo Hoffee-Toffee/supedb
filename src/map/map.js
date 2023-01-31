@@ -1034,7 +1034,8 @@ function save() {
 
     // Update firestore document
     db.collection("timelines").doc(window["mapSettings"].id).update({
-        map: data
+        map: data,
+        lastChange: auth.currentUser.email
     })
 }
 
@@ -1231,9 +1232,11 @@ function start() {
         mapMenu()
     }
 
-    // Sync all data from the timeline
+    window["mapSettings"] = null
+
+    // Sync all data from the timeline (don't sync if the user is the one that made the last change unless they are loading for the first time)
     db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
-        if (map) {
+        if (map.data().lastChange != auth.currentUser.email || !window["mapSettings"]) {
             document.getElementsByTagName("title")[0].innerText = map.data().title
     
             window["mapSettings"] = {
@@ -1270,18 +1273,40 @@ function start() {
                     window["ready"] = true
                 }
             }
-        }})
-    
-        if (window["ready"]) {
-            display()
         }
         else {
-            window["ready"] = true
+            // Reset the html size
+            document.querySelector("html").style.width = "initial"
+            
+            // Reset the height of each era
+            document.querySelectorAll(".era").forEach(era => {
+                era.style.height = "0px"
+            })
+
+            // Get the scrolling height and width of the screen
+            var height = document.scrollingElement.scrollHeight + "px"
+            var width = "calc(5em + " + document.scrollingElement.scrollWidth + "px)"
+
+            // Set the html to the size of the map
+            document.querySelector("html").style.width = width
+
+            // Set the height of each era to the height of the map
+            document.querySelectorAll(".era").forEach(era => {
+                era.style.height = height
+            })
         }
+    })
     
-        document.getElementById("mapSettings").addEventListener("click", function() {
-            mapMenu()
-        })
+    if (window["ready"]) {
+        display()
+    }
+    else {
+        window["ready"] = true
+    }
+
+    document.getElementById("mapSettings").addEventListener("click", function() {
+        mapMenu()
+    })
 }
 
 function contextMenu(e) {
