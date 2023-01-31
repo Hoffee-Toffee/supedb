@@ -952,6 +952,55 @@ document.onkeydown = (event) => {
             })
           }, 10)
     }
+
+    // Check if the 'p' key is pressed without being in any input field
+    if (event.key == "p") {
+        // Prevent the default action of the keypress
+        event.preventDefault()
+
+        // Html class will go through the following cycle:
+        // {} -> {print} -> {print, print1} -> {print, print1, print2} -> {} -> ...
+
+        // Check if it has the print2 class
+        if (document.querySelector("html").classList.contains("print2")) {
+            // If it does, remove all print classes and exit full screen
+            document.querySelector("html").classList.remove("print")
+            document.querySelector("html").classList.remove("print1")
+
+            document.querySelectorAll(".print2").forEach(el => {
+                el.classList.remove("print2")
+            })
+
+            document.exitFullscreen()
+        }
+        // Check if it has the print1 class
+        else if (document.querySelector("html").classList.contains("print1")) {
+            // If it does, add the print2 class
+            document.querySelector("html").classList.add("print2")
+
+            // Hide all heads with "A storyline, event or person." as a tooltip, and hide all subs with "A specific event" as a tooltip
+            objects.forEach(obj => {
+                if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
+                    document.getElementById(obj.id).classList.add("print2")
+                }
+                else if (obj.class == "Sub" && obj.description == "A specific event") {
+                    document.getElementById(obj.id).classList.add("print2")
+                }
+            })
+        }
+        // Check if it has the print class
+        else if (document.querySelector("html").classList.contains("print")) {
+            // If it does, add the print1 class
+            document.querySelector("html").classList.add("print1")
+        }
+        // If it doesn't have any print classes
+        else {
+            // Add the print class and enter full screen
+            document.querySelector("html").classList.add("print")
+
+            document.documentElement.requestFullscreen()
+        }
+    }
 }
 
 function updateLinks(element) {
@@ -1159,7 +1208,7 @@ function start() {
     // Check if the user isn't logged in
     if (!auth.currentUser) {
         // Redirect to the login page with redirect params
-        location.href = "../login/login.html?redirect=.." + location.pathname + location.search
+        location.href = "../login/login.html?redirect=" + redir()
     }
 
     // Check if the user has any associated permissions
@@ -1333,6 +1382,35 @@ window.addEventListener("scroll", function() {
         })
     }
 })
+
+document.onmousemove = function (event) {
+    // If the user is holding the alt key while moving the mouse, scroll the page
+    // e.g. if the mouse is right at the bottom-right corner of the screen, the page will scroll all the way to the bottom-right
+    if (event.altKey) {
+        var x = event.clientX - (window.innerWidth * 0.05)
+        var y = event.clientY - (window.innerHeight * 0.05)
+
+        // Get the whole page size (not just the visible part)
+        var xMax = document.documentElement.offsetWidth - document.documentElement.clientWidth
+        var yMax = document.documentElement.offsetHeight - document.documentElement.clientHeight
+
+        // Get only the visible part of the page (where the mouse can be), with some leeway
+        var xView = window.innerWidth * 0.9
+        var yView = window.innerHeight * 0.9
+
+        // Calculate the scroll amount
+        var xScroll = (x / xView) * xMax 
+        var yScroll = (y / yView) * yMax
+
+        // Scroll the page
+        window.scrollTo(xScroll, yScroll)
+
+        console.log(`x: ${x}, y: ${y}\nxMax: ${xMax}, yMax: ${yMax}\nxView: ${xView}, yView: ${yView}\nxScroll: ${xScroll}, yScroll: ${yScroll}`)
+
+        // Scroll the page
+        // window.scrollTo(xScroll, yScroll)
+    }
+}
 
 function linkPoints(button, obj, points) {    
     // If the line has only two points, the midpoint is the average of the two points

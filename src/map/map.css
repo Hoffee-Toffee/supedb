@@ -473,3 +473,46 @@ textarea {
 .editLink:hover {
     transition: background-color 0.25s, border-color 0.25s;
 }
+
+/*
+PRINTING STYLES
+*/
+
+.print #mapSettings {
+    display: none;
+}
+
+.print ::-webkit-scrollbar {
+    display: none;
+}
+
+.print * {
+    user-select: none;
+    pointer-events: none;
+}
+
+.print1 .editLink {
+    display: none;
+}
+
+.sub.print2 > .tooltip {
+    display: none;
+}
+
+.head.print2 > .tooltip {
+    display: none;
+}
+
+.print2 .tooltip {
+    opacity: 1;
+    height: initial;
+    margin-top: 1em;
+    top: 100%;
+    pointer-events: auto;
+}
+
+@media print {
+    #mapSettings {
+        display: none;
+    }
+}
