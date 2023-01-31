@@ -817,7 +817,7 @@ document.onkeydown = (event) => {
     }
 
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
-        // If the user is also holding the shift key (and only editing one node) then toogle the selection of all the nodes in the direction of the arrow key
+        // If the user is also holding the shift key (and only editing one node) then toggle the selection of all the nodes in the direction of the arrow key
         if (event.shiftKey && document.querySelectorAll(".editing").length == 1) {
             // Get the id of the node that is being edited
             var id = document.querySelector(".editing").id
@@ -907,10 +907,23 @@ document.onkeydown = (event) => {
             })
         })
 
-        els[0].scrollIntoView({
-            block: "nearest",
-            inline: "center"
+        // Reset the height of each era
+        document.querySelectorAll(".era").forEach(era => {
+            era.style.height = "0px"
         })
+
+        // Get the scrolling height of the screen
+        var height = document.scrollingElement.scrollHeight + "px"
+
+        // Set the height of each era to the height of the map
+        document.querySelectorAll(".era").forEach(era => {
+            era.style.height = height
+        })
+
+        // If only one node is selected then scroll the screen so that the node is on the screen
+        if (els.length == 1) {
+            els[0].scrollIntoView()
+        }
     }
     else if (event.key == "Enter" && window["editing"]) {
         event.preventDefault()
