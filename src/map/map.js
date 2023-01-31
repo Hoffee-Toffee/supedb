@@ -953,8 +953,8 @@ document.onkeydown = (event) => {
           }, 10)
     }
 
-    // Check if the 'p' key is pressed without being in any input field
-    if (event.key == "p") {
+    // Check if the 'p' key is pressed without there being any active elements
+    if (event.key == "p" && document.activeElement == document.body) {
         // Prevent the default action of the keypress
         event.preventDefault()
 

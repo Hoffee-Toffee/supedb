@@ -200,7 +200,7 @@ input {
 .head .tooltip,
 .sub .tooltip,
 .info .tooltip {
-    background-color: black;
+    background-color: #000000AA;
     transition: 0.25s;
     position: absolute;
     padding: 1em 0.5em 0em 0.5em;
@@ -209,7 +209,7 @@ input {
     left: 50%;
     font-size: small;
     width: calc(100% - 1em);
-    border: 0.1em solid white;
+    border: 0.1em solid #ffffffAA;
     border-radius: 0.5em;
     color: #fff;
     text-align: center;
