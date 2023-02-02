@@ -1682,6 +1682,92 @@ function helpMenu() {
                     ]
                 }
             ]
+        },
+        "Coming Soon...": {
+            desc: [
+                "Here are some features being worked on."
+            ],
+            pages: [
+                {
+                    "Help GIFs": [
+                        "GIFs will be added to this help menu to show how to perform certain actions."
+                    ],
+                    "Categories": [
+                        "So far, sub nodes can only be in one category (their head node).",
+                        "They can still show up through direct links, but indirect linking is what this feature is for.",
+                        "If you have a sub node (e.g. \"Alice and Bob meet\"), you could link it to multiple head nodes (e.g. Linked to \"Alice\" and \"Bob\" head nodes instead of just one of them).",
+                        "",
+                        "This is similar to tags, but categories are only related to the head nodes that exist."
+                    ],
+                    "Tags": [
+                        "Tags are similar to categories, but they are not related to head nodes.",
+                        "They are more like keywords and types, such as \"Character\", \"Location\", \"Event\", \"Battle\", \"Birth\", etc.",
+                        "They can be used to filter and search for nodes."
+                    ]
+                },
+                {
+                    "Wiki": [
+                        "The wiki shows all node information in a more organized way.",
+                        "This is in early development, but will have wiki pages for each head node, and sub nodes will be shown as sections on those pages.",
+                        "Categories, tags, and eras will also be available at some point."
+                    ],
+                    "Dragging and Selecting": [
+                        "It will be possible to drag a box around nodes to select them.",
+                        "Also will add the option to click and drag nodes to move them.",
+                        "Moving like this will only be possible for selected nodes (to prevent accidental movement)."
+                    ]
+                },
+                {
+                    "Print Mode": [
+                        "Pressing \"P\" (while nothing focused) will enter print mode, which will make the page perfectly displayed for screenshots and printing.",
+                        "You can toggle between three versions of print mode by pressing \"P\" again.",
+                        "One you press it a fourth time, you will exit print mode.",
+                        "This has been implemented, but documentation will be added later."
+                    ],
+                    "Tutorial Tracking": [
+                        "Will add features using this page to show users the help menu on load, and to track what they have seen.",
+                        "Will have the option to disable this, and to mark pages as \"read\".",
+                        "Any time new features are added, you'll be able to see them when you load the page."
+                    ]
+                },
+                {
+                    "Help Menu": [
+                        "Each page of each topic in the help menu will have a title, not just the topic.",
+                        "The table of contents will use these names instead of \"Page 1\", \"Page 2\", etc.",
+                        "The links in the table of contents will also be clickable to jump to the page."
+                    ],
+                    "Settings": [
+                        "Project and timeline settings are being fixed and new features are being added.",
+                        "Inviting users, and changing their permissions, will be added soon."
+                    ]
+                },
+                {
+                    "Versions": [
+                        "Will have timeline branches, different versions of the timeline.",
+                        "These can be used as draft changes to be merged into the main timeline, or as alternate timelines.",
+                        "They will be able to be viewed and edited separately, and merged into the main timeline.",
+                        "Each goes through different stages, and can have different permissions."
+                    ],
+                    "Miss Minutes": [
+                        "The \"Miss Minutes\" discord bot is being worked on.",
+                        "It will be able to be added to your server, and will be able to notify you of any updates.",
+                        "Some processes could be done through the bot, accessing the wiki, etc.",
+                        "It can also facilitate communication between users and voting when needed."
+                    ]
+                },
+                {
+                    "Back and Close Buttons": [
+                        "Back and close buttons will be added to many menus and pages.",
+                        "This will make it easier to navigate the site, and to close menus and pages."
+                    ],
+                    "Show Weak Nodes": [
+                        "An option is in development to show nodes that are 'weak'.",
+                        "Pressing \"E\" currently shows all nodes that still have the default description.",
+                        "This is useful for finding nodes that need to be filled in.",
+                        "This will be expanded further in the future."
+                    ]
+                }
+            ]
         }
     };
 }
