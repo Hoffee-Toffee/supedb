@@ -920,9 +920,9 @@ document.onkeydown = (event) => {
             era.style.height = height
         })
 
-        // If only one node is selected then scroll the screen so that the node is on the screen
+        // If only one node is selected then scroll the screen so that the node is on the screen (don't if already in view however)
         if (els.length == 1) {
-            els[0].scrollIntoView()
+            els[0].scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
         }
     }
     else if (event.key == "Enter" && window["editing"]) {
@@ -966,8 +966,8 @@ document.onkeydown = (event) => {
           }, 10)
     }
 
-    // Check if the 'p' key is pressed without there being any active elements
-    if (event.key == "p" && document.activeElement == document.body) {
+    // Check if the 'p' key is pressed without there being any active elements or any other keys pressed
+    if (event.key == "p" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
         // Prevent the default action of the keypress
         event.preventDefault()
 
@@ -985,6 +985,13 @@ document.onkeydown = (event) => {
             })
 
             document.exitFullscreen()
+
+            // Reset each link
+            objects.forEach(obj => {
+                if (obj.class == "Link") {
+                    updateLinks(obj)
+                }
+            })
         }
         // Check if it has the print1 class
         else if (document.querySelector("html").classList.contains("print1")) {
@@ -1012,7 +1019,26 @@ document.onkeydown = (event) => {
             document.querySelector("html").classList.add("print")
 
             document.documentElement.requestFullscreen()
+
+            // Reset each link
+            objects.forEach(obj => {
+                if (obj.class == "Link") {
+                    updateLinks(obj)
+                }
+            })
         }
+    }
+    // Same for the 'e' key
+    else if (event.key == "e" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        // Get all heads with "A storyline, event or person." as a tooltip, and all subs with "A specific event" as a tooltip
+        objects.forEach(obj => {
+            if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
+                document.getElementById(obj.id).classList.toggle("print2")
+            }
+            else if (obj.class == "Sub" && obj.description == "A specific event") {
+                document.getElementById(obj.id).classList.toggle("print2")
+            }
+        })
     }
 }
 

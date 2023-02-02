@@ -489,17 +489,26 @@ PRINTING STYLES
 .print * {
     user-select: none;
     pointer-events: none;
+    font-size: large;
+}
+
+.print .tooltip {
+    font-size: medium;
+}
+
+.print .era {
+    font-size: large;
 }
 
 .print1 .editLink {
     display: none;
 }
 
-.sub.print2 > .tooltip {
+.sub.print.print2 > .tooltip {
     display: none;
 }
 
-.head.print2 > .tooltip {
+.head.print.print2 > .tooltip {
     display: none;
 }
 
