@@ -1,0 +1,222 @@
+#helpScreen {
+    color: white;
+    background-color: #000000BB;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(1px);
+    display: flex;
+    transition: 0.25s ease-in-out;
+    opacity: 1;
+}
+
+#helpScreen > div {
+    position: fixed;
+    /* Completely centered */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #00000008;
+    width: calc(100% - 2em);
+    height: calc(100% - 2em);
+    max-width: 1200px;
+    max-height: 800px;
+    outline: 0.1em solid #fff;
+    pointer-events: auto;
+    border-radius: 0.5em;
+    overflow: hidden;
+}
+
+/* Don't show the help screen when it doesn't have the show class */
+html:not(.help) #helpScreen {
+    transition: 0.25s ease-in-out;
+    opacity: 0;
+    pointer-events: none;
+}
+
+html:not(.help) #helpScreen > div {
+    top: calc(50% + 0.25em);
+    left: calc(50% + 0.25em);
+    pointer-events: none;
+}
+
+/* Don't show the mapSettings when the help screen is shown */
+html.help #mapSettings {
+    display: none;
+}
+
+/* Don't allow interaction with anything behind the help screen */
+html.help* {
+    pointer-events: none;
+    user-select: none;
+}
+
+#helpBox {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#helpBox h1 {
+    width: 100%;
+    font-size: 1.5em;
+    left: 2em;
+    text-align: center;
+}
+
+#helpBox h1::after {
+    position: relative;
+    top: 0.5em;
+    content: " ";
+    display: block;
+    height: 1px;
+    width: 100%;
+    background-color: #ffffff33;
+}
+
+#helpBox #toc {
+    position: relative;
+    top: -2.20em;
+    width: 15em;
+    height: calc(100% - 7.75em);
+    z-index: 1;
+    background-color: #000000;
+    transform: translateX(-15em);
+    transition: 0.25s ease-in;
+}
+
+#helpBox #toc::after {
+    position: absolute;
+    content: "";
+    display: block;
+    width: 1em;
+    height: 100vh;
+    top: 0em;
+    right: -1em;
+    background-color: var(--col-red-hover);
+    transition: 0.25s ease-in;
+    border: 0em solid transparent;
+}
+
+#helpBox #toc:hover {
+    transform: translateX(0em);
+    padding-right: 0;
+}
+
+#helpBox #toc:hover::after {
+    background-color: #000;
+    border-right: 0.1em solid #ffffff33;
+}
+
+#helpBox #toc h2 {
+    font-size: 1.5em;
+    margin-left: 0.5em;
+    text-align: center;
+}
+
+#helpBox #toc > ul {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+#helpBox #toc ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #111111;
+    height: 100%;
+}
+
+#helpBox #toc ul li {
+    margin: 0;
+    padding: 0;
+    padding-left: 0.5em;
+    scroll-snap-align: start;
+}
+
+#helpBox #toc ul li a {
+    display: block;
+    color: var(--col-orange);
+    padding: 0.5em;
+    text-decoration: none;
+    transition: 0.1s ease-in;
+    cursor: pointer;
+}
+
+#helpBox #toc ul li li {
+    padding-left: 1.5em;
+    margin-left: -0.5em;
+    filter: brightness(0.75);
+    background-color: #222222;
+    font-size: 0.8em;
+}
+
+#helpBox #toc ul li a:hover {
+    color: var(--col-red);
+    
+}
+
+#helpBox #toc ul li a.active {
+    color: var(--col-red);
+    background-color: var(--col-red-hover);
+}
+
+#helpBox #content {
+    position: absolute;
+    width: calc(100% - 1em);
+    top: calc(3.5em + 1px);
+    height: calc(100% - 3.5em);
+    left: 1em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background-color: #00000080;
+}
+
+#helpBox #content > div {
+    padding-left: 1em;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+#helpBox #content > div h2 {
+    position: absolute;
+    width: 100%;
+}
+
+#helpBox #content > div *:not(h2) {
+    margin-top: 1em;
+}
+
+#helpBox #content > div > div {
+    margin-top: 3em;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: end;
+}
+
+#helpBox #content p {
+    margin: 0;
+    margin-right: 1em;
+    padding: 0 0.5em;
+    font-family: monospace;
+    font-size: 1.2em;
+    line-height: 1.5em;
+}

@@ -27,6 +27,7 @@
     width: 10px;
     height: 10px;
     background-color: transparent;
+    transition: 0.5s;
 }
 
 *::-webkit-scrollbar-track {
@@ -51,6 +52,11 @@ body {
     width:  calc(100vw - 2em);
     background-color: black;
     font-family: arial;
+}
+
+.help body::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
 }
 
 #addmenu {

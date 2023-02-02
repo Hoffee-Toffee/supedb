@@ -1539,3 +1539,149 @@ function changeHead(id) {
         }
     })
 }
+
+function helpMenu() {
+    return {
+        "Era Dividers": {
+            desc: [
+                "Eras are used to segment the timeline into different periods of time.",
+            ],
+            pages: [
+                {
+                    "Creating an Era": [
+                        "To create an era, right click on the background and select \"New Era\"."
+                    ],
+                    "Editing an Era": [
+                        "You can double click the title of an era to edit it."
+                    ]
+                }
+            ]
+        },
+        "Head Nodes": {
+            desc: [
+                "Head nodes represent objects, people, groups, locations, or events.",
+                "They are used to link sub nodes related to them."
+            ],
+            pages: [
+                {
+                    "Creating a Head Node": [
+                        "To create a head node, right click on the background and select \"New Head\"."
+                    ],
+                    "Editing a Head Node": [
+                        "You can double click the title or description of a head node to edit it."
+                    ],
+                    "Changing a Head Node's Color": [
+                        "You can click the color picker to change the color of the head node.",
+                        "This will also change the color of it's sub nodes and links."
+                    ]
+                }
+            ]
+        },
+        "Sub Nodes": {
+            desc: [
+                "Sub nodes are used to represent individual events and actions that occur within, between, or are related to head nodes."
+            ],
+            pages: [
+                {
+                    "Creating a Sub Node": [
+                        "To create a sub node, right click on a head node or another sub node and select \"New Sub\".",
+                        "The sub node will then be created as a child of the head node or the head of the sub node you right clicked on."
+                    ],
+                    "Editing a Sub Node": [
+                        "You can double click the title or description of a sub node to edit it."
+                    ]
+                },
+                {
+                    "Changing a Sub Node's Head": [
+                        "Right click on a sub node and select \"Change Head\".",
+                        "Then click on the head node you want to change it to."
+                    ]
+                }
+            ]
+        },
+        "Selecting Nodes": {
+            pages: [
+                {
+                    "Selecting a single node": [
+                        "To select a single node, simply double click on it.",
+                        "Click outside of the node to deselect it."
+                    ],
+                    "Selecting multiple nodes": [
+                        "Press \"Ctrl\" and click on a node to toggle it's selection.",
+                        "You can use this to select multiple nodes, or to deselect a node."
+                    ]
+                },
+                {
+                    "Directional Selection": [
+                        "When a singular node is selected, you can use \"Shift\" and an arrow key to select all nodes in that direction."
+                    ]
+                }
+            ]
+        },
+        "Links": {
+            desc: [
+                "Links can be used to show relationships between head and sub nodes.",
+                "A link can be one of three types: \"Factor\", \"Cause\", or \"Extension\".",
+                "",
+                "Factor: Shows that one node was partially responsible for causing the other node.",
+                "Cause: Shows that one node was directly responsible for causing the other node.",
+                "Extension: Shows that two nodes were caused concurrently."
+            ],
+            pages: [
+                {
+                    "Creating a Link": [
+                        "To create a link, select a singular node (by either double clicking or using \"Ctrl\" and clicking on it).",
+                        "Four plus buttons will appear around the node, one for each direction links can stem from.",
+                        "",
+                        "Once you click one of the buttons, hover over the node you want to link it to.",
+                        "Four similar buttons will appear around it.",
+                        "Select one of these buttons to finish the link, or click the background to cancel the link."
+                    ],
+                    "Changing a Link's Type During Creation": [
+                        "After clicking one of the plus buttons, you can press \"E\", \"F\", or \"C\" to change the type of link.",
+                        "(\"E\" for \"Extension\", \"F\" for \"Factor\", and \"C\" for \"Cause\")",
+                        "",
+                        "You can only use this method during link creation.",
+                        "However, you can change the type of a link after it has been created in the context menu."
+                    ]
+                },
+                {
+                    "Accessing a Link's Context Menu": [
+                        "Hover over the circle at the mid-point of a link's line to access it's context menu.",
+                        "Here you can do the following:"
+                    ],
+                    "Changing a Link's Type": [
+                        "Click \"Make Factor\", \"Make Cause\", or \"Make Extension\" to change the type of the link.",
+                        "Factor links are grey, showing an arrow from the first node to the second node.",
+                        "Cause links are the same color as the first node, showing an arrow from the first node to the second node.",
+                        "Extension links are the same color as the first node, showing a line between the two nodes.",
+                    ],
+                    "Flipping a Link's Direction": [
+                        "Click \"Flip Direction\" to flip the direction of the link.",
+                        "This will swap each end of the link, changing color if necessary."
+                    ],
+                    "Deleting a Link": [
+                        "Click \"Delete\" to delete the link."
+                    ]
+                }
+            ]
+        },
+        "Selection Actions": {
+            desc: [
+                "Here are some actions you can perform on selected nodes."
+            ],
+            pages: [
+                {
+                    "Moving Selected Nodes": [
+                        "Use the arrow keys to move the selected nodes."
+                    ],
+                    "Deleting Selected Nodes": [
+                        "Press the \"Delete\" key to delete the selected nodes.",
+                        "This will delete all links connected to the nodes as well.",
+                        "If any head nodes are deleted, their sub nodes will not be deleted, but will become 'orphaned'."
+                    ]
+                }
+            ]
+        }
+    };
+}

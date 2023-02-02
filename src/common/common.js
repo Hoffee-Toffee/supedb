@@ -39,6 +39,15 @@ function genContextMenu(e, attr, hoverOnly = false) {
     //     ...
     // ]
 
+    // Add 'help' to the end of the array, as it's always there
+    attr.push({
+        text: "Help",
+        key: "Ctrl + H",
+        onclick: function () {
+            help();
+        }
+    });
+
     // Create the context menu
     let contextMenu = document.createElement("ul");
     contextMenu.id = "context-menu";
@@ -93,7 +102,7 @@ function genContextMenu(e, attr, hoverOnly = false) {
 }
 
 // Remove the context menu when the user left or right clicks anywhere except the context menu
-function toogleContextMenu(e) {
+function toggleContextMenu(e) {
     let cm = document.getElementById("context-menu");
 
     if (e && e.type == "mousemove" && cm && cm.classList.contains("hoverOnly")) {
@@ -122,10 +131,16 @@ function toogleContextMenu(e) {
 }
 
 // Add the event listeners
-document.addEventListener("click", toogleContextMenu);
-document.addEventListener("contextmenu", toogleContextMenu);
-document.addEventListener("scroll", toogleContextMenu);
-document.addEventListener("mousemove", toogleContextMenu);
+document.addEventListener("click", toggleContextMenu);
+document.addEventListener("contextmenu", toggleContextMenu);
+document.addEventListener("scroll", toggleContextMenu);
+document.addEventListener("mousemove", toggleContextMenu);
+document.addEventListener("keydown", e => {
+    if (e.key == "h" && e.ctrlKey) {
+        e.preventDefault();
+        help();
+    }
+});
 
 function redir() {
     // Return the last two parts of the url plus the query string
