@@ -504,13 +504,6 @@ PRINTING STYLES
     display: none;
 }
 
-.sub.print.print2 > .tooltip {
-    display: none;
-}
-
-.head.print.print2 > .tooltip {
-    display: none;
-}
 
 .print2 .tooltip {
     opacity: 1;
@@ -518,6 +511,14 @@ PRINTING STYLES
     margin-top: 1em;
     top: 100%;
     pointer-events: auto;
+}
+
+.sub.print2 > .tooltip {
+    display: none;
+}
+
+.head.print2 > .tooltip {
+    display: none;
 }
 
 @media print {

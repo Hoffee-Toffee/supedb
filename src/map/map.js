@@ -1722,7 +1722,13 @@ function helpMenu() {
                         "Pressing \"P\" (while nothing focused) will enter print mode, which will make the page perfectly displayed for screenshots and printing.",
                         "You can toggle between three versions of print mode by pressing \"P\" again.",
                         "One you press it a fourth time, you will exit print mode.",
-                        "This has been implemented, but documentation will be added later."
+                        "This has been implemented, but documentation will be added later.",
+                        "",
+                        "To take a full page screenshot, (while in print mode), do the following:",
+                        "- 1. Press \"Ctrl + Shift + I\" to open the developer tools.",
+                        "- 2. Press \"Ctrl + Shift + P\" to open the command menu.",
+                        "- 3. Type \"fz\" and press enter.",
+                        "(\"fz\" is the shortest string that will bring up the \"Capture full size screenshot\" option as the first result.)",
                     ],
                     "Tutorial Tracking": [
                         "Will add features using this page to show users the help menu on load, and to track what they have seen.",
@@ -1734,7 +1740,8 @@ function helpMenu() {
                     "Help Menu": [
                         "Each page of each topic in the help menu will have a title, not just the topic.",
                         "The table of contents will use these names instead of \"Page 1\", \"Page 2\", etc.",
-                        "The links in the table of contents will also be clickable to jump to the page."
+                        "The links in the table of contents will also be clickable to jump to the page.",
+                        "Some text will be formatted as button prompts, such as \"Ctrl + Z\"."
                     ],
                     "Settings": [
                         "Project and timeline settings are being fixed and new features are being added.",
