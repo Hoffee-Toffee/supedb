@@ -49,15 +49,18 @@ function display(all = true) {
     document.querySelector("html").style.height = "initial"
     document.querySelector("html").style.width = "initial"
 
-    // Get the scrolling height and width of the screen
-    var height = "calc(8em + " + document.scrollingElement.scrollHeight + "px)"
-    var width = "calc(8em + " + document.scrollingElement.scrollWidth + "px)"
+    // Reset the height of each era
+    document.querySelectorAll(".era").forEach(era => {
+        era.style.height = "initial"
+    })
 
-    if (all) {
-        // Set the html to the size of the map
-        document.querySelector("html").style.height = height
-        document.querySelector("html").style.width = width
-    }
+    // Get the scrolling height and width of the screen
+    var height = "calc(3em + " + document.scrollingElement.scrollHeight + "px)"
+    var width = "calc(4em + " + document.scrollingElement.scrollWidth + "px)"
+
+    // Set the html to the size of the map
+    document.querySelector("html").style.height = height
+    document.querySelector("html").style.width = width
 
     // Set the height of each era to the height of the map
     document.querySelectorAll(".era").forEach(era => {
