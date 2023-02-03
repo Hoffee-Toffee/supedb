@@ -97,11 +97,24 @@ function help() {
             topicTitle.innerText = topic;
             topicDiv.appendChild(topicTitle);
 
+            // Scroll to topicDiv when topicLink is clicked
+            topicLink.addEventListener("click", function() {
+                // Scroll the content to the topic
+                content.scrollTo({
+                    top: topicDiv.offsetTop,
+                    behavior: "smooth"
+                });
+            });
+
             // Add scroll check
             topicDiv.addEventListener("scroll", scrollCheck);
 
             // Loop through each page
             for (let i = 0; i < menuData[topic].pages.length; i++) {
+                let pageDiv = document.createElement("div");
+                pageDiv.id = topic + "-" + (i + 1);
+                topicDiv.appendChild(pageDiv);
+
                 // Add page to the table of contents (if more than one page) and content
                 if (menuData[topic].pages.length > 1) {
                     let pageLi = document.createElement("li");
@@ -109,11 +122,23 @@ function help() {
                     pageLink.innerText = "Page " + (i + 1);
                     pageLi.appendChild(pageLink);
                     topicUl.appendChild(pageLi);
-                }
 
-                let pageDiv = document.createElement("div");
-                pageDiv.id = topic + "-" + (i + 1);
-                topicDiv.appendChild(pageDiv);
+                    // Scroll to pageDiv when pageLink is clicked
+                    pageLink.addEventListener("click", function() {
+                        // Scroll the content to the topic, then scroll the topic to the page (once the content has scrolled)
+                        content.scrollTo({
+                            top: topicDiv.offsetTop,
+                            behavior: "smooth"
+                        });
+
+                        setTimeout(function() {
+                            topicDiv.scrollTo({
+                                left: pageDiv.offsetLeft,
+                                behavior: "smooth"
+                            });
+                        }, 500);
+                    });
+                }
 
                 // Add the description (if any and only on the first page)
                 if (i == 0 && menuData[topic].desc) {

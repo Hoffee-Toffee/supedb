@@ -8,29 +8,40 @@ var objects = []
 window["decrypt"] = false
 window["subId"] = null
 
-function display() {
+function display(all = true) {
     var scrollX = null
     var scrollY = null
 
-    // Check if any objects already exist
-    if (document.querySelectorAll(".object").length + document.querySelectorAll("svg").length > 1) {
-        // Delete all the objects and svgs (except for the first svg) to recreate them using the objects array
-        document.querySelectorAll(".object").forEach((obj) => { obj.remove() })
-        document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
+    if (all) {
+        // Check if any objects already exist
+        if (document.querySelectorAll(".object").length + document.querySelectorAll("svg").length > 1) {
+            // Delete all the objects and svgs (except for the first svg) to recreate them using the objects array
+            document.querySelectorAll(".object").forEach((obj) => { obj.remove() })
+            document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
+        }
+        else {
+            // Get the scroll position from the url
+            var url = new URL(window.location.href)
+            if (url.searchParams.get("x") && url.searchParams.get("y")) {
+                scrollX = url.searchParams.get("x")
+                scrollY = url.searchParams.get("y")
+            }
+        }
+
+        // Add the objects
+        objects.forEach(obj => {
+            newObj(obj.class, obj)
+        })
     }
     else {
-        // Get the scroll position from the url
-        var url = new URL(window.location.href)
-        if (url.searchParams.get("x") && url.searchParams.get("y")) {
-            scrollX = url.searchParams.get("x")
-            scrollY = url.searchParams.get("y")
-        }
-    }
+        // Remove all svgs except for the first one
+        document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
 
-    // Add the objects
-    objects.forEach(obj => {
-        newObj(obj.class, obj)
-    })
+        // Add only the link objects
+        objects.forEach(obj => {
+            if (obj.class === "Link") newObj(obj.class, obj);
+        })
+    }
 
     document.getElementById("addmenu").style.zIndex = 5
 
@@ -39,12 +50,14 @@ function display() {
     document.querySelector("html").style.width = "initial"
 
     // Get the scrolling height and width of the screen
-    var height = "calc(5em + " + document.scrollingElement.scrollHeight + "px)"
-    var width = "calc(5em + " + document.scrollingElement.scrollWidth + "px)"
+    var height = "calc(8em + " + document.scrollingElement.scrollHeight + "px)"
+    var width = "calc(8em + " + document.scrollingElement.scrollWidth + "px)"
 
-    // Set the html to the size of the map
-    document.querySelector("html").style.height = height
-    document.querySelector("html").style.width = width
+    if (all) {
+        // Set the html to the size of the map
+        document.querySelector("html").style.height = height
+        document.querySelector("html").style.width = width
+    }
 
     // Set the height of each era to the height of the map
     document.querySelectorAll(".era").forEach(era => {
@@ -140,7 +153,7 @@ function newObj(type, obj = null, e = null, headId = null) {
 
             var text = document.createElement("input")
             text.type = "text"
-            text.setAttribute("oninput", "this.size = this.value.length")
+            text.setAttribute("oninput", "this.size = this.value.length; updateLinks(this.parentElement, true)")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
             text.addEventListener("mouseover", (e) => { infobar.innerHTML = "Double click to edit title." })
             text.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
@@ -242,7 +255,7 @@ function newObj(type, obj = null, e = null, headId = null) {
 
             var text = document.createElement("input")
             text.type = "text"
-            text.setAttribute("oninput", "this.size = this.value.length")
+            text.setAttribute("oninput", "this.size = this.value.length; updateLinks(this.parentElement, true)")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
             text.addEventListener("blur", function() {
                 updateObj(this, "title")
@@ -301,7 +314,7 @@ function newObj(type, obj = null, e = null, headId = null) {
 
             var text = document.createElement("input")
             text.type = "text"
-            text.setAttribute("oninput", "this.size = this.value.length")
+            text.setAttribute("oninput", "this.size = this.value.length; updateLinks(this.parentElement, true)")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
             text.addEventListener("blur", function() {
                 updateObj(this, "title")
@@ -684,7 +697,7 @@ document.addEventListener("click", function (event) {
         })
     }
 
-    if (!(event.target.classList.contains("editing") || event.target.parentElement.classList.contains("editing")) && !event.ctrlKey) {
+    if ( !(event.target && ( ( event.target.classList && event.target.classList.contains("editing") ) || ( event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("editing") ) ) ) && !event.ctrlKey ) {
         document.querySelectorAll(".editing").forEach((edit) => {
             edit.classList.remove("editing")
             Array.from(edit.children).forEach(child => {
@@ -756,7 +769,7 @@ document.addEventListener("click", function (event) {
         window["subId"] += "-"
     }
     // If clicking on a head (second click)
-    else if (event.target && event.target.classList.contains("head")) {
+    else if (window["subId"] && event.target && event.target.classList.contains("head")) {
         // Get the subId
         var subId = window["subId"].split("-")[0]
 
@@ -1042,25 +1055,34 @@ document.onkeydown = (event) => {
     }
 }
 
-function updateLinks(element) {
-    var points = []
+function updateLinks(element, get = false) {
+    var links = [element]
 
-    element.line.forEach(line => {
-        var xreq = document.getElementById(objects.find(obj => obj.id == line[0]).id)
-        var yreq = document.getElementById(objects.find(obj => obj.id == line[2]).id)
-
-        var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
-        var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
-        
-        points.push([x, y])
-    })
-
-    // Run the linkPoints function to update the points of the link unless it's pointing to the mouse
-    if (element.childId != "mouse") {
-        linkPoints(document.getElementById("editLink" + element.id), objects.find(obj => obj.id == element.id), points)
+    if (get) {
+        // Get all the links with the element as a parent or child
+        links = objects.filter(obj => obj.class == "Link" && (obj.parentId == element.id || obj.childId == element.id))
     }
 
-    document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
+    links.forEach(element => {
+        var points = []
+
+        element.line.forEach(line => {
+            var xreq = document.getElementById(objects.find(obj => obj.id == line[0]).id)
+            var yreq = document.getElementById(objects.find(obj => obj.id == line[2]).id)
+
+            var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
+            var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
+            
+            points.push([x, y])
+        })
+
+        // Run the linkPoints function to update the points of the link unless it's pointing to the mouse
+        if (element.childId != "mouse") {
+            linkPoints(document.getElementById("editLink" + element.id), objects.find(obj => obj.id == element.id), points)
+        }
+
+        document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
+    })
 }
 
 function save() {
@@ -1314,25 +1336,7 @@ function start() {
             }
         }
         else {
-            // Reset the html size
-            document.querySelector("html").style.width = "initial"
-            
-            // Reset the height of each era
-            document.querySelectorAll(".era").forEach(era => {
-                era.style.height = "0px"
-            })
-
-            // Get the scrolling height and width of the screen
-            var height = document.scrollingElement.scrollHeight + "px"
-            var width = "calc(5em + " + document.scrollingElement.scrollWidth + "px)"
-
-            // Set the html to the size of the map
-            document.querySelector("html").style.width = width
-
-            // Set the height of each era to the height of the map
-            document.querySelectorAll(".era").forEach(era => {
-                era.style.height = height
-            })
+            display(false);
         }
     })
     

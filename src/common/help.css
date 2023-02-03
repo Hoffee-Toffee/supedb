@@ -189,6 +189,7 @@ html.help* {
     height: 100%;
     scroll-snap-align: start;
     overflow-x: scroll;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     display: flex;
