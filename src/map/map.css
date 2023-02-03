@@ -500,6 +500,11 @@ PRINTING STYLES
     font-size: medium;
 }
 
+.print .editLink {
+    font-size: medium;
+    border-width: 0.175em;
+}
+
 .print2 .editLink {
     display: none;
 }
