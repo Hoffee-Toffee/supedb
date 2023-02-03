@@ -1059,15 +1059,26 @@ document.onkeydown = (event) => {
     }
     // Same for the 'e' key
     else if (event.key == "e" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-        // Get all heads with "A storyline, event or person." as a tooltip, and all subs with "A specific event" as a tooltip
-        objects.forEach(obj => {
-            if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
-                document.getElementById(obj.id).classList.toggle("print2")
-            }
-            else if (obj.class == "Sub" && obj.description == "A specific event") {
-                document.getElementById(obj.id).classList.toggle("print2")
-            }
-        })
+        // Get all elements with the print2 class
+        var els = document.querySelectorAll(".print2")
+
+        if (els.length > 0 && !document.querySelector("html").classList.contains("print")) {
+            // If there are any, remove the print2 class from them
+            els.forEach(el => {
+                el.classList.remove("print2")
+            })
+        }
+        else if (els.length == 0 && !document.querySelector("html").classList.contains("print")) {
+            // Get all heads with "A storyline, event or person." as a tooltip, and all subs with "A specific event" as a tooltip
+            objects.forEach(obj => {
+                if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
+                    document.getElementById(obj.id).classList.add("print2")
+                }
+                else if (obj.class == "Sub" && obj.description == "A specific event") {
+                    document.getElementById(obj.id).classList.add("print2")
+                }
+            })
+        }
     }
 }
 
