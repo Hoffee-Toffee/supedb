@@ -1026,21 +1026,21 @@ document.onkeydown = (event) => {
         else if (document.querySelector("html").classList.contains("print1")) {
             // If it does, add the print2 class
             document.querySelector("html").classList.add("print2")
-
-            // Hide all heads with "A storyline, event or person." as a tooltip, and hide all subs with "A specific event" as a tooltip
-            objects.forEach(obj => {
-                if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
-                    document.getElementById(obj.id).classList.add("print2")
-                }
-                else if (obj.class == "Sub" && obj.description == "A specific event") {
-                    document.getElementById(obj.id).classList.add("print2")
-                }
-            })
         }
         // Check if it has the print class
         else if (document.querySelector("html").classList.contains("print")) {
             // If it does, add the print1 class
             document.querySelector("html").classList.add("print1")
+
+            // Hide all heads with "A storyline, event or person." as a tooltip, and hide all subs with "A specific event" as a tooltip
+            objects.forEach(obj => {
+                if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
+                    document.getElementById(obj.id).classList.add("print1")
+                }
+                else if (obj.class == "Sub" && obj.description == "A specific event") {
+                    document.getElementById(obj.id).classList.add("print1")
+                }
+            })
         }
         // If it doesn't have any print classes
         else {

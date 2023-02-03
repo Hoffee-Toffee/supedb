@@ -496,16 +496,15 @@ PRINTING STYLES
     font-size: medium;
 }
 
-.print .era {
-    font-size: large;
+.print .era .title {
+    font-size: medium;
 }
 
-.print1 .editLink {
+.print2 .editLink {
     display: none;
 }
 
-
-.print2 .tooltip {
+.print1 .tooltip {
     opacity: 1;
     height: initial;
     margin-top: 1em;
