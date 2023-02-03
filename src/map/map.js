@@ -776,6 +776,23 @@ document.addEventListener("click", function (event) {
         // Loop through all objects
         objects.forEach(obj => {
             var el = document.getElementById(obj.id)
+
+            // Check if this is the subId
+            if (obj.id == subId) {
+                obj.headId = event.target.id
+
+                el.remove()
+                newObj("Sub", obj)
+
+                return
+            }
+            // Check the sub is a parent of child of this link
+            else if (obj.class == "Link" && (obj.parentId == subId || obj.childId == subId)) {
+                el.remove()
+                newObj("Link", obj)
+
+                return
+            }
     
             // Reset all filters and pointer events
             if (obj.class != "Head") {
@@ -783,20 +800,17 @@ document.addEventListener("click", function (event) {
                 el.style.pointerEvents = "initial"
     
                 // If a link then remove the filter from the edit button
-                if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "none"
-            }
+                if (obj.class == "Link") {
+                    document.getElementById("editLink" + obj.id).style.filter = "none"
+                }
 
-            // Check if this is the subId
-            if (obj.id == subId) {
-                obj.headId = event.target.id
-                el.remove()
-
-                newObj("Sub", obj)
             }
         })
+
+        window["subId"] = null
     }
     // Else if clicking nothing (second click)
-    else if ([null, document.body].includes(event.target)) {
+    else if (window["subId"]) {
         // Loop through all objects
         objects.forEach(obj => {
             var el = document.getElementById(obj.id)
@@ -810,6 +824,8 @@ document.addEventListener("click", function (event) {
                 if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "none"
             }
         })
+
+        window["subId"] = null
     }
 }, false)
 
@@ -1472,11 +1488,6 @@ document.onmousemove = function (event) {
 
         // Scroll the page
         window.scrollTo(xScroll, yScroll)
-
-        console.log(`x: ${x}, y: ${y}\nxMax: ${xMax}, yMax: ${yMax}\nxView: ${xView}, yView: ${yView}\nxScroll: ${xScroll}, yScroll: ${yScroll}`)
-
-        // Scroll the page
-        // window.scrollTo(xScroll, yScroll)
     }
 }
 
