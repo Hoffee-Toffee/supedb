@@ -513,11 +513,11 @@ PRINTING STYLES
     pointer-events: auto;
 }
 
-.sub.print2 > .tooltip {
+.print .sub.print2 > .tooltip {
     display: none;
 }
 
-.head.print2 > .tooltip {
+.print .head.print2 > .tooltip {
     display: none;
 }
 
