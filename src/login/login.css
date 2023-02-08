@@ -1,3 +1,28 @@
+:root {
+    --col-dark-brown: #221100aa;
+    --col-brown: #ff884408;
+
+    --col-black-red: #100;
+    --col-brown-red: #200;
+    --col-dark-red: #300;
+
+    --col-red: #f00;
+    --col-red-shadow: #ff000088;
+    --col-red-hover: #ff220033;
+
+    --col-red-orange: #e30;
+    --col-red-orange-shadow: #ee3300aa;
+    --col-red-orange-hover: #ee550033;
+
+    --col-orange: #f60;
+    --col-orange-shadow: #ff6600cc;
+    --col-orange-hover: #ff884433;
+
+    --col-black-orange: #330;
+    --col-brown-orange: #440;
+    --col-dark-orange: #550;
+}
+
 /* Align children in the middle horizontally and vertically */
 body {
     display: flex;
@@ -6,7 +31,9 @@ body {
 }
 
 #login, #signup {
-    background-color: #22226655;
+    background-color: black;
+    border: var(--col-red-orange) solid 4px;
+    box-shadow: 0px 0px 10px var(--col-red-orange-shadow);
     width: 100%;
     max-width: 400px;
     height: 100%;
@@ -19,15 +46,17 @@ body {
 }
 
 #login-title, #signup-title {
-    color: white;
+    color: var(--col-red);
+    text-shadow: 0px 0px 5px var(--col-red-shadow);
     font-size: 50px;
     font-weight: bold;
-    margin-bottom: 50px;
+    margin-bottom: 25px;
     text-align: center;
 }
 
 .login-label, .signup-label {
-    color: white;
+    color: var(--col-orange);
+    text-shadow: 0px 0px 15px var(--col-orange-shadow);
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
@@ -38,16 +67,37 @@ body {
     height: 30px;
     font-size: 20px;
     margin-bottom: 20px;
-    color: black;
-    border: grey solid 2px;
+    background-color: transparent;
+    color: white;
+    text-shadow: 0px 0px 5px #ffffffaa;
+    border: none;
+    outline: var(--col-red-orange) solid 1px;
+    box-shadow: 0px 0px 0px var(--col-red-orange-shadow);
     border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.login-input:focus, .signup-input:focus {
+    outline: var(--col-red-orange) solid 2px;
+    box-shadow: 0px 0px 10px var(--col-red-orange-shadow);
+}
+
+.login-input, #login-button, .signup-input, #signup-button {
+    transition: 0.2s;
+}
+
+.login-input:hover, #login-button:hover, .signup-input:hover, #signup-button:hover {
+    background-color: var(--col-dark-brown);
+    box-shadow: 0px 0px 10px var(--col-dark-brown);
+    cursor: text;
+    transform: scale(1.05);
 }
 
 #login-button, #signup-button {
     width: 300px;
     height: 30px;
-    background-color: white;
-    color: black;
+    background-color: black;
+    color: var(--col-red);
     font-size: 20px;
     font-weight: bold;
     display: flex;
@@ -56,14 +106,15 @@ body {
     margin-bottom: 20px;
     border-width: 4px;
     border-style: solid;
-    border-color: #222266;
-    box-shadow: 0px 0px 0px transparent;    
+    border-color: var(--col-red);
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px var(--col-red-shadow);  
 }
 
 #login-button:hover, #signup-button:hover {
     color: white;
-    background-color: #222266;
-    box-shadow: 0px 0px 10px #222266;
+    background-color: var(--col-red);
+    box-shadow: 0px 0px 10px var(--col-red-shadow);
     cursor: pointer;
 }
 
@@ -74,16 +125,10 @@ body {
     justify-content: center;
 }
 
-.login-input, #login-button, .signup-input, #signup-button {
-    transition: 0.2s;
-}
-
-.login-input:hover, #login-button:hover, .signup-input:hover, #signup-button:hover {
-    width: 310px;
-}
-
 #login-error, #signup-error {
-    color: red;
+    color: var(--col-red);
+    font-size: 15px;
+    text-shadow: 0px 0px 15px var(--col-red-orange-shadow);
     font-weight: bold;
     margin-bottom: 20px;
     padding: 10px;
@@ -96,14 +141,17 @@ body {
     align-items: center;
     justify-content: center;
     color: grey;
+    font-size: 15px;
 }
 
 #login-bottom a, #signup-bottom a {
-    color: #6666AA;
+    color: var(--col-red-orange);
     transition: 0.2s;
+    text-shadow: 0px 0px 0px transparent;
 }
 
 #login-bottom a:hover, #signup-bottom a:hover {
-    color: #AAAAFF;
+    color: var(--col-orange);
+    text-shadow: 0px 0px 10px var(--col-orange-shadow);
     cursor: pointer;
 }

@@ -5,6 +5,14 @@ function try_login() {
 
     // Sign in with email and password
     auth.signInWithEmailAndPassword(email, pw).then((userCredential) => {
+        // Create a cookie that the user has an account (if it doesn't exist)
+        if (!document.cookie.includes('account')) {
+            var d = new Date();
+            d.setTime(d.getTime() + (365*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = "account=true;" + expires + ";path=/";
+        }
+        
         // Redirect to dashboard or window["redirect"] if it exists
         window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
     }).catch((error) => {
@@ -20,11 +28,11 @@ function try_signup() {
     var password = document.getElementById("signup-password-input").value;
 
     auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {    
-        // Get date ten years from now (for cookie expiry)
-        var now = new Date();
-        var expires = new Date(now.getTime() + 3153600000000);
-
-        document.cookie = "account=new; expires=" + expires.toUTCString() + "; path=/";
+        // Create a cookie that the user has an account
+        var d = new Date();
+        d.setTime(d.getTime() + (365*24*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = "account=true;" + expires + ";path=/";
 
         // Set the username of the user
         userCredential.user.updateProfile({
@@ -79,6 +87,22 @@ window.onload = function() {
     else {
         // Show signup page
         document.getElementById("signup").style.display = "flex";
+    }
+
+    document.getElementById("login-error").addEventListener("DOMSubtreeModified", () => { errorChanged(document.getElementById("login-error")) });
+    document.getElementById("signup-error").addEventListener("DOMSubtreeModified", () => { errorChanged(document.getElementById("signup-error")) });
+}
+
+function errorChanged(element) {
+    // If the error message is not empty
+    if (element.innerHTML != "") {
+        // Reset the error message after the user clicks the submit button
+        var resetError = () => {
+            element.innerHTML = "";
+            document.querySelectorAll("#login-submit, #signup-submit, #login-bottom a, #signup-bottom a").forEach((element) => { element.removeEventListener("click", resetError) });
+        }
+        document.querySelectorAll("#login-submit, #signup-submit, #login-bottom a, #signup-bottom a").forEach((element) => { element.addEventListener("click", resetError) });
+
     }
 }
 
