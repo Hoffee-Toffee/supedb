@@ -5,9 +5,6 @@ function start() {
     window.location.href = "../login/login.html";
   }
 
-  document.getElementById("addmenu").style.zIndex = 3
-
-
   // Sync to the database (will run every time the database is updated)
   // Will look for changes made to the maps accessible by the user
 

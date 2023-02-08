@@ -43,8 +43,6 @@ function display(all = true) {
         })
     }
 
-    document.getElementById("addmenu").style.zIndex = 5
-
     // Reset the html size
     document.querySelector("html").style.height = "initial"
     document.querySelector("html").style.width = "initial"
@@ -751,20 +749,6 @@ document.addEventListener("click", function (event) {
             linkRight.id = "linkRight"
             els[0].appendChild(linkRight)
         }
-    }
-
-    if (event.target.id == "addmenu" || (event.target.parentElement && event.target.parentElement.id == "addmenu")) {
-        if (document.getElementById("addmenu").classList.contains("open")) {
-            document.getElementById("addmenu").classList.remove("open")
-        }
-        else {
-            document.getElementById("addmenu").classList.add("open")
-        }
-    }
-
-    if (event.target.classList.contains("addClassObj")) {
-        document.getElementById("addmenu").classList.remove("open")
-        newObj(event.target.innerHTML)
     }
 
     // Check if updating a head (first click)

@@ -59,47 +59,6 @@ body {
     height: 0px;
 }
 
-#addmenu {
-    transition: 0.5s;
-    height: 4em;
-    width: 4em;
-    bottom: 1em;
-    right: 1em;
-    position: fixed;
-    background-color: lightslategrey;
-    border-radius: 4em;
-    z-index: -1;
-}
-
-#addmenu:hover {
-    cursor: pointer;
-    background-color: white;
-}
-
-#addmenu #xLine {
-    transition: 0.5s;
-    position: absolute;
-    display: block;
-    background-color: black;
-    border-radius: 0.1em;
-    bottom: 1.75em;
-    right: 0.75em;
-    height: 0.5em;
-    width: 2.5em;
-}
-
-#addmenu #yLine {
-    transition: 0.5s;
-    position: absolute;
-    display: block;
-    background-color: black;
-    border-radius: 0.1em;
-    bottom: 0.75em;
-    right: 1.75em;
-    height: 2.5em;
-    width: 0.5em;
-}
-
 #mapSettings {
     z-index: 10;
     transition: 0.25s;

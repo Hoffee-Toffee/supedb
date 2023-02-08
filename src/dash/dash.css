@@ -46,35 +46,3 @@
     background-color: black;
     z-index: 0;
 }
-
-#addmenu {
-    transition: 0.25s;
-}
-
-#addmenu::before {
-    content: "New Project";
-    position: absolute;
-    top: 7em;
-    bottom: 0;
-    color: white;
-    transition: 0.25s;
-    rotate: -90deg;
-    border: 0.1em solid white;
-    border-radius: 0.25em;
-    height: 2em;
-    width: 7em;
-    text-align: center;
-    line-height: 2em;
-    pointer-events: none;
-    transform: translateY(-1.5em);
-    opacity: 0;
-}
-
-#addmenu:hover {
-    transition: 0.25s;
-    rotate: 90deg;
-}
-
-#addmenu:hover::before {
-    opacity: 1;
-}
