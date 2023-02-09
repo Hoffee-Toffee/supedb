@@ -28,6 +28,15 @@ function start() {
       location.href = "../dash/dash.html"
   }
 
+  // Get the project info
+  db.collection("projects").doc(window["id"]).get().then((doc) => {
+    window["projectSettings"] = {
+      id: doc.id,
+      title: doc.data().title,
+      description: doc.data().description
+    }
+  })
+
   // Check if the user has access to the project
   db.collection("permissions").where("user", "==", auth.currentUser.email).where("project", "==", window["id"]).get().then((querySnapshot) => {
     if (querySnapshot.empty) {
@@ -144,7 +153,7 @@ function start() {
     window["interval"] = setInterval(() => {
       check(event, true)
     }, 50);
-  });
+  })
 }
 
 // Generate the line
@@ -357,8 +366,6 @@ function check(event, e = true) {
   // Set the index
   index = minIndex;
 
-  console.log(index)
-
   // Set the window variable to the index
   window["index"] = index;
 
@@ -402,4 +409,100 @@ function trigger(id) {
 
   // Redirect to the timeline page
   window.location = `../map/map.html?id=${value}`;
+}
+
+function settingsMenu() {
+  window["onMainMenu"] = true
+  if (typeof window["projectSettings"] === 'undefined') {
+      window["projectSettings"] = {
+          id: null,
+          title: "Map Title",
+          description: "Map Description"
+      }
+  }
+
+  document.getElementById("newTitle").value = window["projectSettings"].title
+  document.getElementById("newDesc").value = window["projectSettings"].description
+
+  // Populate permissions table
+  db.collection("permissions").where("type", "==", "P").where("entity", "==", window["projectSettings"].id).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+          let data = doc.data()
+          let row = document.createElement("tr")
+          let name = document.createElement("td")
+          let role = document.createElement("td")
+          let options = document.createElement("td")
+
+          // Get the user's details (from firebase auth)
+          console.log(data)
+          db.collection("users").where("email", "==", data.user).get().then((querySnapshot) => {
+              let userData = querySnapshot.docs[0].data()
+              name.innerHTML = `<a href="#link" title="${userData.email}">${userData.name}</a>`
+          })
+
+          role.innerHTML = `<select name="level" id="level">
+              <option ${data.level == "1" ? "selected" : ""} value="1" title="Read only">Minuteman</option>
+              <option ${data.level == "2" ? "selected" : ""} value="2" title="Read and comment">Hunter</option>
+              <option ${data.level == "3" ? "selected" : ""} value="3" title="Read, comment, contribute to drafts">Consultant</option>2
+              <option ${data.level == "4" ? "selected" : ""} value="4" title="Read, comment, contribute to drafts, vote on drafts">Analyst</option>
+              <option ${data.level == "5" ? "selected" : ""} value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">Agent</option>
+              <option ${data.level == "6" ? "selected" : ""} value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">Judge</option>
+          </select>`
+          options.innerHTML = `<button class="remove">Remove</button>`
+          row.setAttribute("user", data.user)
+
+          row.appendChild(name)
+          row.appendChild(role)
+          row.appendChild(options)
+
+          // add row before the last in the table body
+          document.getElementById("newPerm").lastElementChild.insertBefore(row, document.getElementById("newPerm").lastElementChild.lastElementChild)
+      })
+  })
+
+
+  document.getElementById("popup").style = "visibility: visible"
+
+  Array.from(document.getElementById("popup").children).forEach(element => {
+      if (!element.classList.length || element.classList.contains("editMenu")) {
+          element.style.display = "block"
+      }
+      else {
+          element.style.display = "none"
+      }
+  })
+
+  // Code for save button
+
+  document.getElementById("save").onclick = function () {
+      window["projectSettings"].title = document.getElementById("newTitle").value
+      window["projectSettings"].description = document.getElementById("newDesc").value
+
+      // Save map settings
+      save()
+
+      // Save permissions
+      Array.from(document.getElementById("newPerm").children).forEach(row => {
+          // Skip if the row is not a user
+          if (!row.hasAttribute("user")) return
+          
+          // Update the user's permissions (if changed)
+          let user = row.getAttribute("user")
+          let role = row.children[1].children[0].value
+
+          db.collection("permissions").where("type", "==", "P").where("entity", "==", window["projectSettings"].id).where("user", "==", user).get().then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                  let data = doc.data()
+                  if (data.role != role) {
+                      db.collection("permissions").doc(doc.id).update({
+                          role: role
+                      })
+                  }
+              })
+          })
+      })
+
+      document.getElementById("popup").style = "visibility: hidden"
+      window["onMainMenu"] = false
+  }
 }

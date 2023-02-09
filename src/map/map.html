@@ -46,31 +46,45 @@
         <div id="cover"></div>
         <div id="mapSettings" aria-hidden="true">⚙️</div>
         <div id="popup">
-            <!-- Enter key to decrypt -->
-            <label id="keyLabel" for="key" class="enterKey">Enter Password:</label>
-            <input id="key" class="enterKey" type="password">
-
-            <!-- Create/edit map info, gives error if missing info -->
+            <!-- Title -->
             <label for="newTitle" class="editMenu">Title:</label>
             <input id="newTitle" class="editMenu" type="text">
 
+            <!-- Description -->
             <label for="newDesc" class="editMenu">Description:</label>
             <textarea id="newDesc" class="editMenu" cols="30" rows="10" style="resize: none;"></textarea>
 
-            <input id="keyMenu" class="editMenu" type="button" value="Password Settings">
+            <!-- Permissions -->
+            <label for="newPerm" class="editMenu">Permissions:</label>
+            <table id="newPerm" class="editMenu">
+                <tr>
+                    <th>Name</th> <!-- Hover for email, click for user page -->
+                    <th>Role</th>
+                    <th>Options</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="email" name="email" id="email">
+                    </td>
+                    <td>
+                        <select name="level" id="level">
+                            <!-- Must have int value, name text, and hover description of the permissions with the level -->
+                            <option value="1" title="Read only">Minuteman</option>
+                            <option value="2" title="Read and comment">Hunter</option>
+                            <option value="3" title="Read, comment, contribute to drafts">Consultant</option>
+                            <option value="4" title="Read, comment, contribute to drafts, vote on drafts">Analyst</option>
+                            <option value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">Agent</option>
+                            <option value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">Judge</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="invite">Invite</button>
+                    </td>
+                </tr>
+            </table>
 
-            <!-- Toogle encryption, change password-->
-            <label for="isEncrypted" class="editEncrypt">Password Protected:</label>
-            <input id="isEncrypted" class="editEncrypt" type="checkbox">
-
-            <label for="key" class="editEncrypt">Set Password:</label>
-            <input id="newKey" class="editEncrypt" type="password">
-
-            <!-- Shows at the bottom of the menu and saves the settings -->
-            <input id="subForm" type="submit" value="Submit">
-
-            <!-- Shows on the encryption settings menu and returns you to the main menu -->
-            <input id="backMenu" class="editEncrypt" type="submit" value="Cancel Changes">
+            <!-- Save -->
+            <button id="save" class="editMenu">Save</button>
         </div>
         <div id="addLink">
             <span id="linkTop"></span>
