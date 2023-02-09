@@ -26,8 +26,10 @@
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <body>
         <div id="helpScreen"></div>
-        <div id="mapSettings">
+        <div id="mapSettings" aria-hidden="true">
             <i class="fa fa-sign-out" onclick="window.location.href = '../login/login.html#logout'"></i>
+            <i class="fa fa-question-circle" onclick="help()"></i>
+            <i class="fa fa-cog" onclick="settingsMenu()"></i>
         </div>
 
         <div id="project-menu"></div>

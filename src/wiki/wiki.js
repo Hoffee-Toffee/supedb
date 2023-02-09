@@ -170,7 +170,7 @@ function display() {
   }
   else {
     // If a page ID is provided, then get that object
-    var page = objects[pageId]
+    var page = objects.find(e => e.id == pageId)
 
     // If it's an era page, then show all the events that happened during that time period
     if (page.class == "Era") {
@@ -198,6 +198,8 @@ function display() {
       else {
         events = events.filter(e => e.position[0] > eraStart && e.position[0] < eraEnd)
       }
+
+      console.log(events)
 
       // Populate the page with the era page
       // Note that the body is empty, so we can just append to it

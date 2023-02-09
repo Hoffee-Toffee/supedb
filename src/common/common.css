@@ -65,27 +65,45 @@ body {
     padding: 0.2em 0.1em 0.2em 0.1em;
     position: fixed;
     right: 1em;
-    bottom: calc(100vh - 1em);
+    bottom: calc(100% - 1em);
     color: transparent;
     background: white;
     border-radius: 0em 0em 0.25em 0.25em;
-    outline: 0.15em solid slategray;
-    width: 1.5em;   
+    outline: 0.15em solid var(--col-orange);
+    width: 1.5em;
+    opacity: 0.25;
 }
 
 #mapSettings:hover {
-    bottom: calc(100vh + 0.1em);
-    cursor: pointer;
+    bottom: calc(100% + 0.15em);
     color: black;
     transform: translateY(100%);
+    opacity: 1;
+    outline-color: var(--col-red-orange);
+}
+
+#mapSettings::after {
+    content: "";
+    position: absolute;
+    width: calc(100% + 1.5em);
+    height: calc(100% + 1.5em);
+    top: -0.75em;
+    left: -0.75em;
+    z-index: -1;
 }
 
 #mapSettings i {
-    cursor: pointer;
     display: inline-block;
     text-align: center;
     width: 100%;
     line-height: 1.5em;
+    transition: transform 0.1s;
+}
+
+#mapSettings i:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+    color: var(--col-orange);
 }
 
 #context-menu {

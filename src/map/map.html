@@ -44,7 +44,11 @@
         </datalist>
 
         <div id="cover"></div>
-        <div id="mapSettings" aria-hidden="true">⚙️</div>
+        <div id="mapSettings" aria-hidden="true">
+            <i class="fa fa-sign-out" onclick="window.location.href = '../login/login.html#logout'"></i>
+            <i class="fa fa-question-circle" onclick="help()"></i>
+            <i class="fa fa-cog" onclick="settingsMenu()"></i>
+        </div>
         <div id="popup">
             <!-- Title -->
             <label for="newTitle" class="editMenu">Title:</label>
