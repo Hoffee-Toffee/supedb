@@ -318,3 +318,45 @@ function display() {
     }
   }
 }
+
+function helpMenu() {
+  /* Return in format:
+  "topic": {
+      desc: [
+          "Line 1",
+          "Line 2",
+          ...
+      ],
+      pages: [
+          {
+              "section": [
+                  "Line 1",
+                  "Line 2",
+                  ...
+              ],
+              ...
+          },
+          ...
+      ]
+  },
+  ...
+}
+
+  */
+  return {
+    "Wiki in Development": {
+      desc: [
+        "The wiki page is still in development.",
+        "You may encounter bugs or missing features."
+      ],
+      pages: [
+        {
+          "Open or Close the Help Menu": [
+            "Press \"Ctrl + H\" to close this menu if you wish to use the wiki in this incomplete state.",
+            "You may also press \"Ctrl + H\" to reopen this menu at any time."
+          ]
+        }
+      ]
+    }
+  }
+}
