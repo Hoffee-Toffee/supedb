@@ -43,11 +43,27 @@
             <option value="#D916A8">Pink</option>
         </datalist>
 
-        <div id="cover"></div>
+        <div id="notice" aria-hidden="true">
+            <p id="noticeText"></p>
+            <i class="fa fa-times" onclick="closeNotice()"></i>
+        </div>
         <div id="mapSettings" aria-hidden="true">
-            <i class="fa fa-sign-out" onclick="window.location.href = '../login/login.html#logout'"></i>
-            <i class="fa fa-question-circle" onclick="help()"></i>
-            <i class="fa fa-cog" onclick="settingsMenu()"></i>
+            <!-- Sign out -->
+            <i class="fa fa-sign-out" title="Sign Out" onclick="window.location.href = '../login/login.html#logout'"></i>
+            <!-- Help -->
+            <i class="fa fa-question-circle" title="Help" onclick="help()"></i>
+            <!-- Settings -->
+            <i class="fa fa-cog" title="Settings" onclick="settingsMenu()"></i>
+            <!-- Toggle offline / online mode (auto save) -->
+            <label for="online" class="switch">
+                <input type="checkbox" id="online" checked>
+                <i class="fa fa-cloud" title="Toggle Online Mode"></i>
+            </label>
+            <!-- Notifications -->
+            <label for="notifications" class="switch">
+                <input type="checkbox" id="notifications" checked>
+                <i class="fa fa-bell" title="Toggle Notifications"></i>
+            </label>
         </div>
         <div id="popup">
             <!-- Title -->

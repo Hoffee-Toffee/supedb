@@ -106,6 +106,25 @@ body {
     color: var(--col-orange);
 }
 
+#mapSettings input[type=checkbox] {
+    display: none;
+}
+
+#mapSettings:hover input[type=checkbox]:not(:checked) + i::after {
+    content: "";
+    position: absolute;
+    width: 75%;
+    height: 2px;
+    background-color: var(--col-red);
+    margin-top: 0.75em;
+    left: 12.5%;
+    transform: rotate(-45deg);
+}
+
+#mapSettings:hover input[type=checkbox]:not(:checked) + i:hover::after {
+    transform: scale(1.1) rotate(-45deg);
+}
+
 #context-menu {
     z-index: 10;
     position: absolute;
