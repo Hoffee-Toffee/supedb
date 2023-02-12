@@ -14,6 +14,7 @@ function try_login() {
         }
         
         // Redirect to dashboard or window["redirect"] if it exists
+        console.log("Try login")
         window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
     }).catch((error) => {
         // Display error message
@@ -34,14 +35,6 @@ function try_signup() {
         var expires = "expires="+ d.toUTCString();
         document.cookie = "account=true;" + expires + ";path=/";
 
-        // Create a user document in the database
-        db.collection("users").doc(userCredential.user.uid).set({
-            name: name,
-            email: email
-        })
-
-        // Redirect to dashboard or window["redirect"] if it exists
-        window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
     }).catch((error) => {
         // Display error message
         document.getElementById("signup-error").innerHTML = error.message;
@@ -113,13 +106,27 @@ function start() {
         // Log the user out
         auth.signOut().then(() => {
             // Redirect to login page
+            console.log("Logged out")
             window.location.href = "../login/login.html";
         })
     }
     // Check if the user is logged in
     if (auth.currentUser) {
         // Redirect to dashboard or window["redirect"] if it exists
-        window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
+        console.log("Logged in")
+
+        // Check if the account is new
+        if (auth.currentUser.metadata.creationTime == auth.currentUser.metadata.lastSignInTime) {
+            // Create a user document in the database with the same id as the user, and the name and email
+            db.collection("users").doc(auth.currentUser.uid).set({
+                name: document.getElementById("signup-name-input").value,
+                email: auth.currentUser.email
+            }).then(() => {
+                window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
+            }).catch((error) => {
+                console.error("Error writing document: ", error);
+            });
+        }
     }
     // Get the redirect url if it exists
     if (window.location.search.includes('redirect')) {
