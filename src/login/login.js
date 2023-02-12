@@ -34,9 +34,10 @@ function try_signup() {
         var expires = "expires="+ d.toUTCString();
         document.cookie = "account=true;" + expires + ";path=/";
 
-        // Set the username of the user
-        userCredential.user.updateProfile({
-            displayName: name
+        // Create a user document in the database
+        db.collection("users").doc(userCredential.user.uid).set({
+            name: name,
+            email: email
         })
 
         // Redirect to dashboard or window["redirect"] if it exists

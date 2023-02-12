@@ -38,7 +38,7 @@ function start() {
   })
 
   // Check if the user has access to the project
-  db.collection("permissions").where("user", "==", auth.currentUser.email).where("project", "==", window["id"]).get().then((querySnapshot) => {
+  db.collection("permissions").where("user", "==", auth.currentUser.email).where("type", "==", "P").where("entity", "==", window["id"]).get().then((querySnapshot) => {
     if (querySnapshot.empty) {
       // Redirect to the dashboard
       location.href = "../dash/dash.html"

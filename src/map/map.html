@@ -50,7 +50,7 @@
             <!-- Help -->
             <i class="fa fa-question-circle" title="Help" onclick="help()"></i>
             <!-- Settings -->
-            <i class="fa fa-cog" title="Settings" onclick="settingsMenu()"></i>
+            <i class="fa fa-cog" title="Settings" onclick="settingsMenu('editMenu')"></i>
             <!-- Toggle offline / online mode (auto save) -->
             <label for="online">
                 <!-- Run checkStatus() when the checkbox is checked or unchecked with the click event taken as an argument -->
@@ -64,6 +64,8 @@
             </label>
         </div>
         <div id="popup">
+            <!-- EDIT MENU -->
+
             <!-- Title -->
             <label for="newTitle" class="editMenu">Title:</label>
             <input id="newTitle" class="editMenu" type="text">
@@ -76,33 +78,28 @@
             <label for="newPerm" class="editMenu">Permissions:</label>
             <table id="newPerm" class="editMenu">
                 <tr>
-                    <th>Name</th> <!-- Hover for email, click for user page -->
+                    <th>Name</th>
                     <th>Role</th>
-                    <th>Options</th>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="email" name="email" id="email">
-                    </td>
-                    <td>
-                        <select name="level" id="level">
-                            <!-- Must have int value, name text, and hover description of the permissions with the level -->
-                            <option value="1" title="Read only">Minuteman</option>
-                            <option value="2" title="Read and comment">Hunter</option>
-                            <option value="3" title="Read, comment, contribute to drafts">Consultant</option>
-                            <option value="4" title="Read, comment, contribute to drafts, vote on drafts">Analyst</option>
-                            <option value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">Agent</option>
-                            <option value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">Judge</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button class="invite">Invite</button>
-                    </td>
                 </tr>
             </table>
 
             <!-- Save -->
             <button id="save" class="editMenu">Save</button>
+
+            <!-- LOAD MENU -->
+
+            <!-- Table -->
+            <label for="saves" class="loadMenu">Saves:</label>
+            <table id="saves" class="loadMenu">
+                <tr>
+                    <th>Created</th>
+                    <th>Options</th>
+                </tr>
+            </table>
+
+            <!-- Cancel -->
+            <button id="cancel" class="loadMenu" onclick="settingsMenu()">Cancel</button>
+
         </div>
         <div id="addLink">
             <span id="linkTop"></span>

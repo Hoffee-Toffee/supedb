@@ -839,6 +839,78 @@ document.onkeydown = (event) => {
         save(true, "Manual save")
     }
 
+    // Ctrl + O to fetch manual save (from local storage)
+    if (event.ctrlKey && event.key == "o") {
+        try {
+            event.preventDefault()
+        }
+        catch (e) {}
+
+       // Clear any existing saves (minus the first row)
+        document.querySelectorAll("#saves tr:not(:first-child)").forEach((row) => {
+            row.remove()
+        })
+        
+        // Loop through all saves, adding each one to the table
+        for (var i = 0; i < localStorage.length; i++) {
+            // Get the key and value of the current save
+            var key = localStorage.key(i)
+            var value = localStorage.getItem(key)
+
+            // Keys will be in the format "<id> <timestamp>"
+            // Get the id and timestamp, only use the id's that match the current id
+            var id = key.split(" ")[0]
+            var timestamp = key.split(" ")[1]
+
+            // If the id's don't match then skip this save
+            if (id != window["id"]) return
+
+            // Convert the timestamp (1676178699156) to a datetime string (10th August 2022 12:30:00 AM)
+            var date = new Date(parseInt(timestamp))
+            var dateString = date.toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+            // Add the save to the table
+            var table = document.getElementById("saves")
+            var row = document.createElement("tr")
+            var created = document.createElement("td")
+            var options = document.createElement("td")
+
+            created.innerHTML = dateString
+            // Load save, delete save
+            var load = document.createElement("i")
+            load.classList.add("fa", "fa-save")
+            load.title = "Load save"
+            load.onclick = () => {
+                // Set 'objects' to the JSON parsed value of the save
+                objects = JSON.parse(value)
+
+                // Close the popup
+                document.getElementById("popup").style.visibility = "hidden"
+            }
+            options.appendChild(load)
+
+            var del = document.createElement("i")
+            del.classList.add("fa", "fa-trash")
+            del.title = "Delete save"
+            del.onclick = () => {
+                // Delete the save
+                localStorage.removeItem(key)
+
+                // Hide the popup and press 'ctrl + o' to refresh the saves
+                document.getElementById("popup").style.visibility = "hidden"
+                document.onkeydown({ ctrlKey: true, key: "o" })
+            }
+            options.appendChild(del)
+
+            row.appendChild(created)
+            row.appendChild(options)
+
+            table.appendChild(row)
+        }
+
+        settingsMenu("loadMenu")
+    }
+
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
         // If the user is also holding the shift key (and only editing one node) then toggle the selection of all the nodes in the direction of the arrow key
         if (event.shiftKey && document.querySelectorAll(".editing").length == 1) {
@@ -1526,8 +1598,8 @@ function checkStatus(event) {
 
         // If they want to be online, tell them they will be switched to online mode when they reconnect
         // If they don't want to be online, just tell them they won't be switched when connection comes back
-        if (window["userWantOnline?"]) notify("Offline mode will automatically deactivate when internet connection is re-established.")
-        else notify("Offline mode can only be deactivated when internet connection is re-established.")
+        if (window["userWantOnline?"]) notify("Offline mode will be automatically deactivated once internet connection is re-established.")
+        else notify("You will only be notified when internet connection is re-established, and not automatically switched to online mode.")
     }
 }
 
@@ -1820,4 +1892,65 @@ function helpMenu() {
             ]
         }
     };
+}
+
+function settingsMenu(visClass) {
+    // If the popup is already open, close it.
+    if (document.getElementById("popup").style.visibility == "visible") {
+        document.getElementById("popup").style.visibility = "hidden";
+        return;
+    }
+
+    // Set the popup to be visible.
+    document.getElementById("popup").style.visibility = "visible";
+
+    // Make the 'visClass' elements visible, and all others invisible
+    var elements = document.getElementById("popup").children;
+
+    for (var i = 0; i < elements.length; i++) {
+        if (elements[i].classList.contains(visClass)) {
+            elements[i].style.display = "block";
+        } else {
+            elements[i].style.display = "none";
+        }
+    }
+
+    if (visClass == "editMenu") {
+        document.getElementById("newTitle").value = window["mapSettings"].title
+        document.getElementById("newDesc").value = window["mapSettings"].description
+
+        // Get all the permissions where entity is the current map id, or the current project id
+        db.collection("permissions").where("entity", "in", [window["mapSettings"].id, window["mapSettings"].project]).get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                let data = doc.data()
+                let row = document.createElement("tr")
+                let name = document.createElement("td")
+                let role = document.createElement("td")
+      
+                // Get the user's details (from firebase auth)
+                console.log(data)
+                db.collection("users").where("email", "==", data.user).get().then((querySnapshot) => {
+                    let userData = querySnapshot.docs[0].data()
+                    name.innerHTML = `<a href="#link" title="${userData.email}">${userData.name}</a>`
+                })
+      
+                role.innerHTML = `<select name="level" id="level">
+                    <option ${data.level == "0" ? "selected" : ""} value="0" title="No access">None</option>
+                    <option ${data.level == "1" ? "selected" : ""} value="1" title="Read only">Minuteman</option>
+                    <option ${data.level == "2" ? "selected" : ""} value="2" title="Read and comment">Hunter</option>
+                    <option ${data.level == "3" ? "selected" : ""} value="3" title="Read, comment, contribute to drafts">Consultant</option>2
+                    <option ${data.level == "4" ? "selected" : ""} value="4" title="Read, comment, contribute to drafts, vote on drafts">Analyst</option>
+                    <option ${data.level == "5" ? "selected" : ""} value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">Agent</option>
+                    <option ${data.level == "6" ? "selected" : ""} value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">Judge</option>
+                </select>`
+                row.setAttribute("user", data.user)
+      
+                row.appendChild(name)
+                row.appendChild(role)
+      
+                // add row before the last in the table body
+                document.getElementById("newPerm").lastElementChild.insertBefore(row, document.getElementById("newPerm").lastElementChild.lastElementChild)
+            })
+        })
+    }
 }

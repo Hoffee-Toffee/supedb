@@ -13,8 +13,7 @@ function start() {
     querySnapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
         console.log("Added: ", change.doc.data());
-        // Add the map to the list
-        db.collection("projects").doc(change.doc.data().project).get().then((doc) => {
+        db.collection("projects").doc(change.doc.data().entity).get().then((doc) => {
           var tag = document.createElement("a")
           tag.id = doc.id
           tag.href = "../versions/versions.html?id=" + doc.id
@@ -35,7 +34,7 @@ function start() {
       if (change.type === "modified") {
         console.log("Modified: ", change.doc.data());
         // Update the map in the list (if the title, description, encrypted status, or timeline ref has changed)
-        db.collection("projects").doc(change.doc.data().project).get().then((doc) => {
+        db.collection("projects").doc(change.doc.data().entity).get().then((doc) => {
           document.getElementById(doc.id).href = "../versions/versions.html?id=" + doc.id
           document.getElementById(doc.id).children[0].innerText = doc.data().title
           document.getElementById(doc.id).children[1].innerText = doc.data().description
@@ -44,7 +43,7 @@ function start() {
       if (change.type === "removed") {
         console.log("Removed: ", change.doc.data());
         // Remove the map from the list
-        db.collection("projects").doc(change.doc.data().project).get().then((doc) => {
+        db.collection("projects").doc(change.doc.data().entity).get().then((doc) => {
           document.getElementById(doc.id).remove()
         })
       }
@@ -54,7 +53,7 @@ function start() {
   db.collection("projects").onSnapshot((querySnapshot) => {
     // Check if the user has access to the map
     querySnapshot.docChanges().forEach((change) => {
-      db.collection("permissions").where("user", "==", auth.currentUser.email).where("project", "==", change.doc.id).get().then((querySnapshot) => {
+      db.collection("permissions").where("user", "==", auth.currentUser.email).where("type", "==", "P").where("entity", "==", change.doc.id).get().then((querySnapshot) => {
         if (querySnapshot.empty) {
           // If the user doesn't have access to the map, leave the function
           return
