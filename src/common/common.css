@@ -290,3 +290,73 @@ textarea {
     color: var(--col-red-orange);
     text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
 }
+
+#notices {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.notice {
+    pointer-events: visible;
+    z-index: 10;
+    background-color: var(--col-orange-hover);
+    color: var(--col-orange);
+    text-shadow: 0 0 0.2em var(--col-orange-shadow);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    text-align: center;
+    top: 0.5em;
+    opacity: 0;
+    transition: 0.2s;
+    width: max-content;
+    max-width: calc(100vw - 2em);
+    min-width: 10em;
+    margin-top: 0.5em;
+    border: solid var(--col-red-orange-hover) 0.1em;
+    display: flex;
+    transform: translateY(calc(-100% - 0.5em));
+}
+
+.notice.show {
+    transition: 0.2s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notice.hide {
+    /* Move left */
+    transition: 0.2s ease-in-out;
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.notice p {
+    margin: 0;
+    background-color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    border: solid var(--col-red-shadow) 0.1em;
+}
+
+.notice i {
+    cursor: pointer;
+    margin-left: 0.5em;
+    margin-top: 0.5em;
+    transition: 0.2s;
+    color: var(--col-red-orange);
+    text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
+}
+
+.notice i:hover {
+    transition: 0.2s;
+    color: var(--col-red);
+    text-shadow: 0 0 0.2em var(--col-red-shadow);
+}
