@@ -332,10 +332,8 @@ textarea {
 }
 
 .notice.hide {
-    /* Move left */
     transition: 0.2s ease-in-out;
     opacity: 0;
-    transform: translateX(-100%);
 }
 
 .notice p {

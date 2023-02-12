@@ -833,6 +833,12 @@ document.onkeydown = (event) => {
         el.setAttribute("points", points)
     }
 
+    // Ctrl + S to manually save (if in offline mode)
+    if (event.ctrlKey && event.key == "s") {
+        event.preventDefault()
+        save(true)
+    }
+
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
         // If the user is also holding the shift key (and only editing one node) then toggle the selection of all the nodes in the direction of the arrow key
         if (event.shiftKey && document.querySelectorAll(".editing").length == 1) {
@@ -1100,8 +1106,17 @@ function updateLinks(element, get = false) {
     })
 }
 
-function save() {
+function save(manual = false) {
     var data = JSON.stringify(objects)
+
+    if (manual) { // Local save
+        // Save data to local storage, under the id of the map and the time saved
+        localStorage.setItem(window["mapSettings"].id + " " + Date.now(), data)
+        notify("Saved to local storage")
+    }
+    else if (!document.getElementById("online").checked && !manual) { // Autosave while offline (invalid)
+        return
+    }
 
     if (window["mapSettings"].encrypted) {
         // Coming soon
@@ -1556,9 +1571,9 @@ function changeHead(id) {
 
 // On load
 window.onload = function() {
-    // If 'online' or 'notifications' checkbox changes, run this
+    // If 'online' or 'notifications' is clicked, run these
     document.getElementById("online").onchange = function() {
-        notify(`You are now working in ${this.checked ? "online" : "offline"} mode.`)
+        modeToggled(false);
         // Set the 'userWantOnline?' variable to the value of the checkbox
         window["userWantOnline?"] = this.checked
     }
@@ -1576,6 +1591,7 @@ window.onload = function() {
     else {
         document.getElementById("online").checked = false
         notify("No internet connection detected. Offline mode activated.")
+        modeToggled()
     }
 
     // Check the connection to the internet every second
@@ -1592,6 +1608,7 @@ window.onload = function() {
             if (window["userWantOnline?"]) {
                 document.getElementById("online").checked = true
                 message += " Offline mode deactivated."
+                modeToggled()
             }
             else {
                 message += " You are now able to deactivate offline mode if you wish."
@@ -1606,7 +1623,11 @@ window.onload = function() {
             // Always set onlineMode to false and notify the user
             // Message is different depending on whether the user wants to be online or not
             var message = "Internet connection lost."
-            document.getElementById("online").checked = false
+
+            if (document.getElementById("online").checked) {
+                document.getElementById("online").checked = false
+                modeToggled()                
+            }
 
             if (window["userWantOnline?"]) {
                 message += " Offline mode will deactivate when internet connection is re-established."
@@ -1654,10 +1675,10 @@ function notify(message) {
         }, 200)
     }
 
-    // After 10 seconds, activate the close button
+    // After 5 seconds, activate the close button
     setTimeout(() => {
         close.click()
-    }, 10000)
+    }, 5000)
 
     notice.appendChild(close)
 
@@ -1672,8 +1693,18 @@ function notify(message) {
     }, 1)
 }
 
+function modeToggled(initialDelay = true) {
+    var mode = document.getElementById("online").checked // false = online, true = offline
+    setTimeout(() => {
+        notify(`You are no${mode ? " longer" : "w"} working in offline mode.`)
 
-    
+        setTimeout(() => {
+            notify(mode ? "Your changes will be automatically saved and synced with the database." : "Local saves can be made with `Ctrl + S`, and fetched with `Ctrl + O`.")
+        }, 1500)
+
+            
+    }, initialDelay ? 1500 : 0)
+}   
 
 function helpMenu() {
     return {
