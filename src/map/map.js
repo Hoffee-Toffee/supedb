@@ -392,7 +392,7 @@ function newObj(type, obj = null, e = null, headId = null) {
                     tag.remove()
                     window["newArrow"] = false
 
-                    save()
+                    save(false, "Incomplete link deleted.")
 
                     return
                 }
@@ -585,7 +585,7 @@ function newObj(type, obj = null, e = null, headId = null) {
 function updateObj(el, attr, toSave = true) {
     objects.find(e => e.id == el.parentElement.id)[attr] = el.value
     if (toSave) {
-        save()
+        save(false, "Object updated")
     }
 }
 
@@ -594,7 +594,7 @@ function updateColor(color) {
 
     objects.find(e => e.id == head).color = color.value.slice(1)
 
-    save()
+    save(false, "Color updated")
 }
 
 document.addEventListener("click", function (event) {
@@ -613,7 +613,7 @@ document.addEventListener("click", function (event) {
             button.remove()
         })
 
-        save()
+        save(false, "Edit cancelled - Clicked nothing / background")
         
         return
     }
@@ -699,7 +699,7 @@ document.addEventListener("click", function (event) {
         })
     }
 
-    if ( !(event.target && ( ( event.target.classList && event.target.classList.contains("editing") ) || ( event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("editing") ) ) ) && !event.ctrlKey ) {
+    if ( !(event.target && ( ( event.target.classList && event.target.classList.contains("editing") ) || ( event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("editing") ) ) ) && !event.ctrlKey && window["editing"] ) {
         document.querySelectorAll(".editing").forEach((edit) => {
             edit.classList.remove("editing")
             Array.from(edit.children).forEach(child => {
@@ -712,9 +712,9 @@ document.addEventListener("click", function (event) {
             button.remove()
         })
 
-        save()
+        save(false, "Edit cancelled - Clicked something else")
     }
-    else if (event.target.classList.contains("object") || event.target.parentElement.classList.contains("object")) {
+    else if ( (event.target.classList && event.target.classList.contains("object") ) || (event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("object")) ) {
         var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
 
         obj.classList.toggle("editing")
@@ -836,7 +836,7 @@ document.onkeydown = (event) => {
     // Ctrl + S to manually save (if in offline mode)
     if (event.ctrlKey && event.key == "s") {
         event.preventDefault()
-        save(true)
+        save(true, "Manual save")
     }
 
     if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
@@ -960,7 +960,7 @@ document.onkeydown = (event) => {
 
         window["editing"] = false
 
-        save()
+        save(false, "Pressed enter within editing mode")
     }
     else if (event.key == "Enter" && window["decrypt"]) {
         document.getElementById("subForm").click()
@@ -1106,7 +1106,7 @@ function updateLinks(element, get = false) {
     })
 }
 
-function save(manual = false) {
+function save(manual = false, reason) {
     var data = JSON.stringify(objects)
 
     if (manual) { // Local save
@@ -1122,6 +1122,8 @@ function save(manual = false) {
         // Coming soon
         // data = encrypt(data, window["key"])
     }
+
+    console.log("Saved to database: " + reason)
 
     // Update firestore document
     db.collection("timelines").doc(window["mapSettings"].id).update({
@@ -1173,127 +1175,6 @@ function moveObj(obj) {
     window["editing"] = true
 }
 
-function mapMenu() {
-    document.getElementById("subForm").addEventListener("click", function() {
-        if (window["decrypt"]) {
-            document.getElementById("keyLabel").classList.remove("error")
-            try {
-                // Coming soon
-                // objects = JSON.parse( decrypt( window["map"], document.getElementById("key").value ) )
-
-            } catch (error) {
-                document.getElementById("keyLabel").classList.add("error")
-                return
-            }
-
-            if (window["ready"]) {
-                display()
-            }
-            else {
-                window["ready"] = true
-            }
-
-            window["key"] = document.getElementById("key").value
-            document.getElementById("popup").style = null
-            window["decrypt"] = false
-        }
-        else if (window["onMainMenu"]) {
-            window["mapSettings"].title = document.getElementById("newTitle").value
-            window["mapSettings"].description = document.getElementById("newDesc").value
-    
-            document.getElementById("popup").style = null
-        }
-        else {
-            window["mapSettings"].encrypted = document.getElementById("isEncrypted").checked
-    
-            var data = JSON.stringify(objects)
-    
-            if (window["mapSettings"].encrypted) {
-                window["key"] = document.getElementById("newKey").value
-
-                // Coming soon
-                // data = encrypt(data, window["key"])
-            }
-    
-            window["mapSettings"].map = data
-    
-            window["onMainMenu"] = true
-            Array.from(document.getElementById("popup").children).forEach(element => {
-                if (!element.classList.length || element.classList.contains("editMenu")) {
-                    element.style.display = "block"
-                }
-                else {
-                    element.style.display = "none"
-                }
-            })
-        }
-    })
-
-    document.getElementById("keyMenu").addEventListener("click", function() {
-        window["onMainMenu"] = false
-        document.getElementById("newTitle").value = window["mapSettings"].title
-        document.getElementById("newDesc").value = window["mapSettings"].description
-        document.getElementById("isEncrypted").checked = window["mapSettings"].encrypted
-        document.getElementById("newKey").value = window["key"]
-
-        Array.from(document.getElementById("popup").children).forEach(element => {
-            if (!element.classList.length || element.classList.contains("editEncrypt")) {
-                element.style.display = "block"
-            }
-            else {
-                element.style.display = "none"
-            }
-        })
-    })
-    
-    document.getElementById("backMenu").addEventListener("click", function() {
-        window["onMainMenu"] = true
-        Array.from(document.getElementById("popup").children).forEach(element => {
-            if (!element.classList.length || element.classList.contains("editMenu")) {
-                element.style.display = "block"
-            }
-            else {
-                element.style.display = "none"
-            }
-        })
-    })
-
-    if (!window["decrypt"]) {
-        window["onMainMenu"] = true
-        if (typeof window["mapSettings"] === 'undefined') {
-            window["mapSettings"] = {
-                id: null,
-                title: "Map Title",
-                description: "Map Description",
-                map: "[]",
-                encrypted: false
-            }
-        }
-        else {
-            window["mapSettings"].map = JSON.stringify(objects)
-            document.getElementsByTagName("title")[0].innerText = "New Map"
-        }
-
-        document.getElementById("newTitle").value = window["mapSettings"].title
-        document.getElementById("newDesc").value = window["mapSettings"].description
-        document.getElementById("isEncrypted").checked = window["mapSettings"].encrypted
-        if (typeof window["mapSettings"].encrypted) {
-            document.getElementById("newKey").value = window["key"]
-        }
-
-        document.getElementById("popup").style = "visibility: visible"
-
-        Array.from(document.getElementById("popup").children).forEach(element => {
-            if (!element.classList.length || element.classList.contains("editMenu")) {
-                element.style.display = "block"
-            }
-            else {
-                element.style.display = "none"
-            }
-        })
-    }
-}
-
 function start() {
     const infobar = document.getElementById("infobar")
 
@@ -1320,7 +1201,7 @@ function start() {
     window["id"] = url.searchParams.get("id")
 
     if (window["id"] == null) {
-        mapMenu()
+        // Coming soon
     }
 
     window["mapSettings"] = null
@@ -1328,6 +1209,7 @@ function start() {
     // Sync all data from the timeline (don't sync if the user is the one that made the last change unless they are loading for the first time)
     db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
         if (map.data().lastChange != auth.currentUser.email || !window["mapSettings"]) {
+            console.log("Retrieving map data...")
             document.getElementsByTagName("title")[0].innerText = map.data().title
     
             window["mapSettings"] = {
@@ -1352,7 +1234,6 @@ function start() {
                 document.getElementById("key").focus()
                 window["decrypt"] = true
                 window["map"] = map.data().map
-                mapMenu()
             }
             else {
                 objects = JSON.parse(map.data().map)
@@ -1366,6 +1247,7 @@ function start() {
             }
         }
         else {
+            console.log("Syncing with new updates from other users...")
             display(false);
         }
     })
@@ -1376,10 +1258,6 @@ function start() {
     else {
         window["ready"] = true
     }
-
-    document.getElementById("mapSettings").addEventListener("click", function() {
-        mapMenu()
-    })
 }
 
 function contextMenu(e) {
@@ -1546,7 +1424,7 @@ function deleteObj(toDel) {
         
         if (obj.class == "Link") document.getElementById("editLink" + obj.id).remove()
     })
-    save()
+    save(false, "Object deleted")
 }
 
 function changeHead(id) {
@@ -1702,7 +1580,6 @@ function modeToggled(initialDelay = true) {
             notify(mode ? "Your changes will be automatically saved and synced with the database." : "Local saves can be made with `Ctrl + S`, and fetched with `Ctrl + O`.")
         }, 1500)
 
-            
     }, initialDelay ? 1500 : 0)
 }   
 
