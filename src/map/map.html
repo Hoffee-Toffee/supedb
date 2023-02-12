@@ -52,9 +52,10 @@
             <!-- Settings -->
             <i class="fa fa-cog" title="Settings" onclick="settingsMenu()"></i>
             <!-- Toggle offline / online mode (auto save) -->
-            <label for="online" class="switch">
-                <input type="checkbox" id="online" checked>
-                <i class="fa fa-cloud" title="Toggle Online Mode"></i>
+            <label for="online">
+                <!-- Run checkStatus() when the checkbox is checked or unchecked with the click event taken as an argument -->
+                <input type="checkbox" id="online" checked onclick="checkStatus(event)">
+                <i class="fa fa-cloud" title="Toggle Offline Mode"></i>
             </label>
             <!-- Notifications -->
             <label for="notifications" class="switch">

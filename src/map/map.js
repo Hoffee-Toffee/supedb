@@ -7,6 +7,7 @@ var objects = []
 
 window["decrypt"] = false
 window["subId"] = null
+window["userWantOnline?"] = true 
 
 function display(all = true) {
     var scrollX = null
@@ -1558,10 +1559,76 @@ window.onload = function() {
     // If 'online' or 'notifications' checkbox changes, run this
     document.getElementById("online").onchange = function() {
         notify(`You are now working in ${this.checked ? "online" : "offline"} mode.`)
+        // Set the 'userWantOnline?' variable to the value of the checkbox
+        window["userWantOnline?"] = this.checked
     }
 
     document.getElementById("notifications").onchange = function() {
         notify(`You will ${this.checked ? "now" : "no longer"} receive notifications of any updates.`)
+    }
+
+    window["internet"] = window.navigator.onLine
+
+    // Activate mode based on online status
+    if (window.navigator.onLine) {
+        document.getElementById("online").checked = true
+    }
+    else {
+        document.getElementById("online").checked = false
+        notify("No internet connection detected. Offline mode activated.")
+    }
+
+    // Check the connection to the internet every second
+    setInterval(() => {
+        // If connected to the internet and the 'internet' variable is false, run the following:
+        if (window.navigator.onLine && !window["internet"]) {
+            console.log("Internet connection re-established.")
+            // If the user wants to be online, set onlineMode to true and notify the user
+            // If the user doesn't want to be online, only notify the user
+            // OnlineMode cannot be true if the user is offline, so no need to check for that
+            var message = "Internet connection re-established."
+            window["internet"] = true
+
+            if (window["userWantOnline?"]) {
+                document.getElementById("online").checked = true
+                message += " Offline mode deactivated."
+            }
+            else {
+                message += " You are now able to deactivate offline mode if you wish."
+            }
+
+            notify(message)
+        }
+        // If not connected to the internet, but the 'internet' variable is true, do the following:
+        else if (!window.navigator.onLine && window["internet"]) {
+            console.log("Internet connection lost.")
+            window["internet"] = false
+            // Always set onlineMode to false and notify the user
+            // Message is different depending on whether the user wants to be online or not
+            var message = "Internet connection lost."
+            document.getElementById("online").checked = false
+
+            if (window["userWantOnline?"]) {
+                message += " Offline mode will deactivate when internet connection is re-established."
+            }
+            else {
+                message += " You cannot deactivate offline mode until internet connection is re-established."
+            }
+            notify(message)
+        }
+    }, 1000)
+}
+
+function checkStatus(event) {
+    // If 'internet' is false, and 'online' is true, then don't allow the user to change the checkbox
+    if (!window["internet"] && document.getElementById("online").checked) {
+        event.preventDefault()
+        window["userWantOnline?"] = !window["userWantOnline?"]
+
+        // If they want to be online, tell them they will be switched to online mode when they reconnect
+        // If they don't want to be online, just tell them they won't be switched when connection comes back
+        if (window["userWantOnline?"]) notify("Offline mode will automatically deactivate when internet connection is re-established.")
+        else notify("Offline mode can only be deactivated when internet connection is re-established.")
     }
 }
 
