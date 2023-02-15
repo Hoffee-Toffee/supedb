@@ -102,23 +102,22 @@ function display() {
     console.log(`All: ${objects.length}, Eras: ${eras.length}, Heads: ${heads.length}`)
 
     // Populate the page with the main wiki page
-    // Note that the body is empty, so we can just append to it
-    var body = document.getElementsByTagName("body")[0]
+    var wiki = document.getElementById("wikiPage")
 
     // Create the title
     var title = document.createElement("h1")
     title.innerText = `${window["mapSettings"].title} - Wiki`
-    body.appendChild(title)
+    wiki.appendChild(title)
 
     // Create the subtitle
     var subtitle = document.createElement("h2")
     subtitle.innerText = "Main Page"
-    body.appendChild(subtitle)
+    wiki.appendChild(subtitle)
 
     // Create the main description
     var description = document.createElement("p")
     description.innerText = "This is the main wiki page for this timeline. Click on a link below to go to a specific page."
-    body.appendChild(description)
+    wiki.appendChild(description)
 
     // Create the page description
     var description2 = document.createElement("p")
@@ -129,11 +128,11 @@ function display() {
 
     var eraTitle = document.createElement("h3")
     eraTitle.innerText = "Eras"
-    body.appendChild(eraTitle)
+    wiki.appendChild(eraTitle)
 
     var eraDescription = document.createElement("p")
     eraDescription.innerText = "Click on an era to see all the events that happened during that time period."
-    body.appendChild(eraDescription)
+    wiki.appendChild(eraDescription)
 
     eras.forEach(era => {
       var eraItem = document.createElement("li")
@@ -144,18 +143,18 @@ function display() {
       eraLink.innerText = era.title
       eraItem.appendChild(eraLink)
     })
-    body.appendChild(eraList)
+    wiki.appendChild(eraList)
 
     // Create the head list
     var headList = document.createElement("ul")
 
     var headTitle = document.createElement("h3")
     headTitle.innerText = "Event Heads"
-    body.appendChild(headTitle)
+    wiki.appendChild(headTitle)
 
     var headDescription = document.createElement("p")
     headDescription.innerText = "Click on an event head to see the details of that event."
-    body.appendChild(headDescription)
+    wiki.appendChild(headDescription)
 
     heads.forEach(head => {
       var headItem = document.createElement("li")
@@ -166,7 +165,7 @@ function display() {
       headLink.innerText = head.title
       headItem.appendChild(headLink)
     })
-    body.appendChild(headList)
+    wiki.appendChild(headList)
   }
   else {
     // If a page ID is provided, then get that object
@@ -202,36 +201,32 @@ function display() {
       console.log(events)
 
       // Populate the page with the era page
-      // Note that the body is empty, so we can just append to it
-      var body = document.getElementsByTagName("body")[0]
+      var wiki = document.getElementById("wikiPage")
 
       // Create the titles
       var title = document.createElement("h1")
       title.innerText = `${window["mapSettings"].title} - ${page.title}`
-      body.appendChild(title)
+      wiki.appendChild(title)
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = "Era Page"
-      body.appendChild(subtitle)
+      wiki.appendChild(subtitle)
 
       // Create the descriptions
       var description = document.createElement("p")
       description.innerText = "This is the era page for this timeline. Click on a link below to go to a specific event page."
-      body.appendChild(description)
+      wiki.appendChild(description)
 
       var description2 = document.createElement("p")
       description2.innerText = page.description
-      body.appendChild(description2)
+      wiki.appendChild(description2)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ul")
 
-      var contentsTitle = document.createElement("h3")
-      contentsTitle.innerText = "Table of Contents"
-      contents.classList.add("contents")
-      body.appendChild(contentsTitle)
+      contents.classList.add("toc")
 
-      body.appendChild(contents)
+      wiki.appendChild(contents)
 
       // Sort objects by their x position (lowest to highest) and y position for those with the same x position (also lowest to highest)
       events.sort((a, b) => a.position[0] - b.position[0] || a.position[1] - b.position[1])
@@ -243,7 +238,7 @@ function display() {
         var section = document.createElement("div")
         section.id = head.id
         section.classList.add("section")
-        body.appendChild(section)
+        wiki.appendChild(section)
 
         // Create the title
         var sectionTitle = document.createElement("h3")
@@ -273,36 +268,32 @@ function display() {
     // If it's a head page, then show the details of that event, its subs, and its info nodes
     else if (page.class == "Head") {
       // Populate the page with the head page
-      // Note that the body is empty, so we can just append to it
-      var body = document.getElementsByTagName("body")[0]
+      var wiki = document.getElementById("wikiPage")
 
       // Create the titles
       var title = document.createElement("h1")
       title.innerText = `${window["mapSettings"].title} - ${page.title}`
-      body.appendChild(title)
+      wiki.appendChild(title)
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = "Event Page"
-      body.appendChild(subtitle)
+      wiki.appendChild(subtitle)
 
       // Create the descriptions
       var description = document.createElement("p")
       description.innerText = "This is the event page for this timeline. Click on a link below to go to a specific sub page."
-      body.appendChild(description)
+      wiki.appendChild(description)
 
       var description2 = document.createElement("p")
       description2.innerText = page.description
-      body.appendChild(description2)
+      wiki.appendChild(description2)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ul")
 
-      var contentsTitle = document.createElement("h3")
-      contentsTitle.innerText = "Table of Contents"
-      contents.classList.add("contents")
-      body.appendChild(contentsTitle)
+      contents.classList.add("toc")
 
-      body.appendChild(contents)
+      wiki.appendChild(contents)
 
       // Create the subs
       var subs = objects.filter(e => e.headId == page.id)
@@ -310,12 +301,12 @@ function display() {
         // Create the sub title
         var subTitle = document.createElement("h4")
         subTitle.innerText = sub.title
-        body.appendChild(subTitle)
+        wiki.appendChild(subTitle)
 
         // Create the sub description
         var subDescription = document.createElement("p")
         subDescription.innerText = sub.description
-        body.appendChild(subDescription)
+        wiki.appendChild(subDescription)
       })
     }
   }

@@ -9,8 +9,126 @@ Each subsection will have a heading (h3) and also a description (p).
 */
 
 body {
-    background-color: black;
-    color: white;
-    margin: 0;
+    color: #ddd;
     padding: 0;
+}
+
+#wikiPage {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    line-height: 1.5;
+    font-size: 1em;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    width: calc(100% - 1.5em);
+    text-shadow: 0 0 0.1em #ffffff80;
+}
+
+#wikiPage::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1.5em;
+    position: absolute;
+    left: 0;
+}
+
+#wikiPage h1 {
+    font-weight: bold;
+    margin: 0;
+    font-size: 2.25em;
+    line-height: 2.5em;
+}
+
+#wikiPage h2 {
+    font-weight: bold;
+    margin: 0;
+    font-size: 1.75em;
+    line-height: 2em;
+}
+
+#wikiPage h3 {
+    font-weight: bold;
+    margin: 0;
+    font-size: 1.25em;
+    line-height: 1.5em;
+}
+
+#wikiPage h1,
+#wikiPage h2,
+#wikiPage h3 {
+    color: #e8e8e8;
+    text-shadow: 0 0 0.25em var(--col-orange-hover);
+}
+
+#wikiPage a {
+    color: var(--col-orange);
+    border-radius: 0.25em;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.25s;
+    text-shadow: 0 0 0.1em var(--col-orange-shadow);
+}
+
+#wikiPage a:hover {
+    color: var(--col-red-orange);
+    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+}
+
+#wikiPage a::after {
+    content: "";
+    display: block;
+    margin-left: 100%;
+    width: 0;
+    height: 2px;
+    transition: 0.25s;
+    background-color: var(--col-orange);
+    box-shadow: 0 0 0.05em var(--col-orange-shadow);
+}
+
+#wikiPage a:hover::after { 
+    width: 100%;
+    transition: width 0.25s, background-color 0.25s;
+    margin-left: 0%;
+    background-color: var(--col-red-orange);
+    box-shadow: 0 0 0.1em var(--col-red-orange-shadow);
+}
+
+#wikiPage ul {
+    padding: 0.5em 0 0.5em 2em;
+    margin: 2em 0 0.5em 0.5em;
+    list-style: numeric;
+    background-color: #0c0c0c;
+    width: calc(100% - 2.5em);
+    max-width: 20em;
+    border-radius: 0.5em;
+    outline: 1px solid #181818;
+}
+
+#wikiPage ul.toc::before {
+    content: "Table of Contents";
+    display: block;
+    font-weight: bold;
+    font-size: 1.25em;
+    margin-bottom: 0.5em;
+    margin-left: -1em;
+    color: #bbb;
+}
+
+#wikiPage ul li::marker {
+    color: #888;
+}
+
+#wikiPage ul li {
+    margin: 0.25em 0;
+    padding-left: 0.5em;
+}
+
+#wikiPage ul li:not(:last-child)::after {
+    content: "";
+    display: block;
+    width: calc(100% - 1.5em);
+    height: 1px;
+    background-color: #222;
+    margin-top: 0.5em;
+    position: relative;
 }

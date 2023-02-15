@@ -50,7 +50,7 @@ body {
     margin: 1em 0em 0em 1em;
     height: calc(100vh - 3em);
     width:  calc(100vw - 2em);
-    background-color: black;
+    background-color: #080808;
     font-family: arial;
 }
 
