@@ -4,7 +4,6 @@ window["permissions"] = []
 var objects = []
 
 function start() {
-
   // Check if the user isn't logged in
   if (!auth.currentUser) {
         // Redirect to the login page with redirect params
@@ -43,7 +42,7 @@ function start() {
           objects = JSON.parse(map.data().map)
   
           if (window["ready"]) {
-              display()
+              displayWiki()
           }
           else {
               window["ready"] = true
@@ -51,14 +50,14 @@ function start() {
       }})
   
       if (window["ready"]) {
-          display()
+          displayWiki()
       }
       else {
           window["ready"] = true
       }
 }
 
-function display() {
+function displayWiki() {
   if (objects.includes(null)){
       // filter all the nulls and loop through them
       var nulls = objects.filter(e => e == null)
@@ -171,6 +170,10 @@ function display() {
     // If a page ID is provided, then get that object
     var page = objects.find(e => e.id == pageId)
 
+    // Create a new document element for the timeline
+    var iframe = document.createElement("iframe")
+    iframe.src = "about:blank"
+
     // If it's an era page, then show all the events that happened during that time period
     if (page.class == "Era") {
       // Get all the events that happened during that time period
@@ -220,6 +223,10 @@ function display() {
       var description2 = document.createElement("p")
       description2.innerText = page.description
       wiki.appendChild(description2)
+
+      // Fill the embed with the events
+      wiki.appendChild(iframe)
+      display(true, events, iframe.contentDocument.body)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
@@ -298,6 +305,12 @@ function display() {
       description2.innerText = page.description
       wiki.appendChild(description2)
 
+      var subs = objects.filter(e => e.headId == page.id)
+
+      // Fill the embed with the subs
+      wiki.appendChild(iframe)
+      display(true, subs, iframe.contentDocument.body)
+
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
 
@@ -306,7 +319,6 @@ function display() {
       wiki.appendChild(contents)
 
       // Create the subs
-      var subs = objects.filter(e => e.headId == page.id)
       subs.forEach(sub => {
         // Create the sub title
         var subTitle = document.createElement("h4")
@@ -330,33 +342,49 @@ function display() {
         contentsItem.appendChild(contentsLink)
       })
     }
+
+    // Add the stylesheet to the iframe
+    var link = iframe.contentDocument.head.appendChild(document.createElement("link"))
+    link.rel = "stylesheet"
+    link.href = "../map/map.css"
+
+    /*
+          <svg style="height: 0; width: 0;" id="arrow-templates">
+            <defs>
+            <marker id="arrow" markerWidth="13" markerHeight="13" refx="9" refy="6" orient="auto">
+                <path d="M2,1 L2,10 L10,6 L2,2" fill="grey"/>
+            </marker>
+            </defs>
+            <use href="#arrow"/>
+        </svg>
+    */
+
+    // Add the arrow templates to the iframe
+    var arrowTemplates = iframe.contentDocument.body.appendChild(document.createElement("svg"))
+    arrowTemplates.style.height = "0"
+    arrowTemplates.style.width = "0"
+    arrowTemplates.id = "arrow-templates"
+
+    var defs = arrowTemplates.appendChild(document.createElement("defs"))
+
+    var marker = defs.appendChild(document.createElement("marker"))
+    marker.id = "arrow"
+    marker.markerWidth = "13"
+    marker.markerHeight = "13"
+    marker.refx = "9"
+    marker.refy = "6"
+    marker.orient = "auto"
+
+    var path = marker.appendChild(document.createElement("path"))
+    path.d = "M2,1 L2,10 L10,6 L2,2"
+    path.fill = "grey"
+
+    var use = arrowTemplates.appendChild(document.createElement("use"))
+    use.href = "#arrow"
   }
 }
 
 function helpMenu() {
-  /* Return in format:
-  "topic": {
-      desc: [
-          "Line 1",
-          "Line 2",
-          ...
-      ],
-      pages: [
-          {
-              "section": [
-                  "Line 1",
-                  "Line 2",
-                  ...
-              ],
-              ...
-          },
-          ...
-      ]
-  },
-  ...
-}
-
-  */
   return {
     "Wiki in Development": {
       desc: [

@@ -9,7 +9,9 @@ window["decrypt"] = false
 window["subId"] = null
 window["userWantOnline?"] = true 
 
-function display(all = true) {
+window["embedded"] = window.location.pathname.split("/").pop().split(".")[0] !== "map"
+
+function display(all = true, objs = objects, embedEl = null) {
     var scrollX = null
     var scrollY = null
 
@@ -21,28 +23,42 @@ function display(all = true) {
             document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
         }
         else {
-            // Get the scroll position from the url
-            var url = new URL(window.location.href)
-            if (url.searchParams.get("x") && url.searchParams.get("y")) {
-                scrollX = url.searchParams.get("x")
-                scrollY = url.searchParams.get("y")
+            // Get the scroll position from the url, exit this statement if embedded
+            if (!window["embedded"]) {
+                var url = new URL(window.location.href)
+                if (url.searchParams.get("x") && url.searchParams.get("y")) {
+                    scrollX = url.searchParams.get("x")
+                    scrollY = url.searchParams.get("y")
+                }
             }
         }
 
-        // Add the objects
-        objects.forEach(obj => {
-            newObj(obj.class, obj)
+        var objIDs = objs.map(obj => obj.id)
+
+        // Add the objects (and their contained links if embedded)
+        objs.forEach(obj => {
+            newObj(obj.class, obj, null, null, window["embedded"] ? embedEl : undefined)
         })
+
+        if (window["embedded"]) {
+            objects.forEach(obj => {
+                if (obj.class === "Link" && objIDs.includes(obj.parentId) && objIDs.includes(obj.childId)) {
+                    newObj(obj.class, obj, null, null, embedEl)
+                }
+            })
+        }
     }
     else {
         // Remove all svgs except for the first one
         document.querySelectorAll("svg").forEach((svg) => { if (svg.id !== "arrow-templates") { svg.remove() } })
 
         // Add only the link objects
-        objects.forEach(obj => {
+        objs.forEach(obj => {
             if (obj.class === "Link") newObj(obj.class, obj);
         })
     }
+
+    if (window["embedded"]) return
 
     // Reset the html size
     document.querySelector("html").style.height = "initial"
@@ -73,7 +89,7 @@ function display(all = true) {
     }
 }
 
-function newObj(type, obj = null, e = null, headId = null) {
+function newObj(type, obj = null, e = null, headId = null, location = document.body) {
     if (e) {
         // Get the coordinates of the mouse including the scroll
         var x = e.clientX + document.scrollingElement.scrollLeft
@@ -146,8 +162,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
             // If mouse over but not over it's nodemenu
-            tag.addEventListener("mouseover", (e) => { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links." } })
-            tag.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
+            // tag.addEventListener("mouseover", (e) => { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links." } })
+            // tag.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
             
             // If hovered over itself or any recursive children
             tag.addEventListener("mouseover", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = 5 } })
@@ -157,8 +173,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             text.type = "text"
             text.setAttribute("oninput", "this.size = this.value.length; updateLinks(this.parentElement, true)")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
-            text.addEventListener("mouseover", (e) => { infobar.innerHTML = "Double click to edit title." })
-            text.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
+            // text.addEventListener("mouseover", (e) => { infobar.innerHTML = "Double click to edit title." })
+            // text.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
             text.value = obj.title
             text.size = text.value.length
             text.readOnly = true
@@ -176,8 +192,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             color.setAttribute("value", "#" + obj.color)
             color.setAttribute("list", "colors")
             color.addEventListener("change", function() { updateColor(color) })
-            color.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the color of this node, it's links, and it's subnodes." })
-            color.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            // color.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the color of this node, it's links, and it's subnodes." })
+            // color.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(color)
 
             var tooltip = document.createElement("textarea")
@@ -193,11 +209,11 @@ function newObj(type, obj = null, e = null, headId = null) {
             tooltip.addEventListener("blur", function() {
                 updateObj(this, "description")
             })
-            tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
-            tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            // tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
+            // tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(tooltip)
             
-            document.getElementsByTagName("BODY")[0].appendChild(tag)
+            location.appendChild(tag)
 
             tooltip.style.height = 'auto'
             tooltip.style.height = tooltip.scrollHeight+'px'
@@ -247,8 +263,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             tag.style.boxShadow = "0 0 0.5em 0.01em black, 0 0 0.5em 0.01em #" + objects.find(e => e.id == obj.headId).color
             tag.style.marginLeft = (obj.position[0] + "em")
             tag.style.marginTop = (obj.position[1] + "em")
-            tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node."; tag.style.zIndex = 5 } })
-            tag.addEventListener("mouseout", function() { infobar.innerHTML = ""; tag.style.zIndex = "" })
+            // tag.addEventListener("mouseover", function(e) { if (e.target == tag) { infobar.innerHTML = "Double click to move and add links to this node."; tag.style.zIndex = 5 } })
+            // tag.addEventListener("mouseout", function() { infobar.innerHTML = ""; tag.style.zIndex = "" })
 
             // If hovered over itself or any recursive children
             tag.addEventListener("mouseover", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = 5 } })
@@ -267,8 +283,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
-            text.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the title of this node." })
-            text.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            // text.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the title of this node." })
+            // text.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(text)
 
             var tooltip = document.createElement("textarea")
@@ -284,11 +300,11 @@ function newObj(type, obj = null, e = null, headId = null) {
             tooltip.addEventListener("blur", function() {
                 updateObj(this, "description")
             })
-            tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
-            tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            // tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
+            // tooltip.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(tooltip)
             
-            document.getElementsByTagName("BODY")[0].appendChild(tag)
+            location.appendChild(tag)
 
             tooltip.style.height = 'auto'
             tooltip.style.height = tooltip.scrollHeight+'px'
@@ -326,8 +342,8 @@ function newObj(type, obj = null, e = null, headId = null) {
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
-            text.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the title of this era." })
-            text.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            // text.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the title of this era." })
+            // text.addEventListener("mouseout", function() { infobar.innerHTML = "" })
             tag.appendChild(text)
 
             tag.classList.add("era")
@@ -341,11 +357,10 @@ function newObj(type, obj = null, e = null, headId = null) {
                 }
             })
             tag.style.left = obj.position + "em"
-            tag.addEventListener("mouseover", function(e) { infobar.innerHTML = "Double click to move this era." })
-            tag.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+            // tag.addEventListener("mouseover", function(e) { infobar.innerHTML = "Double click to move this era." })
+            // tag.addEventListener("mouseout", function() { infobar.innerHTML = "" })
 
-            var element = document.getElementsByTagName("BODY")[0]
-            element.appendChild( tag )
+            location.appendChild(tag)
             break
 
         case "Link":
@@ -373,8 +388,9 @@ function newObj(type, obj = null, e = null, headId = null) {
             var points = []
 
             obj.line.forEach(el => {
-                var xreq = document.getElementById(objects.find(e => e.id == el[0]).id)
-                var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
+                var xreq = window["embedded"] ? Array.from(location.children).find(e => e.id == el[0]) : document.getElementById(objects.find(e => e.id == el[0]).id)
+                var yreq = window["embedded"] ? Array.from(location.children).find(e => e.id == el[2]) : document.getElementById(objects.find(e => e.id == el[2]).id)
+                // var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
         
                 var x = xreq.offsetLeft + (xreq.offsetWidth * (el[1] - 0.5) )
                 var y = yreq.offsetTop + (yreq.offsetHeight * el[3])
@@ -525,11 +541,10 @@ function newObj(type, obj = null, e = null, headId = null) {
 
             tag.appendChild(poly)
             
-            var element = document.getElementsByTagName("BODY")[0]
-            element.appendChild(tag)
+            location.appendChild(tag)
 
             // Append the button if it exists
-            if (button) element.appendChild(button)
+            if (button) location.appendChild(button)
 
             break
     }
@@ -595,557 +610,6 @@ function updateColor(color) {
     objects.find(e => e.id == head).color = color.value.slice(1)
 
     save(false, "Color updated")
-}
-
-document.addEventListener("click", function (event) {
-    // Check if you clicked nothing or the html element
-    if ((event.target == null || event.target.tagName == "HTML") && window["editing"]) {
-        document.querySelectorAll(".editing").forEach((edit) => {
-            edit.classList.remove("editing")
-            Array.from(edit.children).forEach(child => {
-                child.readOnly = true
-            })
-
-            window["editing"] = false
-        })
-
-        document.querySelectorAll(".addLink").forEach((button) => {
-            button.remove()
-        })
-
-        save(false, "Edit cancelled - Clicked nothing / background")
-        
-        return
-    }
-
-    if ( event.target.classList.contains("addLink") && !window["newArrow"] ) {
-        window["newArrow"] = true
-
-        var coords = [0, 0.5]
-        if ( event.target.id == "linkRight" ) coords = [1, 0.5]
-        if ( event.target.id == "linkTop" ) coords = [0.5, 0]
-        if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
-
-        var obj = {
-            "id": getNew(),
-            "class": "Link",
-            "line": [
-                [
-                    parseInt(event.target.parentElement.id),
-                    coords[0],
-                    parseInt(event.target.parentElement.id),
-                    coords[1]
-                ]
-            ],
-            "parentId": parseInt(event.target.parentElement.id),
-            "childId": "mouse",
-            "type": "c"
-        }
-        objects.push(obj)
-
-        newObj("Link", obj)
-    }
-    else if ( event.target.classList.contains("addLink") && window["newArrow"] ) {
-        window["newArrow"] = false
-
-        var coords = [0, 0.5]
-        if ( event.target.id == "linkRight" ) coords = [1, 0.5]
-        if ( event.target.id == "linkTop" ) coords = [0.5, 0]
-        if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
-
-        var obj = objects.find(obj => obj.childId === "mouse")
-
-        obj.childId = parseInt(event.target.parentElement.id)
-
-        if ( ["linkLeft", "linkRight"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[1] !== objects.find(e => e.id == obj.childId).position[1] ) {
-            obj.line.push(
-                [
-                    obj.line[0][0],
-                    obj.line[0][1],
-                    parseInt(event.target.parentElement.id),
-                    coords[1]
-                ]
-            )
-
-        }
-        else if ( ["linkTop", "linkBottom"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[0] !== objects.find(e => e.id == obj.childId).position[0] ) {
-            obj.line.push(
-                [
-                    parseInt(event.target.parentElement.id),
-                    coords[0],
-                    obj.line[0][2],
-                    obj.line[0][3]
-                ]
-            )
-        }
-
-        obj.line.push(
-            [
-                parseInt(event.target.parentElement.id),
-                coords[0],
-                parseInt(event.target.parentElement.id),
-                coords[1]
-            ]
-        )
-
-        document.getElementById(obj.id).remove()
-
-        newObj("Link", obj)
-    }
-
-    if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
-        document.querySelectorAll(".addLink").forEach((button) => {
-            button.remove()
-        })
-    }
-
-    if ( !(event.target && ( ( event.target.classList && event.target.classList.contains("editing") ) || ( event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("editing") ) ) ) && !event.ctrlKey && window["editing"] ) {
-        document.querySelectorAll(".editing").forEach((edit) => {
-            edit.classList.remove("editing")
-            Array.from(edit.children).forEach(child => {
-                child.readOnly = true
-            })
-
-            window["editing"] = false
-        })
-        document.querySelectorAll(".addLink").forEach((button) => {
-            button.remove()
-        })
-
-        save(false, "Edit cancelled - Clicked something else")
-    }
-    else if ( (event.target.classList && event.target.classList.contains("object") ) || (event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("object")) ) {
-        var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
-
-        obj.classList.toggle("editing")
-        Array.from(obj.children).forEach(child => {
-            child.readOnly = false
-        })
-        window["editing"] = true
-
-        var els = document.querySelectorAll(".editing")
-
-        document.querySelectorAll(".addLink").forEach((button) => {
-            button.remove()
-        })
-
-        if (els.length == 1 && !els[0].classList.contains("era")) {
-            var linkTop = document.createElement("span")
-            linkTop.classList.add("addLink")
-            linkTop.id = "linkTop"
-            els[0].appendChild(linkTop)
-        
-            var linkBottom = document.createElement("span")
-            linkBottom.classList.add("addLink")
-            linkBottom.id = "linkBottom"
-            els[0].appendChild(linkBottom)
-        
-            var linkLeft = document.createElement("span")
-            linkLeft.classList.add("addLink")
-            linkLeft.id = "linkLeft"
-            els[0].appendChild(linkLeft)
-        
-            var linkRight = document.createElement("span")
-            linkRight.classList.add("addLink")
-            linkRight.id = "linkRight"
-            els[0].appendChild(linkRight)
-        }
-    }
-
-    // Check if updating a head (first click)
-    if (window["subId"] && !window["subId"].endsWith("-")) {
-        window["subId"] += "-"
-    }
-    // If clicking on a head (second click)
-    else if (window["subId"] && event.target && event.target.classList.contains("head")) {
-        // Get the subId
-        var subId = window["subId"].split("-")[0]
-
-        // Loop through all objects
-        objects.forEach(obj => {
-            var el = document.getElementById(obj.id)
-
-            // Check if this is the subId
-            if (obj.id == subId) {
-                obj.headId = event.target.id
-
-                el.remove()
-                newObj("Sub", obj)
-
-                return
-            }
-            // Check the sub is a parent of child of this link
-            else if (obj.class == "Link" && (obj.parentId == subId || obj.childId == subId)) {
-                el.remove()
-                newObj("Link", obj)
-
-                return
-            }
-    
-            // Reset all filters and pointer events
-            if (obj.class != "Head") {
-                el.style.filter = "none"
-                el.style.pointerEvents = "initial"
-    
-                // If a link then remove the filter from the edit button
-                if (obj.class == "Link") {
-                    document.getElementById("editLink" + obj.id).style.filter = "none"
-                }
-
-            }
-        })
-
-        window["subId"] = null
-    }
-    // Else if clicking nothing (second click)
-    else if (window["subId"]) {
-        // Loop through all objects
-        objects.forEach(obj => {
-            var el = document.getElementById(obj.id)
-    
-            // Reset all filters and pointer events
-            if (obj.class != "Head") {
-                el.style.filter = "none"
-                el.style.pointerEvents = "initial"
-    
-                // If a link then remove the filter from the edit button
-                if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "none"
-            }
-        })
-
-        window["subId"] = null
-    } 
-}, false)
-
-document.onkeydown = (event) => {
-    if ( window["newArrow"] && ["c", "f", "e"].includes(event.key) ) {
-        var obj = objects.find(obj => obj.childId === "mouse")
-
-        obj.type = event.key
-
-        var el = document.getElementById(obj.id).children[1]
-        points = el.getAttribute("points")
-
-        document.getElementById(obj.id).remove()
-        newObj("Link", obj)
-
-        var el = document.getElementById(obj.id).children[1]
-        el.setAttribute("points", points)
-    }
-
-    // Ctrl + S to manually save (if in offline mode)
-    if (event.ctrlKey && event.key == "s") {
-        event.preventDefault()
-        save(true, "Manual save")
-    }
-
-    // Ctrl + O to fetch manual save (from local storage)
-    if (event.ctrlKey && event.key == "o") {
-        try {
-            event.preventDefault()
-        }
-        catch (e) {}
-
-       // Clear any existing saves (minus the first row)
-        document.querySelectorAll("#saves tr:not(:first-child)").forEach((row) => {
-            row.remove()
-        })
-        
-        // Loop through all saves, adding each one to the table
-        for (var i = 0; i < localStorage.length; i++) {
-            // Get the key and value of the current save
-            var key = localStorage.key(i)
-            var value = localStorage.getItem(key)
-
-            // Keys will be in the format "<id> <timestamp>"
-            // Get the id and timestamp, only use the id's that match the current id
-            var id = key.split(" ")[0]
-            var timestamp = key.split(" ")[1]
-
-            // If the id's don't match then skip this save
-            if (id != window["id"]) return
-
-            // Convert the timestamp (1676178699156) to a datetime string (10th August 2022 12:30:00 AM)
-            var date = new Date(parseInt(timestamp))
-            var dateString = date.toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-
-            // Add the save to the table
-            var table = document.getElementById("saves")
-            var row = document.createElement("tr")
-            var created = document.createElement("td")
-            var options = document.createElement("td")
-
-            created.innerHTML = dateString
-            // Load save, delete save
-            var load = document.createElement("i")
-            load.classList.add("fa", "fa-save")
-            load.title = "Load save"
-            load.onclick = () => {
-                // Set 'objects' to the JSON parsed value of the save
-                objects = JSON.parse(value)
-
-                // Close the popup
-                document.getElementById("popup").style.visibility = "hidden"
-            }
-            options.appendChild(load)
-
-            var del = document.createElement("i")
-            del.classList.add("fa", "fa-trash")
-            del.title = "Delete save"
-            del.onclick = () => {
-                // Delete the save
-                localStorage.removeItem(key)
-
-                // Hide the popup and press 'ctrl + o' to refresh the saves
-                document.getElementById("popup").style.visibility = "hidden"
-                document.onkeydown({ ctrlKey: true, key: "o" })
-            }
-            options.appendChild(del)
-
-            row.appendChild(created)
-            row.appendChild(options)
-
-            table.appendChild(row)
-        }
-
-        settingsMenu("loadMenu")
-    }
-
-    if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
-        // If the user is also holding the shift key (and only editing one node) then toggle the selection of all the nodes in the direction of the arrow key
-        if (event.shiftKey && document.querySelectorAll(".editing").length == 1) {
-            // Get the id of the node that is being edited
-            var id = document.querySelector(".editing").id
-
-            // Get the x and y position of the selected node
-            var position = objects.find(obj => obj.id == id).position
-
-            // Run get a set of nodes in the direction of the arrow key
-            var nodes = []
-
-            // First check runs for sub, head, and info nodes
-            var objs = objects.filter(obj => ["Sub", "Head", "Info"].includes(obj.class))
-
-            if (event.key == "ArrowUp") nodes = objs.filter(obj => obj.position[1] <= position[1])
-            else if (event.key == "ArrowDown") nodes = objs.filter(obj => obj.position[1] >= position[1])
-            else if (event.key == "ArrowLeft") nodes = objs.filter(obj => obj.position[0] <= position[0])
-            else if (event.key == "ArrowRight") nodes = objs.filter(obj => obj.position[0] >= position[0])
-
-            // Second check runs for era nodes (only for left and right arrow keys)
-            objs = objects.filter(obj => obj.class == "Era")
-
-            if (event.key == "ArrowLeft") nodes = nodes.concat(objs.filter(obj => obj.position <= position[0]))
-            else if (event.key == "ArrowRight") nodes = nodes.concat(objs.filter(obj => obj.position >= position[0]))
-
-            // Toggle the selection of each in the set of nodes (except the selected node)
-            nodes.forEach(node => {
-                if (node.id != id) {
-                    document.getElementById(node.id).classList.toggle("editing")
-                }
-            })
-
-            return
-        }
-
-        var els = document.querySelectorAll(".editing")
-
-        if (Array.from(els).includes(document.activeElement.parentElement)) {
-            return
-        }
-
-        event.preventDefault()
-
-        els.forEach(el => {
-            var updated = 5
-
-            if ( ["ArrowUp","ArrowLeft"].includes(event.key) ) {
-                updated = -5
-            }
-
-            var elObj = objects.find(obj => obj.id == el.id)
-
-            if ( ["ArrowLeft","ArrowRight"].includes(event.key) ) {
-                if (elObj.class != "Era") {
-                    updated += Number(el.style.marginLeft.slice(0, el.style.marginLeft.length - 2))
-                }
-                else {
-                    updated += Number(el.style.left.slice(0, el.style.left.length - 2))
-                }
-
-                if (updated >= 0) {
-                    if (elObj.class != "Era") {
-                        el.style.marginLeft = updated + "em"
-                        elObj.position[0] = updated
-                    }
-                    else {
-                        el.style.left = updated + "em"
-                        elObj.position = updated
-                    }
-                }
-            }
-            else {
-                updated += Number(el.style.marginTop.slice(0, el.style.marginTop.length - 2))
-
-                if (updated >= 0 && elObj.class != "Era") {
-                    el.style.marginTop = updated + "em"
-                    elObj.position[1] = updated
-                }
-                else if (elObj.class == "Era") {
-                    elObj.position = updated
-                }
-            }
-
-            var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
-
-            toUpdate.forEach(element => {
-                updateLinks(element)
-            })
-        })
-
-        // Reset the height of each era
-        document.querySelectorAll(".era").forEach(era => {
-            era.style.height = "0px"
-        })
-
-        // Get the scrolling height of the screen
-        var height = document.scrollingElement.scrollHeight + "px"
-
-        // Set the height of each era to the height of the map
-        document.querySelectorAll(".era").forEach(era => {
-            era.style.height = height
-        })
-
-        // If only one node is selected then scroll the screen so that the node is on the screen (don't if already in view however)
-        if (els.length == 1) {
-            els[0].scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
-        }
-    }
-    else if (event.key == "Enter" && window["editing"]) {
-        event.preventDefault()
-
-        document.querySelectorAll(".editing").forEach(edit => {
-            edit.classList.remove("editing")
-            Array.from(edit.children).forEach(child => {
-                child.readOnly = true
-            })
-        })
-
-        window["editing"] = false
-
-        save(false, "Pressed enter within editing mode")
-    }
-    else if (event.key == "Enter" && window["decrypt"]) {
-        document.getElementById("subForm").click()
-    }
-    else if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
-        setTimeout(function (){
-            var el = document.activeElement.parentElement
-
-            var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
-    
-            toUpdate.forEach(element => {
-                var points = []
-    
-                element.line.forEach(line => {
-                    var xreq = document.getElementById(objects.find(obj => obj.id == line[0]).id)
-                    var yreq = document.getElementById(objects.find(obj => obj.id == line[2]).id)
-    
-                    var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
-                    var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
-                    
-                    points.push([x, y])
-                })
-    
-                document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
-            })
-          }, 10)
-    }
-
-    // Check if the 'p' key is pressed without there being any active elements or any other keys pressed
-    if (event.key == "p" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-        // Prevent the default action of the keypress
-        event.preventDefault()
-
-        // Html class will go through the following cycle:
-        // {} -> {print} -> {print, print1} -> {print, print1, print2} -> {} -> ...
-
-        // Check if it has the print2 class
-        if (document.querySelector("html").classList.contains("print2")) {
-            // If it does, remove all print classes and exit full screen
-            document.querySelector("html").classList.remove("print")
-            document.querySelector("html").classList.remove("print1")
-
-            document.querySelectorAll(".print2").forEach(el => {
-                el.classList.remove("print2")
-            })
-
-            document.exitFullscreen()
-
-            // Reset each link
-            objects.forEach(obj => {
-                if (obj.class == "Link") {
-                    updateLinks(obj)
-                }
-            })
-        }
-        // Check if it has the print1 class
-        else if (document.querySelector("html").classList.contains("print1")) {
-            // If it does, add the print2 class
-            document.querySelector("html").classList.add("print2")
-        }
-        // Check if it has the print class
-        else if (document.querySelector("html").classList.contains("print")) {
-            // If it does, add the print1 class
-            document.querySelector("html").classList.add("print1")
-
-            // Hide all heads with "A storyline, event or person." as a tooltip, and hide all subs with "A specific event" as a tooltip
-            objects.forEach(obj => {
-                if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
-                    document.getElementById(obj.id).classList.add("print1")
-                }
-                else if (obj.class == "Sub" && obj.description == "A specific event") {
-                    document.getElementById(obj.id).classList.add("print1")
-                }
-            })
-        }
-        // If it doesn't have any print classes
-        else {
-            // Add the print class and enter full screen
-            document.querySelector("html").classList.add("print")
-
-            document.documentElement.requestFullscreen()
-
-            // Reset each link
-            objects.forEach(obj => {
-                if (obj.class == "Link") {
-                    updateLinks(obj)
-                }
-            })
-        }
-    }
-    // Same for the 'e' key
-    else if (event.key == "e" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-        // Get all elements with the print2 class
-        var els = document.querySelectorAll(".print2")
-
-        if (els.length > 0 && !document.querySelector("html").classList.contains("print")) {
-            // If there are any, remove the print2 class from them
-            els.forEach(el => {
-                el.classList.remove("print2")
-            })
-        }
-        else if (els.length == 0 && !document.querySelector("html").classList.contains("print")) {
-            // Get all heads with "A storyline, event or person." as a tooltip, and all subs with "A specific event" as a tooltip
-            objects.forEach(obj => {
-                if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
-                    document.getElementById(obj.id).classList.add("print2")
-                }
-                else if (obj.class == "Sub" && obj.description == "A specific event") {
-                    document.getElementById(obj.id).classList.add("print2")
-                }
-            })
-        }
-    }
 }
 
 function updateLinks(element, get = false) {
@@ -1248,7 +712,7 @@ function moveObj(obj) {
 }
 
 function start() {
-    const infobar = document.getElementById("infobar")
+    if (window["embedded"]) return;
 
     // Check if the user isn't logged in
     if (!auth.currentUser) {
@@ -1416,45 +880,6 @@ function contextMenu(e) {
     return attr
 }
 
-window.addEventListener("scroll", function() {
-    // Get the current scroll position
-    var x = window.scrollX
-    var y = window.scrollY
-
-    // Update the url without reloading the page
-    window.history.replaceState(null, null, "?id=" + window["id"] + "&x=" + x + "&y=" + y)
-
-    if (window["newArrow"] && e.target.classList.contains("addLink")) {
-        document.querySelectorAll(".addLink").forEach((button) => {
-            button.remove()
-        })
-    }
-})
-
-document.onmousemove = function (event) {
-    // If the user is holding the alt key while moving the mouse, scroll the page
-    // e.g. if the mouse is right at the bottom-right corner of the screen, the page will scroll all the way to the bottom-right
-    if (event.altKey) {
-        var x = event.clientX - (window.innerWidth * 0.05)
-        var y = event.clientY - (window.innerHeight * 0.05)
-
-        // Get the whole page size (not just the visible part)
-        var xMax = document.documentElement.offsetWidth - document.documentElement.clientWidth
-        var yMax = document.documentElement.offsetHeight - document.documentElement.clientHeight
-
-        // Get only the visible part of the page (where the mouse can be), with some leeway
-        var xView = window.innerWidth * 0.9
-        var yView = window.innerHeight * 0.9
-
-        // Calculate the scroll amount
-        var xScroll = (x / xView) * xMax 
-        var yScroll = (y / yView) * yMax
-
-        // Scroll the page
-        window.scrollTo(xScroll, yScroll)
-    }
-}
-
 function linkPoints(button, obj, points) {    
     // If the line has only two points, the midpoint is the average of the two points
     if (points.length == 2) {
@@ -1519,75 +944,666 @@ function changeHead(id) {
     })
 }
 
-// On load
-window.onload = function() {
-    // If 'online' or 'notifications' is clicked, run these
-    document.getElementById("online").onchange = function() {
-        modeToggled(false);
-        // Set the 'userWantOnline?' variable to the value of the checkbox
-        window["userWantOnline?"] = this.checked
-    }
-
-    document.getElementById("notifications").onchange = function() {
-        notify(`You will ${this.checked ? "now" : "no longer"} receive notifications of any updates.`)
-    }
-
-    window["internet"] = window.navigator.onLine
-
-    // Activate mode based on online status
-    if (window.navigator.onLine) {
-        document.getElementById("online").checked = true
-    }
-    else {
-        document.getElementById("online").checked = false
-        notify("No internet connection detected. Offline mode activated.")
-        modeToggled()
-    }
-
-    // Check the connection to the internet every second
-    setInterval(() => {
-        // If connected to the internet and the 'internet' variable is false, run the following:
-        if (window.navigator.onLine && !window["internet"]) {
-            console.log("Internet connection re-established.")
-            // If the user wants to be online, set onlineMode to true and notify the user
-            // If the user doesn't want to be online, only notify the user
-            // OnlineMode cannot be true if the user is offline, so no need to check for that
-            var message = "Internet connection re-established."
-            window["internet"] = true
-
-            if (window["userWantOnline?"]) {
-                document.getElementById("online").checked = true
-                message += " Offline mode deactivated."
-                modeToggled()
-            }
-            else {
-                message += " You are now able to deactivate offline mode if you wish."
-            }
-
-            notify(message)
+if (!window["embedded"]) {
+    window.onload = function() {
+        // If 'online' or 'notifications' is clicked, run these
+        document.getElementById("online").onchange = function() {
+            modeToggled(false);
+            // Set the 'userWantOnline?' variable to the value of the checkbox
+            window["userWantOnline?"] = this.checked
         }
-        // If not connected to the internet, but the 'internet' variable is true, do the following:
-        else if (!window.navigator.onLine && window["internet"]) {
-            console.log("Internet connection lost.")
-            window["internet"] = false
-            // Always set onlineMode to false and notify the user
-            // Message is different depending on whether the user wants to be online or not
-            var message = "Internet connection lost."
 
-            if (document.getElementById("online").checked) {
-                document.getElementById("online").checked = false
-                modeToggled()                
-            }
-
-            if (window["userWantOnline?"]) {
-                message += " Offline mode will deactivate when internet connection is re-established."
-            }
-            else {
-                message += " You cannot deactivate offline mode until internet connection is re-established."
-            }
-            notify(message)
+        document.getElementById("notifications").onchange = function() {
+            notify(`You will ${this.checked ? "now" : "no longer"} receive notifications of any updates.`)
         }
-    }, 1000)
+
+        window["internet"] = window.navigator.onLine
+
+        // Activate mode based on online status
+        if (window.navigator.onLine) {
+            document.getElementById("online").checked = true
+        }
+        else {
+            document.getElementById("online").checked = false
+            notify("No internet connection detected. Offline mode activated.")
+            modeToggled()
+        }
+
+        // Check the connection to the internet every second
+        setInterval(() => {
+            // If connected to the internet and the 'internet' variable is false, run the following:
+            if (window.navigator.onLine && !window["internet"]) {
+                console.log("Internet connection re-established.")
+                // If the user wants to be online, set onlineMode to true and notify the user
+                // If the user doesn't want to be online, only notify the user
+                // OnlineMode cannot be true if the user is offline, so no need to check for that
+                var message = "Internet connection re-established."
+                window["internet"] = true
+
+                if (window["userWantOnline?"]) {
+                    document.getElementById("online").checked = true
+                    message += " Offline mode deactivated."
+                    modeToggled()
+                }
+                else {
+                    message += " You are now able to deactivate offline mode if you wish."
+                }
+
+                notify(message)
+            }
+            // If not connected to the internet, but the 'internet' variable is true, do the following:
+            else if (!window.navigator.onLine && window["internet"]) {
+                console.log("Internet connection lost.")
+                window["internet"] = false
+                // Always set onlineMode to false and notify the user
+                // Message is different depending on whether the user wants to be online or not
+                var message = "Internet connection lost."
+
+                if (document.getElementById("online").checked) {
+                    document.getElementById("online").checked = false
+                    modeToggled()                
+                }
+
+                if (window["userWantOnline?"]) {
+                    message += " Offline mode will deactivate when internet connection is re-established."
+                }
+                else {
+                    message += " You cannot deactivate offline mode until internet connection is re-established."
+                }
+                notify(message)
+            }
+        }, 1000)
+    }
+
+    window.addEventListener("scroll", function() {
+        // Get the current scroll position
+        var x = window.scrollX
+        var y = window.scrollY
+    
+        // Update the url without reloading the page
+        window.history.replaceState(null, null, "?id=" + window["id"] + "&x=" + x + "&y=" + y)
+    
+        if (window["newArrow"] && e.target.classList.contains("addLink")) {
+            document.querySelectorAll(".addLink").forEach((button) => {
+                button.remove()
+            })
+        }
+    })
+    
+    document.onmousemove = function (event) {
+        // If the user is holding the alt key while moving the mouse, scroll the page
+        // e.g. if the mouse is right at the bottom-right corner of the screen, the page will scroll all the way to the bottom-right
+        if (event.altKey) {
+            var x = event.clientX - (window.innerWidth * 0.05)
+            var y = event.clientY - (window.innerHeight * 0.05)
+    
+            // Get the whole page size (not just the visible part)
+            var xMax = document.documentElement.offsetWidth - document.documentElement.clientWidth
+            var yMax = document.documentElement.offsetHeight - document.documentElement.clientHeight
+    
+            // Get only the visible part of the page (where the mouse can be), with some leeway
+            var xView = window.innerWidth * 0.9
+            var yView = window.innerHeight * 0.9
+    
+            // Calculate the scroll amount
+            var xScroll = (x / xView) * xMax 
+            var yScroll = (y / yView) * yMax
+    
+            // Scroll the page
+            window.scrollTo(xScroll, yScroll)
+        }
+    }
+
+    document.addEventListener("click", function (event) {
+        // Check if you clicked nothing or the html element
+        if ((event.target == null || event.target.tagName == "HTML") && window["editing"]) {
+            document.querySelectorAll(".editing").forEach((edit) => {
+                edit.classList.remove("editing")
+                Array.from(edit.children).forEach(child => {
+                    child.readOnly = true
+                })
+    
+                window["editing"] = false
+            })
+    
+            document.querySelectorAll(".addLink").forEach((button) => {
+                button.remove()
+            })
+    
+            save(false, "Edit cancelled - Clicked nothing / background")
+            
+            return
+        }
+    
+        if ( event.target.classList.contains("addLink") && !window["newArrow"] ) {
+            window["newArrow"] = true
+    
+            var coords = [0, 0.5]
+            if ( event.target.id == "linkRight" ) coords = [1, 0.5]
+            if ( event.target.id == "linkTop" ) coords = [0.5, 0]
+            if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
+    
+            var obj = {
+                "id": getNew(),
+                "class": "Link",
+                "line": [
+                    [
+                        parseInt(event.target.parentElement.id),
+                        coords[0],
+                        parseInt(event.target.parentElement.id),
+                        coords[1]
+                    ]
+                ],
+                "parentId": parseInt(event.target.parentElement.id),
+                "childId": "mouse",
+                "type": "c"
+            }
+            objects.push(obj)
+    
+            newObj("Link", obj)
+        }
+        else if ( event.target.classList.contains("addLink") && window["newArrow"] ) {
+            window["newArrow"] = false
+    
+            var coords = [0, 0.5]
+            if ( event.target.id == "linkRight" ) coords = [1, 0.5]
+            if ( event.target.id == "linkTop" ) coords = [0.5, 0]
+            if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
+    
+            var obj = objects.find(obj => obj.childId === "mouse")
+    
+            obj.childId = parseInt(event.target.parentElement.id)
+    
+            if ( ["linkLeft", "linkRight"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[1] !== objects.find(e => e.id == obj.childId).position[1] ) {
+                obj.line.push(
+                    [
+                        obj.line[0][0],
+                        obj.line[0][1],
+                        parseInt(event.target.parentElement.id),
+                        coords[1]
+                    ]
+                )
+    
+            }
+            else if ( ["linkTop", "linkBottom"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[0] !== objects.find(e => e.id == obj.childId).position[0] ) {
+                obj.line.push(
+                    [
+                        parseInt(event.target.parentElement.id),
+                        coords[0],
+                        obj.line[0][2],
+                        obj.line[0][3]
+                    ]
+                )
+            }
+    
+            obj.line.push(
+                [
+                    parseInt(event.target.parentElement.id),
+                    coords[0],
+                    parseInt(event.target.parentElement.id),
+                    coords[1]
+                ]
+            )
+    
+            document.getElementById(obj.id).remove()
+    
+            newObj("Link", obj)
+        }
+    
+        if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
+            document.querySelectorAll(".addLink").forEach((button) => {
+                button.remove()
+            })
+        }
+    
+        if ( !(event.target && ( ( event.target.classList && event.target.classList.contains("editing") ) || ( event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("editing") ) ) ) && !event.ctrlKey && window["editing"] ) {
+            document.querySelectorAll(".editing").forEach((edit) => {
+                edit.classList.remove("editing")
+                Array.from(edit.children).forEach(child => {
+                    child.readOnly = true
+                })
+    
+                window["editing"] = false
+            })
+            document.querySelectorAll(".addLink").forEach((button) => {
+                button.remove()
+            })
+    
+            save(false, "Edit cancelled - Clicked something else")
+        }
+        else if ( (event.target.classList && event.target.classList.contains("object") ) || (event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("object")) ) {
+            var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
+    
+            obj.classList.toggle("editing")
+            Array.from(obj.children).forEach(child => {
+                child.readOnly = false
+            })
+            window["editing"] = true
+    
+            var els = document.querySelectorAll(".editing")
+    
+            document.querySelectorAll(".addLink").forEach((button) => {
+                button.remove()
+            })
+    
+            if (els.length == 1 && !els[0].classList.contains("era")) {
+                var linkTop = document.createElement("span")
+                linkTop.classList.add("addLink")
+                linkTop.id = "linkTop"
+                els[0].appendChild(linkTop)
+            
+                var linkBottom = document.createElement("span")
+                linkBottom.classList.add("addLink")
+                linkBottom.id = "linkBottom"
+                els[0].appendChild(linkBottom)
+            
+                var linkLeft = document.createElement("span")
+                linkLeft.classList.add("addLink")
+                linkLeft.id = "linkLeft"
+                els[0].appendChild(linkLeft)
+            
+                var linkRight = document.createElement("span")
+                linkRight.classList.add("addLink")
+                linkRight.id = "linkRight"
+                els[0].appendChild(linkRight)
+            }
+        }
+    
+        // Check if updating a head (first click)
+        if (window["subId"] && !window["subId"].endsWith("-")) {
+            window["subId"] += "-"
+        }
+        // If clicking on a head (second click)
+        else if (window["subId"] && event.target && event.target.classList.contains("head")) {
+            // Get the subId
+            var subId = window["subId"].split("-")[0]
+    
+            // Loop through all objects
+            objects.forEach(obj => {
+                var el = document.getElementById(obj.id)
+    
+                // Check if this is the subId
+                if (obj.id == subId) {
+                    obj.headId = event.target.id
+    
+                    el.remove()
+                    newObj("Sub", obj)
+    
+                    return
+                }
+                // Check the sub is a parent of child of this link
+                else if (obj.class == "Link" && (obj.parentId == subId || obj.childId == subId)) {
+                    el.remove()
+                    newObj("Link", obj)
+    
+                    return
+                }
+        
+                // Reset all filters and pointer events
+                if (obj.class != "Head") {
+                    el.style.filter = "none"
+                    el.style.pointerEvents = "initial"
+        
+                    // If a link then remove the filter from the edit button
+                    if (obj.class == "Link") {
+                        document.getElementById("editLink" + obj.id).style.filter = "none"
+                    }
+    
+                }
+            })
+    
+            window["subId"] = null
+        }
+        // Else if clicking nothing (second click)
+        else if (window["subId"]) {
+            // Loop through all objects
+            objects.forEach(obj => {
+                var el = document.getElementById(obj.id)
+        
+                // Reset all filters and pointer events
+                if (obj.class != "Head") {
+                    el.style.filter = "none"
+                    el.style.pointerEvents = "initial"
+        
+                    // If a link then remove the filter from the edit button
+                    if (obj.class == "Link") document.getElementById("editLink" + obj.id).style.filter = "none"
+                }
+            })
+    
+            window["subId"] = null
+        } 
+    }, false)
+    
+    document.onkeydown = (event) => {
+        if ( window["newArrow"] && ["c", "f", "e"].includes(event.key) ) {
+            var obj = objects.find(obj => obj.childId === "mouse")
+    
+            obj.type = event.key
+    
+            var el = document.getElementById(obj.id).children[1]
+            points = el.getAttribute("points")
+    
+            document.getElementById(obj.id).remove()
+            newObj("Link", obj)
+    
+            var el = document.getElementById(obj.id).children[1]
+            el.setAttribute("points", points)
+        }
+    
+        // Ctrl + S to manually save (if in offline mode)
+        if (event.ctrlKey && event.key == "s") {
+            event.preventDefault()
+            save(true, "Manual save")
+        }
+    
+        // Ctrl + O to fetch manual save (from local storage)
+        if (event.ctrlKey && event.key == "o") {
+            try {
+                event.preventDefault()
+            }
+            catch (e) {}
+    
+           // Clear any existing saves (minus the first row)
+            document.querySelectorAll("#saves tr:not(:first-child)").forEach((row) => {
+                row.remove()
+            })
+            
+            // Loop through all saves, adding each one to the table
+            for (var i = 0; i < localStorage.length; i++) {
+                // Get the key and value of the current save
+                var key = localStorage.key(i)
+                var value = localStorage.getItem(key)
+    
+                // Keys will be in the format "<id> <timestamp>"
+                // Get the id and timestamp, only use the id's that match the current id
+                var id = key.split(" ")[0]
+                var timestamp = key.split(" ")[1]
+    
+                // If the id's don't match then skip this save
+                if (id != window["id"]) return
+    
+                // Convert the timestamp (1676178699156) to a datetime string (10th August 2022 12:30:00 AM)
+                var date = new Date(parseInt(timestamp))
+                var dateString = date.toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+    
+                // Add the save to the table
+                var table = document.getElementById("saves")
+                var row = document.createElement("tr")
+                var created = document.createElement("td")
+                var options = document.createElement("td")
+    
+                created.innerHTML = dateString
+                // Load save, delete save
+                var load = document.createElement("i")
+                load.classList.add("fa", "fa-save")
+                load.title = "Load save"
+                load.onclick = () => {
+                    // Set 'objects' to the JSON parsed value of the save
+                    objects = JSON.parse(value)
+    
+                    // Close the popup
+                    document.getElementById("popup").style.visibility = "hidden"
+                }
+                options.appendChild(load)
+    
+                var del = document.createElement("i")
+                del.classList.add("fa", "fa-trash")
+                del.title = "Delete save"
+                del.onclick = () => {
+                    // Delete the save
+                    localStorage.removeItem(key)
+    
+                    // Hide the popup and press 'ctrl + o' to refresh the saves
+                    document.getElementById("popup").style.visibility = "hidden"
+                    document.onkeydown({ ctrlKey: true, key: "o" })
+                }
+                options.appendChild(del)
+    
+                row.appendChild(created)
+                row.appendChild(options)
+    
+                table.appendChild(row)
+            }
+    
+            settingsMenu("loadMenu")
+        }
+    
+        if( ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key) && window["editing"] ) {
+            // If the user is also holding the shift key (and only editing one node) then toggle the selection of all the nodes in the direction of the arrow key
+            if (event.shiftKey && document.querySelectorAll(".editing").length == 1) {
+                // Get the id of the node that is being edited
+                var id = document.querySelector(".editing").id
+    
+                // Get the x and y position of the selected node
+                var position = objects.find(obj => obj.id == id).position
+    
+                // Run get a set of nodes in the direction of the arrow key
+                var nodes = []
+    
+                // First check runs for sub, head, and info nodes
+                var objs = objects.filter(obj => ["Sub", "Head", "Info"].includes(obj.class))
+    
+                if (event.key == "ArrowUp") nodes = objs.filter(obj => obj.position[1] <= position[1])
+                else if (event.key == "ArrowDown") nodes = objs.filter(obj => obj.position[1] >= position[1])
+                else if (event.key == "ArrowLeft") nodes = objs.filter(obj => obj.position[0] <= position[0])
+                else if (event.key == "ArrowRight") nodes = objs.filter(obj => obj.position[0] >= position[0])
+    
+                // Second check runs for era nodes (only for left and right arrow keys)
+                objs = objects.filter(obj => obj.class == "Era")
+    
+                if (event.key == "ArrowLeft") nodes = nodes.concat(objs.filter(obj => obj.position <= position[0]))
+                else if (event.key == "ArrowRight") nodes = nodes.concat(objs.filter(obj => obj.position >= position[0]))
+    
+                // Toggle the selection of each in the set of nodes (except the selected node)
+                nodes.forEach(node => {
+                    if (node.id != id) {
+                        document.getElementById(node.id).classList.toggle("editing")
+                    }
+                })
+    
+                return
+            }
+    
+            var els = document.querySelectorAll(".editing")
+    
+            if (Array.from(els).includes(document.activeElement.parentElement)) {
+                return
+            }
+    
+            event.preventDefault()
+    
+            els.forEach(el => {
+                var updated = 5
+    
+                if ( ["ArrowUp","ArrowLeft"].includes(event.key) ) {
+                    updated = -5
+                }
+    
+                var elObj = objects.find(obj => obj.id == el.id)
+    
+                if ( ["ArrowLeft","ArrowRight"].includes(event.key) ) {
+                    if (elObj.class != "Era") {
+                        updated += Number(el.style.marginLeft.slice(0, el.style.marginLeft.length - 2))
+                    }
+                    else {
+                        updated += Number(el.style.left.slice(0, el.style.left.length - 2))
+                    }
+    
+                    if (updated >= 0) {
+                        if (elObj.class != "Era") {
+                            el.style.marginLeft = updated + "em"
+                            elObj.position[0] = updated
+                        }
+                        else {
+                            el.style.left = updated + "em"
+                            elObj.position = updated
+                        }
+                    }
+                }
+                else {
+                    updated += Number(el.style.marginTop.slice(0, el.style.marginTop.length - 2))
+    
+                    if (updated >= 0 && elObj.class != "Era") {
+                        el.style.marginTop = updated + "em"
+                        elObj.position[1] = updated
+                    }
+                    else if (elObj.class == "Era") {
+                        elObj.position = updated
+                    }
+                }
+    
+                var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
+    
+                toUpdate.forEach(element => {
+                    updateLinks(element)
+                })
+            })
+    
+            // Reset the height of each era
+            document.querySelectorAll(".era").forEach(era => {
+                era.style.height = "0px"
+            })
+    
+            // Get the scrolling height of the screen
+            var height = document.scrollingElement.scrollHeight + "px"
+    
+            // Set the height of each era to the height of the map
+            document.querySelectorAll(".era").forEach(era => {
+                era.style.height = height
+            })
+    
+            // If only one node is selected then scroll the screen so that the node is on the screen (don't if already in view however)
+            if (els.length == 1) {
+                els[0].scrollIntoView({behavior: "smooth", block: "center", inline: "center"})
+            }
+        }
+        else if (event.key == "Enter" && window["editing"]) {
+            event.preventDefault()
+    
+            document.querySelectorAll(".editing").forEach(edit => {
+                edit.classList.remove("editing")
+                Array.from(edit.children).forEach(child => {
+                    child.readOnly = true
+                })
+            })
+    
+            window["editing"] = false
+    
+            save(false, "Pressed enter within editing mode")
+        }
+        else if (event.key == "Enter" && window["decrypt"]) {
+            document.getElementById("subForm").click()
+        }
+        else if (Array.from(document.querySelectorAll(".editing")).includes(document.activeElement.parentElement)) {
+            setTimeout(function (){
+                var el = document.activeElement.parentElement
+    
+                var toUpdate = objects.filter(e => e.parentId == el.getAttribute("id") || e.childId == el.getAttribute("id") )
+        
+                toUpdate.forEach(element => {
+                    var points = []
+        
+                    element.line.forEach(line => {
+                        var xreq = document.getElementById(objects.find(obj => obj.id == line[0]).id)
+                        var yreq = document.getElementById(objects.find(obj => obj.id == line[2]).id)
+        
+                        var x = xreq.offsetLeft + (xreq.offsetWidth * (line[1] - 0.5) )
+                        var y = yreq.offsetTop + (yreq.offsetHeight * line[3])
+                        
+                        points.push([x, y])
+                    })
+        
+                    document.getElementById(element.id).children[1].setAttributeNS(null, "points", points)
+                })
+              }, 10)
+        }
+    
+        // Check if the 'p' key is pressed without there being any active elements or any other keys pressed
+        if (event.key == "p" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+            // Prevent the default action of the keypress
+            event.preventDefault()
+    
+            // Html class will go through the following cycle:
+            // {} -> {print} -> {print, print1} -> {print, print1, print2} -> {} -> ...
+    
+            // Check if it has the print2 class
+            if (document.querySelector("html").classList.contains("print2")) {
+                // If it does, remove all print classes and exit full screen
+                document.querySelector("html").classList.remove("print")
+                document.querySelector("html").classList.remove("print1")
+    
+                document.querySelectorAll(".print2").forEach(el => {
+                    el.classList.remove("print2")
+                })
+    
+                document.exitFullscreen()
+    
+                // Reset each link
+                objects.forEach(obj => {
+                    if (obj.class == "Link") {
+                        updateLinks(obj)
+                    }
+                })
+            }
+            // Check if it has the print1 class
+            else if (document.querySelector("html").classList.contains("print1")) {
+                // If it does, add the print2 class
+                document.querySelector("html").classList.add("print2")
+            }
+            // Check if it has the print class
+            else if (document.querySelector("html").classList.contains("print")) {
+                // If it does, add the print1 class
+                document.querySelector("html").classList.add("print1")
+    
+                // Hide all heads with "A storyline, event or person." as a tooltip, and hide all subs with "A specific event" as a tooltip
+                objects.forEach(obj => {
+                    if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
+                        document.getElementById(obj.id).classList.add("print1")
+                    }
+                    else if (obj.class == "Sub" && obj.description == "A specific event") {
+                        document.getElementById(obj.id).classList.add("print1")
+                    }
+                })
+            }
+            // If it doesn't have any print classes
+            else {
+                // Add the print class and enter full screen
+                document.querySelector("html").classList.add("print")
+    
+                document.documentElement.requestFullscreen()
+    
+                // Reset each link
+                objects.forEach(obj => {
+                    if (obj.class == "Link") {
+                        updateLinks(obj)
+                    }
+                })
+            }
+        }
+        // Same for the 'e' key
+        else if (event.key == "e" && document.activeElement == document.body && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+            // Get all elements with the print2 class
+            var els = document.querySelectorAll(".print2")
+    
+            if (els.length > 0 && !document.querySelector("html").classList.contains("print")) {
+                // If there are any, remove the print2 class from them
+                els.forEach(el => {
+                    el.classList.remove("print2")
+                })
+            }
+            else if (els.length == 0 && !document.querySelector("html").classList.contains("print")) {
+                // Get all heads with "A storyline, event or person." as a tooltip, and all subs with "A specific event" as a tooltip
+                objects.forEach(obj => {
+                    if (obj.class == "Head" && obj.description == "A storyline, event or person.") {
+                        document.getElementById(obj.id).classList.add("print2")
+                    }
+                    else if (obj.class == "Sub" && obj.description == "A specific event") {
+                        document.getElementById(obj.id).classList.add("print2")
+                    }
+                })
+            }
+        }
+    }
 }
 
 function checkStatus(event) {
@@ -1656,6 +1672,8 @@ function modeToggled(initialDelay = true) {
 }   
 
 function helpMenu() {
+    if (window["embedded"]) return;
+
     return {
         "Era Dividers": {
             desc: [
