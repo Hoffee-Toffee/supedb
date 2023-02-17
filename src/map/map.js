@@ -43,6 +43,7 @@ function display(all = true, objs = objects, embedEl = null) {
         if (window["embedded"]) {
             objects.forEach(obj => {
                 if (obj.class === "Link" && objIDs.includes(obj.parentId) && objIDs.includes(obj.childId)) {
+                    console.log(obj)
                     newObj(obj.class, obj, null, null, embedEl)
                 }
             })
@@ -89,7 +90,12 @@ function display(all = true, objs = objects, embedEl = null) {
     }
 }
 
-function newObj(type, obj = null, e = null, headId = null, location = document.body) {
+function newObj(type, obj = null, e = null, headId = null, document = null) {
+    var embedLoc = document
+
+    document = (document == null) ? window.document : document.contentDocument
+    var location = document.body
+    
     if (e) {
         // Get the coordinates of the mouse including the scroll
         var x = e.clientX + document.scrollingElement.scrollLeft
@@ -387,14 +393,23 @@ function newObj(type, obj = null, e = null, headId = null, location = document.b
 
             var points = []
 
+
             obj.line.forEach(el => {
-                var xreq = window["embedded"] ? Array.from(location.children).find(e => e.id == el[0]) : document.getElementById(objects.find(e => e.id == el[0]).id)
-                var yreq = window["embedded"] ? Array.from(location.children).find(e => e.id == el[2]) : document.getElementById(objects.find(e => e.id == el[2]).id)
-                // var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
-        
+                var xreq = document.getElementById(objects.find(e => e.id == el[0]).id)
+                var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
+    
                 var x = xreq.offsetLeft + (xreq.offsetWidth * (el[1] - 0.5) )
                 var y = yreq.offsetTop + (yreq.offsetHeight * el[3])
-        
+
+                if (obj.id == "3") {
+                    console.log(`xreq.offsetLeft: ${xreq.offsetLeft}\nxreq.offsetWidth: ${xreq.offsetWidth}\nyreq.offsetTop: ${yreq.offsetTop}\nyreq.offsetHeight: ${yreq.offsetHeight}`)
+
+                    if (window["embedded"]) {
+                        console.log(`embedLoc.offsetLeft: ${embedLoc.offsetLeft}\nembedLoc.offsetWidth: ${embedLoc.offsetWidth}\nembedLoc.offsetTop: ${embedLoc.offsetTop}\nembedLoc.offsetHeight: ${embedLoc.offsetHeight}`)
+                        console.log(`embedLoc.clientLeft: ${embedLoc.clientLeft}\nembedLoc.clientWidth: ${embedLoc.clientWidth}\nembedLoc.clientTop: ${embedLoc.clientTop}\nembedLoc.clientHeight: ${embedLoc.clientHeight}`)
+                    }
+                }
+
                 points.push([x, y])
             })
 

@@ -226,7 +226,9 @@ function displayWiki() {
 
       // Fill the embed with the events
       wiki.appendChild(iframe)
-      display(true, events, iframe.contentDocument.body)
+      iframe.contentDocument.head.innerHTML = "<link rel='stylesheet' href='../common/common.css'><link rel='stylesheet' href='../map/map.css'>"
+      iframe.contentDocument.body.innerHTML = "<svg style='height: 0; width: 0;' id='arrow-templates'><defs><marker id='arrow' markerWidth='13' markerHeight='13' refx='9' refy='6' orient='auto'><path d='M2,1 L2,10 L10,6 L2,2' fill='grey'></path></marker></defs><use href='#arrow'></use></svg>"
+      display(true, events, iframe)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
@@ -309,7 +311,10 @@ function displayWiki() {
 
       // Fill the embed with the subs
       wiki.appendChild(iframe)
-      display(true, subs, iframe.contentDocument.body)
+      
+      iframe.contentDocument.head.innerHTML = "<link rel='stylesheet' href='../common/common.css'><link rel='stylesheet' href='../map/map.css'>"
+      iframe.contentDocument.body.innerHTML = "<svg style='height: 0; width: 0;' id='arrow-templates'><defs><marker id='arrow' markerWidth='13' markerHeight='13' refx='9' refy='6' orient='auto'><path d='M2,1 L2,10 L10,6 L2,2' fill='grey'></path></marker></defs><use href='#arrow'></use></svg>"
+      display(true, subs, iframe)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
@@ -342,45 +347,6 @@ function displayWiki() {
         contentsItem.appendChild(contentsLink)
       })
     }
-
-    // Add the stylesheet to the iframe
-    var link = iframe.contentDocument.head.appendChild(document.createElement("link"))
-    link.rel = "stylesheet"
-    link.href = "../map/map.css"
-
-    /*
-          <svg style="height: 0; width: 0;" id="arrow-templates">
-            <defs>
-            <marker id="arrow" markerWidth="13" markerHeight="13" refx="9" refy="6" orient="auto">
-                <path d="M2,1 L2,10 L10,6 L2,2" fill="grey"/>
-            </marker>
-            </defs>
-            <use href="#arrow"/>
-        </svg>
-    */
-
-    // Add the arrow templates to the iframe
-    var arrowTemplates = iframe.contentDocument.body.appendChild(document.createElement("svg"))
-    arrowTemplates.style.height = "0"
-    arrowTemplates.style.width = "0"
-    arrowTemplates.id = "arrow-templates"
-
-    var defs = arrowTemplates.appendChild(document.createElement("defs"))
-
-    var marker = defs.appendChild(document.createElement("marker"))
-    marker.id = "arrow"
-    marker.markerWidth = "13"
-    marker.markerHeight = "13"
-    marker.refx = "9"
-    marker.refy = "6"
-    marker.orient = "auto"
-
-    var path = marker.appendChild(document.createElement("path"))
-    path.d = "M2,1 L2,10 L10,6 L2,2"
-    path.fill = "grey"
-
-    var use = arrowTemplates.appendChild(document.createElement("use"))
-    use.href = "#arrow"
   }
 }
 
