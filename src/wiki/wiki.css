@@ -93,10 +93,10 @@ body {
     box-shadow: 0 0 0.1em var(--col-red-orange-shadow);
 }
 
-#wikiPage ul {
+#wikiPage ul,
+#wikiPage ol {
     padding: 0.5em 0 0.5em 2em;
     margin: 2em 0 0.5em 0.5em;
-    list-style: numeric;
     background-color: #0c0c0c;
     width: calc(100% - 2.5em);
     max-width: 20em;
@@ -104,7 +104,7 @@ body {
     outline: 1px solid #181818;
 }
 
-#wikiPage ul.toc::before {
+#wikiPage ol.toc::before {
     content: "Table of Contents";
     display: block;
     font-weight: bold;
@@ -114,16 +114,19 @@ body {
     color: #bbb;
 }
 
-#wikiPage ul li::marker {
+#wikiPage ul li::marker,
+#wikiPage ol li::marker {
     color: #888;
 }
 
-#wikiPage ul li {
+#wikiPage ul li,
+#wikiPage ol li {
     margin: 0.25em 0;
     padding-left: 0.5em;
 }
 
-#wikiPage ul li:not(:last-child)::after {
+#wikiPage ul li:not(:last-child)::after,
+#wikiPage ol li:not(:last-child)::after {
     content: "";
     display: block;
     width: calc(100% - 1.5em);

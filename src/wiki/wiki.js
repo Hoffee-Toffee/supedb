@@ -222,7 +222,7 @@ function display() {
       wiki.appendChild(description2)
 
       // Create a contents table to be populated later
-      var contents = document.createElement("ul")
+      var contents = document.createElement("ol")
 
       contents.classList.add("toc")
 
@@ -256,6 +256,7 @@ function display() {
           // Create the sub title
           var subTitle = document.createElement("h4")
           subTitle.innerText = sub.title
+          subTitle.id = sub.id
           section.appendChild(subTitle)
 
           // Create the sub description
@@ -263,6 +264,15 @@ function display() {
           subDescription.innerText = sub.description
           section.appendChild(subDescription)
         })
+
+        // Add to table of contents
+        var contentsItem = document.createElement("li")
+        contents.appendChild(contentsItem)
+
+        var contentsLink = document.createElement("a")
+        contentsLink.href = `#${head.id}`
+        contentsLink.innerText = head.title
+        contentsItem.appendChild(contentsLink)
       })
     }
     // If it's a head page, then show the details of that event, its subs, and its info nodes
@@ -289,7 +299,7 @@ function display() {
       wiki.appendChild(description2)
 
       // Create a contents table to be populated later
-      var contents = document.createElement("ul")
+      var contents = document.createElement("ol")
 
       contents.classList.add("toc")
 
@@ -301,12 +311,23 @@ function display() {
         // Create the sub title
         var subTitle = document.createElement("h4")
         subTitle.innerText = sub.title
+        subTitle.id = sub.id
+
         wiki.appendChild(subTitle)
 
         // Create the sub description
         var subDescription = document.createElement("p")
         subDescription.innerText = sub.description
         wiki.appendChild(subDescription)
+
+        // Add to table of contents
+        var contentsItem = document.createElement("li")
+        contents.appendChild(contentsItem)
+
+        var contentsLink = document.createElement("a")
+        contentsLink.href = `#${sub.id}`
+        contentsLink.innerText = sub.title
+        contentsItem.appendChild(contentsLink)
       })
     }
   }
