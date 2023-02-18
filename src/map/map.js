@@ -12,6 +12,11 @@ window["userWantOnline?"] = true
 window["embedded"] = window.parent !== window
 
 function display(all = true, objs = objects, embedEl = null) {
+    if (window["embedded"]) {
+        // Delete 'mapSettings'
+        document.getElementById("mapSettings").remove()
+    }
+
     var scrollX = null
     var scrollY = null
 
@@ -93,8 +98,6 @@ function display(all = true, objs = objects, embedEl = null) {
 }
 
 function newObj(type, obj = null, e = null, headId = null, document = null) {
-    var embedLoc = document
-
     document = (document == null) ? window.document : document.contentDocument
     var location = document.body
     
@@ -469,8 +472,8 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
         
                 // When hovered, show the context menu
                 button.addEventListener("mouseover", function() {
-                    // Return if the context menu is already open elsewhere
-                    if (document.getElementById("context-menu")) return
+                    // Return if the context menu is already open
+                    if (document.getElementById("context-menu") || window["embedded"]) return
 
                     // Get the position of the button
                     var mid = linkPoints(button, obj, points)
@@ -567,6 +570,8 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
     }
 
     tag.addEventListener("mouseover", function() {
+        if (window["embedded"]) return
+        
         if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 && obj.class != "Era") {
             var linkTop = document.createElement("span")
             linkTop.classList.add("addLink")
@@ -823,6 +828,7 @@ function start() {
 }
 
 function contextMenu(e) {
+    if (window["embedded"]) return
     e.preventDefault()
 
     // For clicking on the body/html
@@ -1698,7 +1704,10 @@ function modeToggled(initialDelay = true) {
 }   
 
 function helpMenu() {
-    if (window["embedded"]) return;
+    if (window["embedded"]) {
+        help()
+        return
+    }
 
     return {
         "Era Dividers": {
