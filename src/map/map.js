@@ -9,7 +9,7 @@ window["decrypt"] = false
 window["subId"] = null
 window["userWantOnline?"] = true 
 
-window["embedded"] = window.location.pathname.split("/").pop().split(".")[0] !== "map"
+window["embedded"] = window.parent !== window
 
 function display(all = true, objs = objects, embedEl = null) {
     var scrollX = null
@@ -156,6 +156,7 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             tag.classList.add("head")
             tag.classList.add("object")
             tag.addEventListener("dblclick", (e) => {
+                if (window["embedded"]) return
                 // Make sure the user clicked on the object and not one of its children
                 if (e.target == tag) {
                     moveObj(tag)
@@ -183,26 +184,32 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
             // text.addEventListener("mouseover", (e) => { infobar.innerHTML = "Double click to edit title." })
             // text.addEventListener("mouseout", (e) => { infobar.innerHTML = "" })
+
+            if (window["embedded"]) text.readOnly = true
+
             text.value = obj.title
             text.size = text.value.length
             text.readOnly = true
             text.classList.add("title")
             // Update the object once it loses focus
             text.addEventListener("blur", function() {
+                if (window["embedded"]) return
                 updateObj(this, "title")
             })
             tag.appendChild(text)
 
-            var color = document.createElement("input")
-            color.type = "color"
-            color.classList.add("colorPicker")
-            color.style.backgroundColor = "#" + obj.color
-            color.setAttribute("value", "#" + obj.color)
-            color.setAttribute("list", "colors")
-            color.addEventListener("change", function() { updateColor(color) })
-            // color.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the color of this node, it's links, and it's subnodes." })
-            // color.addEventListener("mouseout", function() { infobar.innerHTML = "" })
-            tag.appendChild(color)
+            if (!window["embedded"]) {
+                var color = document.createElement("input")
+                color.type = "color"
+                color.classList.add("colorPicker")
+                color.style.backgroundColor = "#" + obj.color
+                color.setAttribute("value", "#" + obj.color)
+                color.setAttribute("list", "colors")
+                color.addEventListener("change", function() { updateColor(color) })
+                // color.addEventListener("mouseover", function() { infobar.innerHTML = "Click to change the color of this node, it's links, and it's subnodes." })
+                // color.addEventListener("mouseout", function() { infobar.innerHTML = "" })
+                tag.appendChild(color)
+            }
 
             var tooltip = document.createElement("textarea")
             tooltip.value = (obj.description != null) ? obj.description : ""
@@ -210,11 +217,13 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             tooltip.size = tooltip.value.length
             tooltip.readOnly = true
             tooltip.setAttribute("oninput", `
+                if (window["embedded"]) return
                 this.style.height = 'auto'
                 this.style.height = this.scrollHeight+'px'
                 this.scrollTop = this.scrollHeight
             `)
             tooltip.addEventListener("blur", function() {
+                if (window["embedded"]) return
                 updateObj(this, "description")
             })
             // tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
@@ -260,6 +269,7 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             tag.classList.add("sub")
             tag.classList.add("object")
             tag.addEventListener("dblclick", (e) => {
+                if (window["embedded"]) return
                 // Make sure the user clicked on the object and not one of its children
                 if (e.target == tag) {
                     moveObj(tag)
@@ -278,14 +288,12 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             tag.addEventListener("mouseover", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = 5 } })
             tag.addEventListener("mouseout", (e) => { if (e.target == tag || (e.target.parentElement && e.target.parentElement == tag) || (e.target.parentElement.parentElement && e.target.parentElement.parentElement == tag) || (e.target.parentElement.parentElement.parentElement && e.target.parentElement.parentElement.parentElement == tag)) { tag.style.zIndex = "" } })
 
-
             var text = document.createElement("input")
             text.type = "text"
             text.setAttribute("oninput", "this.size = this.value.length; updateLinks(this.parentElement, true)")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
-            text.addEventListener("blur", function() {
-                updateObj(this, "title")
-            })
+
+            if (window["embedded"]) text.readOnly = true
 
             text.value = obj.title
             text.size = text.value.length
@@ -301,11 +309,13 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             tooltip.size = tooltip.value.length
             tooltip.readOnly = true
             tooltip.setAttribute("oninput", `
+                if (window["embedded"]) return
                 this.style.height = 'auto'
                 this.style.height = this.scrollHeight+'px'
                 this.scrollTop = this.scrollHeight
             `)
             tooltip.addEventListener("blur", function() {
+                if (window["embedded"]) return
                 updateObj(this, "description")
             })
             // tooltip.addEventListener("mouseover", function() { infobar.innerHTML = "Double click to edit the description of this node." })
@@ -395,23 +405,12 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
 
             var points = []
 
-            var iframeRect = window["embedded"] ? embedLoc.getBoundingClientRect() : {left: 0, top: 0}
-
             obj.line.forEach(el => {
                 var xref = document.getElementById(objects.find(e => e.id == el[0]).id);
                 var yref = document.getElementById(objects.find(e => e.id == el[2]).id);
             
                 var x = xref.offsetLeft + (xref.offsetWidth * (el[1] - 0.5));
                 var y = yref.offsetTop + (yref.offsetHeight * el[3]);
-            
-                if (window["embedded"]) {
-                    x += iframeRect.left;
-                    y += iframeRect.top;
-                }
-
-                if (obj.id == "3") {
-                    console.log(`el[0]: ${el[0]},\n el[2]: ${el[2]},\n xref.offsetLeft: ${xref.offsetLeft},\n iframeRect.left: ${iframeRect.left},\n xref.offsetWidth: ${xref.offsetWidth},\n el[1]: ${el[1]},\n yref.offsetTop: ${yref.offsetTop},\n iframeRect.top: ${iframeRect.top},\n yref.offsetHeight: ${yref.offsetHeight},\n el[3]: ${el[3]},\n x: ${x},\n y: ${y}`)
-                }
             
                 points.push([x, y]);
             });
