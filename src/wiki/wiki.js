@@ -340,8 +340,8 @@ function displayWiki() {
       // Remove nulls, duplicates, and any heads that are already in the incLinks array
       heads = new Set(heads.filter(e => e != null && !incLinks.includes(e)))
 
-      // Give each head an attribute to hide it
-      heads.forEach(e => e.hidden = true)
+      // Give each head an attribute to hide it (unless it's the page head)
+      heads.forEach(e => e.hidden = e.id != page.id)
 
       // Merge the heads array into the incLinks array
       var incHidden = incLinks.concat([...heads])
