@@ -54,6 +54,10 @@ function display(all = true, objs = objects, embedEl = null) {
                     newObj(obj.class, obj, null, null, embedEl)
                 }
             })
+
+            // Resize the iframe to fit it's contents
+            embedEl.style.height = "calc(3em + " + embedEl.contentDocument.scrollingElement.scrollHeight + "px)"
+            embedEl.style.width = "calc(4em + " + embedEl.contentDocument.scrollingElement.scrollWidth + "px)"
         }
     }
     else {
@@ -571,7 +575,7 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
 
     tag.addEventListener("mouseover", function() {
         if (window["embedded"]) return
-        
+
         if (window["newArrow"] && document.querySelectorAll(".addLink").length == 0 && obj.class != "Era") {
             var linkTop = document.createElement("span")
             linkTop.classList.add("addLink")
