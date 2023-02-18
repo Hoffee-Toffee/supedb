@@ -202,11 +202,27 @@ function displayWiki() {
         events = events.filter(e => e.position[0] > eraStart && e.position[0] < eraEnd)
       }
 
-      // Add the objects to the iframe
       // Get all objects that are either A) in the events array or B) have both a parent and child that are in the events array
-      iframe.setAttribute("objects", JSON.stringify(objects.filter(e => events.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && events.includes(o)) && objects.find(o => o.id == e.childId && events.includes(o))))))
+      var incLinks = objects.filter(e => events.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && events.includes(o)) && objects.find(o => o.id == e.childId && events.includes(o))))
 
-      console.log(events)
+      var heads = incLinks.map(e => {
+        if (e.class == "Sub") {
+          // Return the head if not already this array or within the incLinks array
+          return objects.find(o => o.id == e.headId)
+        }
+      })
+
+      // Remove nulls, duplicates, and any heads that are already in the incLinks array
+      heads = new Set(heads.filter(e => e != null && !incLinks.includes(e)))
+
+      // Give each head an attribute to hide it
+      heads.forEach(e => e.hidden = true)
+
+      // Merge the heads array into the incLinks array
+      var incHidden = incLinks.concat([...heads])
+
+      // Add the objects to the iframe
+      iframe.setAttribute("objects", JSON.stringify(incHidden))
 
       // Populate the page with the era page
       var wiki = document.getElementById("wikiPage")
@@ -311,9 +327,27 @@ function displayWiki() {
 
       var subs = objects.filter(e => e.headId == page.id)
 
-      // Add the objects to the iframe
       // Get all objects that are either A) in the subs array or B) have both a parent and child that are in the subs array
-      iframe.setAttribute("objects", JSON.stringify(objects.filter(e => subs.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && subs.includes(o)) && objects.find(o => o.id == e.childId && subs.includes(o))))))
+      var incLinks = objects.filter(e => subs.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && subs.includes(o)) && objects.find(o => o.id == e.childId && subs.includes(o))))
+
+      var heads = incLinks.map(e => {
+        if (e.class == "Sub") {
+          // Return the head if not already this array or within the incLinks array
+          return objects.find(o => o.id == e.headId)
+        }
+      })
+
+      // Remove nulls, duplicates, and any heads that are already in the incLinks array
+      heads = new Set(heads.filter(e => e != null && !incLinks.includes(e)))
+
+      // Give each head an attribute to hide it
+      heads.forEach(e => e.hidden = true)
+
+      // Merge the heads array into the incLinks array
+      var incHidden = incLinks.concat([...heads])
+
+      // Add the objects to the iframe
+      iframe.setAttribute("objects", JSON.stringify(incHidden))
 
       // Fill the embed with the subs
       wiki.appendChild(iframe)
