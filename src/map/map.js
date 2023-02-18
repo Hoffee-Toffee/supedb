@@ -50,14 +50,49 @@ function display(all = true, objs = objects, embedEl = null) {
         if (window["embedded"]) {
             objects.forEach(obj => {
                 if (obj.class === "Link" && objIDs.includes(obj.parentId) && objIDs.includes(obj.childId)) {
-                    console.log(obj)
                     newObj(obj.class, obj, null, null, embedEl)
                 }
             })
 
-            // Resize the iframe to fit it's contents
+            // Check if any of the objects are outside the iframe (to the left of the iframe) (loop while none are)
+            while (!Array.from(embedEl.contentDocument.querySelectorAll(".object")).some(obj => obj.getBoundingClientRect().left < 0)) {
+                // Move all the objects to the left by 5em
+                embedEl.contentDocument.querySelectorAll(".object").forEach(obj => {
+                    obj.style.marginLeft = "calc(" + obj.style.marginLeft + " - 5em)"
+                })
+
+                // Offset all links (except the first), and each .editLink by 5em
+                embedEl.contentDocument.querySelectorAll("svg, .editLink").forEach((svg) => {
+                    if (svg.classList.contains("editLink")) {
+                        svg.style.marginLeft = "calc(" + (svg.style.marginLeft || "0em") + " - 6em)"
+                        return
+                    }
+
+                    if (svg.id !== "arrow-templates") {
+                        svg.style.left = "calc(" + (svg.style.left || "0em") + " - 5em)"
+                    }
+                })
+            }
+
+            // Now need to move back by a final 5em to bring the objects back into the iframe
+            embedEl.contentDocument.querySelectorAll(".object").forEach(obj => {
+                obj.style.marginLeft = "calc(" + obj.style.marginLeft + " + 5em)"
+            })
+
+            embedEl.contentDocument.querySelectorAll("svg, .editLink").forEach((svg) => {
+                if (svg.classList.contains("editLink")) {
+                    svg.style.marginLeft = "calc(" + (svg.style.marginLeft || "0em") + " + 6em)"
+                    return
+                }
+
+                if (svg.id !== "arrow-templates") {
+                    svg.style.left = "calc(" + (svg.style.left || "0em") + " + 5em)"
+                }
+            })
+
+            // Finally, resize the iframe yet again to fit it's contents
             embedEl.style.height = "calc(3em + " + embedEl.contentDocument.scrollingElement.scrollHeight + "px)"
-            embedEl.style.width = "calc(4em + " + embedEl.contentDocument.scrollingElement.scrollWidth + "px)"
+            embedEl.style.width = "calc(2em + " + embedEl.contentDocument.scrollingElement.scrollWidth + "px)"
         }
     }
     else {
@@ -745,7 +780,6 @@ function start() {
         window["id"] = url.searchParams.get("id")
         window["embedEL"] = window.parent.document.getElementById(window["id"])
         display(true, JSON.parse(window["embedEL"].getAttribute("objects")), window["embedEL"])
-        console.log(window["embedEL"].getAttribute("objects"))
         return
     }
 
@@ -916,7 +950,7 @@ function contextMenu(e) {
     return attr
 }
 
-function linkPoints(button, obj, points) {    
+function linkPoints(button, obj, points) {
     // If the line has only two points, the midpoint is the average of the two points
     if (points.length == 2) {
         var midX = (parseInt(points[0][0]) + parseInt(points[1][0])) / 2
