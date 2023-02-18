@@ -35,6 +35,8 @@ function display(all = true, objs = objects, embedEl = null) {
 
         var objIDs = objs.map(obj => obj.id)
 
+        objects = objs
+
         // Add the objects (and their contained links if embedded)
         objs.forEach(obj => {
             newObj(obj.class, obj, null, null, window["embedded"] ? embedEl : undefined)
@@ -393,25 +395,26 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
 
             var points = []
 
+            var iframeRect = window["embedded"] ? embedLoc.getBoundingClientRect() : {left: 0, top: 0}
 
             obj.line.forEach(el => {
-                var xreq = document.getElementById(objects.find(e => e.id == el[0]).id)
-                var yreq = document.getElementById(objects.find(e => e.id == el[2]).id)
-    
-                var x = xreq.offsetLeft + (xreq.offsetWidth * (el[1] - 0.5) )
-                var y = yreq.offsetTop + (yreq.offsetHeight * el[3])
-
-                if (obj.id == "3") {
-                    console.log(`xreq.offsetLeft: ${xreq.offsetLeft}\nxreq.offsetWidth: ${xreq.offsetWidth}\nyreq.offsetTop: ${yreq.offsetTop}\nyreq.offsetHeight: ${yreq.offsetHeight}`)
-
-                    if (window["embedded"]) {
-                        console.log(`embedLoc.offsetLeft: ${embedLoc.offsetLeft}\nembedLoc.offsetWidth: ${embedLoc.offsetWidth}\nembedLoc.offsetTop: ${embedLoc.offsetTop}\nembedLoc.offsetHeight: ${embedLoc.offsetHeight}`)
-                        console.log(`embedLoc.clientLeft: ${embedLoc.clientLeft}\nembedLoc.clientWidth: ${embedLoc.clientWidth}\nembedLoc.clientTop: ${embedLoc.clientTop}\nembedLoc.clientHeight: ${embedLoc.clientHeight}`)
-                    }
+                var xref = document.getElementById(objects.find(e => e.id == el[0]).id);
+                var yref = document.getElementById(objects.find(e => e.id == el[2]).id);
+            
+                var x = xref.offsetLeft + (xref.offsetWidth * (el[1] - 0.5));
+                var y = yref.offsetTop + (yref.offsetHeight * el[3]);
+            
+                if (window["embedded"]) {
+                    x += iframeRect.left;
+                    y += iframeRect.top;
                 }
 
-                points.push([x, y])
-            })
+                if (obj.id == "3") {
+                    console.log(`el[0]: ${el[0]},\n el[2]: ${el[2]},\n xref.offsetLeft: ${xref.offsetLeft},\n iframeRect.left: ${iframeRect.left},\n xref.offsetWidth: ${xref.offsetWidth},\n el[1]: ${el[1]},\n yref.offsetTop: ${yref.offsetTop},\n iframeRect.top: ${iframeRect.top},\n yref.offsetHeight: ${yref.offsetHeight},\n el[3]: ${el[3]},\n x: ${x},\n y: ${y}`)
+                }
+            
+                points.push([x, y]);
+            });
 
             if (obj.childId == "mouse") {
                 try {
@@ -727,7 +730,16 @@ function moveObj(obj) {
 }
 
 function start() {
-    if (window["embedded"]) return;
+    // If embedded
+    if (window.parent.document != window.document) {
+        // Get the embed ID from the URL
+        var url = new URL(window.location.href)
+        window["id"] = url.searchParams.get("id")
+        window["embedEL"] = window.parent.document.getElementById(window["id"])
+        display(true, JSON.parse(window["embedEL"].getAttribute("objects")), window["embedEL"])
+        console.log(window["embedEL"].getAttribute("objects"))
+        return
+    }
 
     // Check if the user isn't logged in
     if (!auth.currentUser) {

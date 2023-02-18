@@ -6,8 +6,8 @@ var objects = []
 function start() {
   // Check if the user isn't logged in
   if (!auth.currentUser) {
-        // Redirect to the login page with redirect params
-        location.href = "../login/login.html?redirect=" + redir()
+      // Redirect to the login page with redirect params
+      location.href = "../login/login.html?redirect=" + redir()
   }
 
   // Check if the user has any associated permissions
@@ -172,7 +172,8 @@ function displayWiki() {
 
     // Create a new document element for the timeline
     var iframe = document.createElement("iframe")
-    iframe.src = "about:blank"
+    iframe.id = "wikiMap"
+    iframe.src = "../map/map.html?id=wikiMap"
 
     // If it's an era page, then show all the events that happened during that time period
     if (page.class == "Era") {
@@ -201,6 +202,10 @@ function displayWiki() {
         events = events.filter(e => e.position[0] > eraStart && e.position[0] < eraEnd)
       }
 
+      // Add the objects to the iframe
+      // Get all objects that are either A) in the events array or B) have both a parent and child that are in the events array
+      iframe.setAttribute("objects", JSON.stringify(objects.filter(e => events.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && events.includes(o)) && objects.find(o => o.id == e.childId && events.includes(o))))))
+
       console.log(events)
 
       // Populate the page with the era page
@@ -226,9 +231,6 @@ function displayWiki() {
 
       // Fill the embed with the events
       wiki.appendChild(iframe)
-      iframe.contentDocument.head.innerHTML = "<link rel='stylesheet' href='../common/common.css'><link rel='stylesheet' href='../map/map.css'>"
-      iframe.contentDocument.body.innerHTML = "<svg style='height: 0; width: 0;' id='arrow-templates'><defs><marker id='arrow' markerWidth='13' markerHeight='13' refx='9' refy='6' orient='auto'><path d='M2,1 L2,10 L10,6 L2,2' fill='grey'></path></marker></defs><use href='#arrow'></use></svg>"
-      display(true, events, iframe)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
@@ -309,12 +311,12 @@ function displayWiki() {
 
       var subs = objects.filter(e => e.headId == page.id)
 
+      // Add the objects to the iframe
+      // Get all objects that are either A) in the subs array or B) have both a parent and child that are in the subs array
+      iframe.setAttribute("objects", JSON.stringify(objects.filter(e => subs.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && subs.includes(o)) && objects.find(o => o.id == e.childId && subs.includes(o))))))
+
       // Fill the embed with the subs
       wiki.appendChild(iframe)
-      
-      iframe.contentDocument.head.innerHTML = "<link rel='stylesheet' href='../common/common.css'><link rel='stylesheet' href='../map/map.css'>"
-      iframe.contentDocument.body.innerHTML = "<svg style='height: 0; width: 0;' id='arrow-templates'><defs><marker id='arrow' markerWidth='13' markerHeight='13' refx='9' refy='6' orient='auto'><path d='M2,1 L2,10 L10,6 L2,2' fill='grey'></path></marker></defs><use href='#arrow'></use></svg>"
-      display(true, subs, iframe)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
