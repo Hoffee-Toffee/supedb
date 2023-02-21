@@ -51,6 +51,15 @@ function help() {
         helpBox.id = "helpBox";
         helpScreen.appendChild(helpBox);
 
+        // Add a close button
+        let close = document.createElement("button");
+        close.id = "close";
+        let closeIcon = document.createElement("i");
+        closeIcon.className = "fa fa-times";
+        close.appendChild(closeIcon);
+        helpBox.appendChild(close);
+        close.addEventListener("click", help);
+
         // Remove scrolling from the body
         document.body.style.overflow = "hidden";
 

@@ -62,6 +62,26 @@ html.help* {
     flex-wrap: wrap;
 }
 
+#helpBox #close {
+    background-color: transparent;
+    border: none;
+    width: 2em;
+    height: 2em;
+    margin-top: 1em;
+    margin-left: 1em;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#helpBox #close i {
+    color: var(--col-red);
+    font-size: 2em;
+    text-shadow: 0 0 0.5em var(--col-red-orange);
+}
+
 #helpBox h1 {
     width: 100%;
     font-size: 1.5em;
