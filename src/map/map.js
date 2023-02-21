@@ -44,6 +44,8 @@ function display(all = true, objs = objects, embedEl = null) {
 
         // Add the objects (and their contained links if embedded)
         objs.forEach(obj => {
+            // Exit if an non-contained link (toggle will exist and be set to true)
+            if (obj.class === "Link" && obj.toggle) return
             newObj(obj.class, obj, null, null, window["embedded"] ? embedEl : undefined)
         })
 
@@ -712,6 +714,7 @@ function save(manual = false, reason) {
         // Save data to local storage, under the id of the map and the time saved
         localStorage.setItem(window["mapSettings"].id + " " + Date.now(), data)
         notify("Saved to local storage")
+        return
     }
     else if (!document.getElementById("online").checked && !manual) { // Autosave while offline (invalid)
         return
@@ -727,7 +730,7 @@ function save(manual = false, reason) {
     // Update firestore document
     db.collection("timelines").doc(window["mapSettings"].id).update({
         map: data,
-        lastChange: auth.currentUser.email
+        lastChange: sessionStorage.getItem("ID")
     })
 }
 
@@ -791,6 +794,17 @@ function start() {
         location.href = "../login/login.html?redirect=" + redir()
     }
 
+
+    // // Convert the timestamp (1676178699156) to a datetime string (10th August 2022 12:30:00 AM)
+    // var date = new Date(parseInt(timestamp))
+    // var dateString = date.toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+    var dateString = new Date().toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+    sessionStorage.setItem("ID", `USER: ${auth.currentUser.email}, INITIATED: ${dateString}, TOKEN: ${Math.random().toString(36).toUpperCase().slice(2)}`)
+
+    // notify("Session began:\n" + sessionStorage.getItem("ID").replace(/,/g, "\n\n"))
+
     // Check if the user has any associated permissions
     db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -815,7 +829,7 @@ function start() {
 
     // Sync all data from the timeline (don't sync if the user is the one that made the last change unless they are loading for the first time)
     db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
-        if (map.data().lastChange != auth.currentUser.email || !window["mapSettings"]) {
+        if (map.data().lastChange != sessionStorage.getItem("ID")) {
             console.log("Retrieving map data...")
             document.getElementsByTagName("title")[0].innerText = map.data().title
     
@@ -852,10 +866,6 @@ function start() {
                     window["ready"] = true
                 }
             }
-        }
-        else {
-            console.log("Syncing with new updates from other users...")
-            display(false);
         }
     })
     
@@ -1412,6 +1422,9 @@ if (!window["embedded"]) {
                 load.onclick = () => {
                     // Set 'objects' to the JSON parsed value of the save
                     objects = JSON.parse(value)
+
+                    // Run the display function
+                    display(true, objects)
     
                     // Close the popup
                     document.getElementById("popup").style.visibility = "hidden"

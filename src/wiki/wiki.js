@@ -327,9 +327,33 @@ function displayWiki() {
 
       var subs = objects.filter(e => e.headId == page.id)
 
-      // Get all objects that are either A) in the subs array or B) have both a parent and child that are in the subs array
-      var incLinks = objects.filter(e => subs.includes(e) || (e.class == "Link" && objects.find(o => o.id == e.parentId && subs.includes(o)) && objects.find(o => o.id == e.childId && subs.includes(o))))
+      // Get all links related to any of the subs
+      var links = objects.filter(e => e.class == "Link" && objects.find(o => o.id == e.parentId && subs.includes(o)) || objects.find(o => o.id == e.childId && subs.includes(o)))
 
+      // Get the destinations of all the links
+      var destinations = links.map(e => {
+        // Only run if only one destination node is within the subs array, don't run if both or neither are
+        if (subs.includes(objects.find(o => o.id == e.parentId)) != subs.includes(objects.find(o => o.id == e.childId))) {
+          // Return the link and the destination node (the one that isn't in the subs array)
+          // Both nodes will now have the toggle attribute set to true
+          e.toggle = true
+          var destination = subs.includes(objects.find(o => o.id == e.parentId)) ? objects.find(o => o.id == e.childId) : objects.find(o => o.id == e.parentId)
+          destination.toggle = true
+          return [e, destination]
+        }
+      })
+
+      // Remove nulls and duplicates
+      destinations = new Set(destinations.filter(e => e != null))
+
+      console.log(destinations)
+
+      // Add all links and destinations to the incLinks array (flattened)
+      var incLinks = subs.concat([...destinations].flat())
+
+      console.log(incLinks)
+
+      // Get all heads required for the subs
       var heads = incLinks.map(e => {
         if (e.class == "Sub") {
           // Return the head if not already this array or within the incLinks array
