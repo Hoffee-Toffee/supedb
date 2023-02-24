@@ -139,7 +139,7 @@ function display(all = true, objs = objects, embedEl = null) {
 }
 
 function newObj(type, obj = null, e = null, headId = null, document = null) {
-    if (obj.hidden) return
+    if (obj && obj.hidden) return
     
     document = (document == null) ? window.document : document.contentDocument
     var location = document.body
