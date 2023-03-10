@@ -102,7 +102,7 @@ function display(all = true, objs = objects, embedEl = null) {
             var heightDiff = embedEl.contentDocument.scrollingElement.scrollHeight - embedEl.contentDocument.scrollingElement.clientHeight
             var widthDiff = embedEl.contentDocument.scrollingElement.scrollWidth - embedEl.contentDocument.scrollingElement.clientWidth
 
-            alert(`${heightDiff}px of height are hidden, ${widthDiff}px of width are hidden`)
+            console.log(`${heightDiff}px of height are hidden, ${widthDiff}px of width are hidden`)
         }
     }
     else {
@@ -793,7 +793,6 @@ function start() {
         window["id"] = url.searchParams.get("id")
         window["embedEL"] = window.parent.document.getElementById(window["id"])
         display(true, JSON.parse(window["embedEL"].getAttribute("objects")), window["embedEL"])
-        alert(window.parent.document.height)
         return
     }
 
