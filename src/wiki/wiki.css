@@ -32,11 +32,28 @@ body {
     left: 0;
 }
 
+#wikiPage h1,
+#wikiPage h2,
+#wikiPage h3 {
+    color: #e8e8e8;
+    text-shadow: 0 0 0.25em var(--col-orange-hover);
+    font-family: 'Linux Libertine','Georgia','Times',serif;
+}
+
 #wikiPage h1 {
     font-weight: bold;
-    margin: 0;
-    font-size: 2.25em;
-    line-height: 2.5em;
+    margin: -0.5em;
+    padding-bottom: 0.5em;
+    font-size: 1em;
+    color: #999;
+}
+
+#wikiPage h1::after {
+    content: "";
+    display: block;
+    width: calc(100vw - 2.5em);
+    height: 1px;
+    background-color: #333;
 }
 
 #wikiPage h2 {
@@ -47,17 +64,23 @@ body {
 }
 
 #wikiPage h3 {
-    font-weight: bold;
-    margin: 0;
-    font-size: 1.25em;
+    font-weight: normal;
+    margin-bottom: 0;
+    font-size: 1.5em;
     line-height: 1.5em;
 }
 
-#wikiPage h1,
-#wikiPage h2,
-#wikiPage h3 {
-    color: #e8e8e8;
-    text-shadow: 0 0 0.25em var(--col-orange-hover);
+#wikiPage h4 {
+    font-size: 1.15em;
+    margin: 0;
+}
+
+#wikiPage h3::after {
+    content: "";
+    display: block;
+    width: calc(100vw - 2.5em);
+    height: 1px;
+    background-color: #555;
 }
 
 #wikiPage a {
@@ -135,8 +158,8 @@ body {
     margin-top: 0.5em;
     position: relative;
 }
-
-/* #wikiPage iframe {
+/* 
+#wikiPage iframe {
     width: 75em;
     height: 15em;
 } */

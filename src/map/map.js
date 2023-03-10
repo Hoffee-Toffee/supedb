@@ -1774,7 +1774,8 @@ function helpMenu() {
                     ],
                     "Editing an Era": [
                         "You can double click the title of an era to edit it."
-                    ]
+                    ],
+                    // "GIF": "../images/era (2).gif"
                 }
             ]
         },
@@ -1794,7 +1795,8 @@ function helpMenu() {
                     "Changing a Head Node's Color": [
                         "You can click the color picker to change the color of the head node.",
                         "This will also change the color of it's sub nodes and links."
-                    ]
+                    ],
+                    // "GIF": "../images/Era.gif"
                 }
             ]
         },
@@ -1810,13 +1812,15 @@ function helpMenu() {
                     ],
                     "Editing a Sub Node": [
                         "You can double click the title or description of a sub node to edit it."
-                    ]
+                    ],
+                    // "GIF": "../images/Head (2).gif"
                 },
                 {
                     "Changing a Sub Node's Head": [
                         "Right click on a sub node and select \"Change Head\".",
                         "Then click on the head node you want to change it to."
-                    ]
+                    ],
+                    // "GIF": "../images/Head Change.gif"
                 }
             ]
         },
@@ -1830,12 +1834,14 @@ function helpMenu() {
                     "Selecting multiple nodes": [
                         "Press \"Ctrl\" and click on a node to toggle it's selection.",
                         "You can use this to select multiple nodes, or to deselect a node."
-                    ]
+                    ],
+                    // "GIF": "../images/Head End.gif"
                 },
                 {
                     "Directional Selection": [
                         "When a singular node is selected, you can use \"Shift\" and an arrow key to select all nodes in that direction."
-                    ]
+                    ],
+                    // "GIF": "../images/Head Start.gif"
                 }
             ]
         },
@@ -1864,7 +1870,8 @@ function helpMenu() {
                         "",
                         "You can only use this method during link creation.",
                         "However, you can change the type of a link after it has been created in the context menu."
-                    ]
+                    ],
+                    // "GIF": "../images/head.gif"
                 },
                 {
                     "Accessing a Link's Context Menu": [
@@ -1883,7 +1890,8 @@ function helpMenu() {
                     ],
                     "Deleting a Link": [
                         "Click \"Delete\" to delete the link."
-                    ]
+                    ],
+                    // "GIF": "../images/Link (1).gif"
                 }
             ]
         },
@@ -1900,7 +1908,8 @@ function helpMenu() {
                         "Press the \"Delete\" key to delete the selected nodes.",
                         "This will delete all links connected to the nodes as well.",
                         "If any head nodes are deleted, their sub nodes will not be deleted, but will become 'orphaned'."
-                    ]
+                    ],
+                    // "GIF": "../images/Link.gif"
                 }
             ]
         },
@@ -1924,7 +1933,8 @@ function helpMenu() {
                         "Tags are similar to categories, but they are not related to head nodes.",
                         "They are more like keywords and types, such as \"Character\", \"Location\", \"Event\", \"Battle\", \"Birth\", etc.",
                         "They can be used to filter and search for nodes."
-                    ]
+                    ],
+                    // "GIF": "../images/Move.gif"
                 },
                 {
                     "Wiki": [
@@ -1936,7 +1946,8 @@ function helpMenu() {
                         "It will be possible to drag a box around nodes to select them.",
                         "Also will add the option to click and drag nodes to move them.",
                         "Moving like this will only be possible for selected nodes (to prevent accidental movement)."
-                    ]
+                    ],
+                    // "GIF": "../images/Select.gif"
                 },
                 {
                     "Print Mode": [
@@ -1955,7 +1966,8 @@ function helpMenu() {
                         "Will add features using this page to show users the help menu on load, and to track what they have seen.",
                         "Will have the option to disable this, and to mark pages as \"read\".",
                         "Any time new features are added, you'll be able to see them when you load the page."
-                    ]
+                    ],
+                    // "GIF": "../images/Single Move.gif"
                 },
                 {
                     "Help Menu": [
@@ -1967,7 +1979,8 @@ function helpMenu() {
                     "Settings": [
                         "Project and timeline settings are being fixed and new features are being added.",
                         "Inviting users, and changing their permissions, will be added soon."
-                    ]
+                    ],
+                    // "GIF": "../images/Sub P1.gif"
                 },
                 {
                     "Versions": [
@@ -1981,7 +1994,8 @@ function helpMenu() {
                         "It will be able to be added to your server, and will be able to notify you of any updates.",
                         "Some processes could be done through the bot, accessing the wiki, etc.",
                         "It can also facilitate communication between users and voting when needed."
-                    ]
+                    ],
+                    // "GIF": "../images/Sub P2.gif"
                 },
                 {
                     "Back and Close Buttons": [
@@ -1993,7 +2007,20 @@ function helpMenu() {
                         "Pressing \"E\" currently shows all nodes that still have the default description.",
                         "This is useful for finding nodes that need to be filled in.",
                         "This will be expanded further in the future."
-                    ]
+                    ],
+                    // "GIF": "../images/sub.gif"
+                },
+                {
+                    "Blah": [
+                        "Blah"
+                    ],
+                    // "GIF": "../images/Sub1.gif"
+                },
+                {
+                    "More Blah": [
+                        "The blah continues."
+                    ],
+                    // "GIF": "../images/sub2.gif"
                 }
             ]
         }

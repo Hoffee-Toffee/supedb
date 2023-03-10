@@ -158,6 +158,15 @@ function help() {
 
                 // Loop through each section
                 for (let section in menuData[topic].pages[i]) {
+                    // Check if the section is a gif
+                    if (section == "GIF") {
+                        // Add the gif
+                        let gif = document.createElement("img");
+                        gif.src = menuData[topic].pages[i][section];
+                        pageDiv.appendChild(gif);
+
+                        continue;
+                    }
                     // Add the section text
                     let sectionText = document.createElement("p");
                     sectionText.innerText = menuData[topic].pages[i][section].join("\n");
