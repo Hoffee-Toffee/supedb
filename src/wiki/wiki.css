@@ -158,8 +158,8 @@ body {
     margin-top: 0.5em;
     position: relative;
 }
-/* 
-#wikiPage iframe {
-    width: 75em;
-    height: 15em;
-} */
+
+#wikiMap {
+    max-width: calc(100vw - 4em);
+    max-height: 10em;
+}

@@ -93,10 +93,39 @@ function displayWiki() {
 
   // If none is provided, then show links to all heads and all era pages
   if (pageId == null) {
+    // Check if it has the 'new' param in the URL (won't be set, but will be present)
+    if (url.searchParams.get("new") != undefined) {
+        // Show a placeholder page
+        var wiki = document.getElementById("wikiPage")
+
+        // Create the title
+        var title = document.createElement("h1")
+        title.innerText = `${window["mapSettings"].title} - New Page`
+        wiki.appendChild(title)
+
+        // Create the subtitle
+        var subtitle = document.createElement("h2")
+        subtitle.innerText = "New Page"
+        wiki.appendChild(subtitle)
+
+        // Create the main description
+        var description = document.createElement("p")
+        description.innerText = "This feature is coming soon, but will allow you to create new custom pages."
+        wiki.appendChild(description)
+
+        return
+    }
     // Get all eras
     var eras = objects.filter(e => e.class == "Era")
+
+    // Order eras by position (lowest to highest)
+    eras.sort((a, b) => a.position - b.position)
+
     // Get all heads
     var heads = objects.filter(e => e.class == "Head")
+
+    // Order heads by position x (lowest to highest) then by position y (lowest to highest) for any with the same x value
+    heads.sort((a, b) => a.position[0] - b.position[0] || a.position[1] - b.position[1])
 
     console.log(`All: ${objects.length}, Eras: ${eras.length}, Heads: ${heads.length}`)
 
@@ -105,7 +134,7 @@ function displayWiki() {
 
     // Create the title
     var title = document.createElement("h1")
-    title.innerText = `${window["mapSettings"].title} - Wiki`
+    title.innerText = `${window["mapSettings"].title} - Main Page`
     wiki.appendChild(title)
 
     // Create the subtitle
@@ -170,6 +199,9 @@ function displayWiki() {
     // If a page ID is provided, then get that object
     var page = objects.find(e => e.id == pageId)
 
+    // If that id doesn't exist, then set 'page.class' to null
+    if (page == undefined) page = {class: null}
+
     // Create a new document element for the timeline
     var iframe = document.createElement("iframe")
     iframe.id = "wikiMap"
@@ -229,11 +261,11 @@ function displayWiki() {
 
       // Create the titles
       var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - ${page.title}`
+      title.innerText = `${window["mapSettings"].title} - Era Page`
       wiki.appendChild(title)
 
       var subtitle = document.createElement("h2")
-      subtitle.innerText = "Era Page"
+      subtitle.innerText = page.title
       wiki.appendChild(subtitle)
 
       // Create the descriptions
@@ -309,11 +341,11 @@ function displayWiki() {
 
       // Create the titles
       var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - ${page.title}`
+      title.innerText = `${window["mapSettings"].title} - Head Page`
       wiki.appendChild(title)
 
       var subtitle = document.createElement("h2")
-      subtitle.innerText = "Event Page"
+      subtitle.innerText = page.title
       wiki.appendChild(subtitle)
 
       // Create the descriptions
@@ -406,6 +438,68 @@ function displayWiki() {
         contentsLink.innerText = sub.title
         contentsItem.appendChild(contentsLink)
       })
+    }
+    // If it's a link or sub then show a placeholder telling the user that no such feature exists yet
+    else if (page.class == "Link" || page.class == "Sub") {
+      // Populate the page with the head page
+      var wiki = document.getElementById("wikiPage")
+
+      // Create the titles
+      var title = document.createElement("h1")
+      title.innerText = `${window["mapSettings"].title} - ${page.class} Page`
+      wiki.appendChild(title)
+
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`
+      wiki.appendChild(subtitle)
+
+      // Create the descriptions
+      var description = document.createElement("p")
+      description.innerText = `This is the page for this ${page.class}. This feature is not yet implemented.`
+      wiki.appendChild(description)
+    }
+    // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
+    else if (page.class == "Wiki") {
+      // Populate the page with the head page
+      var wiki = document.getElementById("wikiPage")
+
+      // Create the titles
+      var title = document.createElement("h1")
+      title.innerText = `${window["mapSettings"].title} - Custom Wiki Page`
+      wiki.appendChild(title)
+
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = page.title
+      wiki.appendChild(subtitle)
+
+      // Create the descriptions
+      var description = document.createElement("p")
+      description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below./nThe formatting of this page has not yet been implemented.`
+      wiki.appendChild(description)
+    }
+    // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
+    else if (page.class == null) {
+      // Populate the page with the head page
+      var wiki = document.getElementById("wikiPage")
+
+      // Create the titles
+      var title = document.createElement("h1")
+      title.innerText = `${window["mapSettings"].title} - Non-Existent Page`
+      wiki.appendChild(title)
+
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = page.title
+      wiki.appendChild(subtitle)
+
+      // Create the description (with a link inside)
+      var description = document.createElement("p")
+      description.innerText = `This page does not exist. You can create it by clicking the link below.\n`
+      wiki.appendChild(description)
+
+      var link = document.createElement("a")
+      link.href = `?id=${window["id"]}&new`
+      link.innerText = `Create New Page`
+      description.appendChild(link)
     }
   }
 }

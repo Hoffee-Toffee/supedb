@@ -95,6 +95,14 @@ function display(all = true, objs = objects, embedEl = null) {
             // Finally, resize the iframe yet again to fit it's contents
             embedEl.style.height = "calc(3em + " + embedEl.contentDocument.scrollingElement.scrollHeight + "px)"
             embedEl.style.width = "calc(2em + " + embedEl.contentDocument.scrollingElement.scrollWidth + "px)"
+
+            // Check if the width and height is actually at this value in practice
+            // 1em = 16px
+
+            var heightDiff = embedEl.contentDocument.scrollingElement.scrollHeight - embedEl.contentDocument.scrollingElement.clientHeight
+            var widthDiff = embedEl.contentDocument.scrollingElement.scrollWidth - embedEl.contentDocument.scrollingElement.clientWidth
+
+            alert(`${heightDiff}px of height are hidden, ${widthDiff}px of width are hidden`)
         }
     }
     else {
@@ -785,6 +793,7 @@ function start() {
         window["id"] = url.searchParams.get("id")
         window["embedEL"] = window.parent.document.getElementById(window["id"])
         display(true, JSON.parse(window["embedEL"].getAttribute("objects")), window["embedEL"])
+        alert(window.parent.document.height)
         return
     }
 
