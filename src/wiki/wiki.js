@@ -304,6 +304,23 @@ function displayWiki() {
         sectionTitle.innerText = head.title
         section.appendChild(sectionTitle)
 
+        // Check if it has a main article
+        if (head.mainArticle != undefined) {
+          // Create the main article link
+          var mainArticleLink = document.createElement("a")
+          mainArticleLink.href = `?id=${window["id"]}&page=${head.mainArticle}`
+          mainArticleLink.innerText = objects.find(e => e.id == head.mainArticle).title
+
+          // Create the main article text
+          var mainArticleText = document.createElement("span")
+          mainArticleText.classList.add("note")
+          mainArticleText.innerText = "See Main Article: "
+          
+          // Add the main article link to the text and then to the section
+          mainArticleText.appendChild(mainArticleLink)
+          section.appendChild(mainArticleText)
+        }
+
         // Create the description
         var sectionDescription = document.createElement("p")
         sectionDescription.innerText = head.description
@@ -317,6 +334,24 @@ function displayWiki() {
           subTitle.innerText = sub.title
           subTitle.id = sub.id
           section.appendChild(subTitle)
+
+          // Check if it has a main article
+          if (sub.mainArticle != undefined) {
+            console.log(objects.find(e => e.id == sub.mainArticle).title)
+            // Create the main article link
+            var mainArticleLink = document.createElement("a")
+            mainArticleLink.href = `?id=${window["id"]}&page=${sub.mainArticle}`
+            mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
+
+            // Create the main article text
+            var mainArticleText = document.createElement("span")
+            mainArticleText.classList.add("note")
+            mainArticleText.innerText = "See Main Article: "
+            
+            // Add the main article link to the text and then to the section
+            mainArticleText.appendChild(mainArticleLink)
+            section.appendChild(mainArticleText)
+          }
 
           // Create the sub description
           var subDescription = document.createElement("p")

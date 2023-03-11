@@ -1,13 +1,13 @@
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBjssTtGISSsfWb-rPtK03fytNFdfGklN8",
-    authDomain: "supe-db-test.firebaseapp.com",
-    projectId: "supe-db-test",
-    storageBucket: "supe-db-test.appspot.com",
-    messagingSenderId: "674146601812",
-    appId: "1:674146601812:web:9b0b63c3d6272139b896c1",
-    measurementId: "G-KGSL8W8HCS"
-};
+    apiKey: "AIzaSyCRrxXRbbyCbDh06oFKoDwZgd4Ucd0nXyk",
+    authDomain: "supe-db.firebaseapp.com",
+    projectId: "supe-db",
+    storageBucket: "supe-db.appspot.com",
+    messagingSenderId: "414925832647",
+    appId: "1:414925832647:web:04e6b82a8fc2dd48bf99e2",
+    measurementId: "G-FCEP73WM0G"
+  };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);

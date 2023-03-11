@@ -37,7 +37,7 @@ body {
 #wikiPage h3 {
     color: #e8e8e8;
     text-shadow: 0 0 0.25em var(--col-orange-hover);
-    font-family: 'Linux Libertine','Georgia','Times',serif;
+    font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
 }
 
 #wikiPage h1 {
@@ -108,7 +108,7 @@ body {
     box-shadow: 0 0 0.05em var(--col-orange-shadow);
 }
 
-#wikiPage a:hover::after { 
+#wikiPage a:hover::after {
     width: 100%;
     transition: width 0.25s, background-color 0.25s;
     margin-left: 0%;
@@ -162,4 +162,15 @@ body {
 #wikiMap {
     max-width: calc(100vw - 4em);
     max-height: 10em;
+}
+
+span.note {
+    filter: brightness(0.5);
+    width: fit-content;
+    margin-top: 0.5em;
+    padding: 0em 0.3em;
+    font-size: small;
+    background-color: #222;
+    border-radius: 0.25em;
+    display: inline-block;
 }
