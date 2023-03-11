@@ -578,7 +578,7 @@ function displayWiki() {
     }
 
     // Add 'tags' and 'categories' sections if they exist (in collapsable divs)
-    if (page.tags.length > 0) {
+    if (page.tags && page.tags.length > 0) {
       // Create the tags section
       var tags = document.createElement("div")
       tags.classList.add("collapsable", "collapsed")
@@ -608,7 +608,7 @@ function displayWiki() {
       wiki.appendChild(tags)
     }
 
-    if (page.categories.length > 0) {
+    if (page.categories && page.categories.length > 0) {
       // Create the categories section
       var categories = document.createElement("div")
       categories.classList.add("collapsable", "collapsed")
