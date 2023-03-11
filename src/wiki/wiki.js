@@ -9,6 +9,10 @@ function start() {
       // Redirect to the login page with redirect params
       location.href = "../login/login.html?redirect=" + redir()
   }
+  
+  var dateString = new Date().toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+  sessionStorage.setItem("ID", `USER: ${auth.currentUser.email}, INITIATED: ${dateString}, TOKEN: ${Math.random().toString(36).toUpperCase().slice(2)}`)
 
   // Check if the user has any associated permissions
   db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
@@ -494,7 +498,7 @@ function displayWiki() {
       wiki.appendChild(description)
     }
     // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
-    else if (page.class == "Wiki") {
+    else if (page.class == "Info") {
       // Populate the page with the head page
       var wiki = document.getElementById("wikiPage")
 
@@ -509,8 +513,13 @@ function displayWiki() {
 
       // Create the descriptions
       var description = document.createElement("p")
-      description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below./nThe formatting of this page has not yet been implemented.`
+      description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below.\nThe formatting of this page has not yet been implemented.`
       wiki.appendChild(description)
+
+      // Create the raw data
+      var raw = document.createElement("pre")
+      raw.innerText = page
+      wiki.appendChild(raw)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null) {
@@ -556,4 +565,55 @@ function helpMenu() {
       ]
     }
   }
+}
+
+function settingsMenu() {
+  // If the popup is already open, close it.
+  if (document.getElementById("popup").style.visibility == "visible") {
+    document.getElementById("popup").style.visibility = "hidden";
+    document.getElementById("popup").innerHTML = "";
+    return;
+  }
+
+  // Set the popup to be visible.
+  document.getElementById("popup").style.visibility = "visible";
+
+  // Create the popup with the raw objects data to be edited.
+  var popup = document.getElementById("popup");
+
+  // Create the popup title
+  var title = document.createElement("h1");
+  title.innerText = "Edit Objects (Crude JSON Editor For Now)";
+  popup.appendChild(title);
+
+  // Show the raw objects data (formatted at the least)
+  var raw = document.createElement("textarea");
+  raw.id = "raw";
+  raw.value = JSON.stringify(objects, null, 2);
+  raw.style.height = "40em";
+  popup.appendChild(raw);
+
+  // Create the save button
+  var save = document.createElement("button");
+  save.innerText = "Save";
+  save.onclick = function() {
+    // Save the objects
+    objects = JSON.parse(document.getElementById("raw").value);
+    saveObjects();
+
+    // Close the popup
+    document.getElementById("popup").style.visibility = "hidden";
+    document.getElementById("popup").innerHTML = "";
+  }
+  popup.appendChild(save);
+}
+
+function saveObjects() {
+  var data = JSON.stringify(objects)
+
+  // Update firestore document
+  db.collection("timelines").doc(window["mapSettings"].id).update({
+      map: data,
+      lastChange: sessionStorage.getItem("ID")
+  })
 }
