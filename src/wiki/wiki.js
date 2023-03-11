@@ -199,6 +199,43 @@ function displayWiki() {
     })
     wiki.appendChild(headList)
   }
+  // If it starts with "category:", then show all the pages in that category
+  else if (pageId.startsWith("Category:")) {
+    // Get the category name
+    var category = pageId.substring(9)
+
+    // Get all the pages in that category (in alphabetical order)
+    var pages = objects.filter(e => e.categories && e.categories.includes(category)).sort((a, b) => a.title.localeCompare(b.title))
+
+    // Populate the page with the contents of the category
+    var wiki = document.getElementById("wikiPage")
+
+    // Create the title
+    var title = document.createElement("h1")
+    title.innerText = `${window["mapSettings"].title} - Category Page`
+    wiki.appendChild(title)
+
+    // Create the subtitle
+    var subtitle = document.createElement("h2")
+    subtitle.innerText = `Category: ${category}`
+    wiki.appendChild(subtitle)
+
+    // Create the list of pages
+    var pageList = document.createElement("ul")
+
+    pages.forEach(page => {
+      var pageItem = document.createElement("li")
+      pageList.appendChild(pageItem)
+
+      var pageLink = document.createElement("a")
+      pageLink.href = `?id=${window["id"]}&page=${page.id}`
+      pageLink.innerText = page.title
+
+      pageItem.appendChild(pageLink)
+    })
+
+    wiki.appendChild(pageList)
+  }
   else {
     // If a page ID is provided, then get that object
     var page = objects.find(e => e.id == pageId)
@@ -599,9 +636,12 @@ function displayWiki() {
         var tagItem = document.createElement("li")
         tagsList.appendChild(tagItem)
 
+        var tagDest = objects.find(e => e.title == tag)
+
         var tagLink = document.createElement("a")
-        tagLink.href = `?id=${window["id"]}&tag=${tag}`
+        tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&title=${tag}`
         tagLink.innerText = tag
+        if (!tagDest) tagLink.classList.add("invalid")
         tagItem.appendChild(tagLink)
       })
 
@@ -630,7 +670,7 @@ function displayWiki() {
         categoriesList.appendChild(categoryItem)
 
         var categoryLink = document.createElement("a")
-        categoryLink.href = `?id=${window["id"]}&category=${category}`
+        categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
         categoryLink.innerText = category
         categoryItem.appendChild(categoryLink)
       })

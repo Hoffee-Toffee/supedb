@@ -92,11 +92,6 @@ body {
     text-shadow: 0 0 0.1em var(--col-orange-shadow);
 }
 
-#wikiPage a:hover {
-    color: var(--col-red-orange);
-    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
-}
-
 #wikiPage a::after {
     content: "";
     display: block;
@@ -106,6 +101,21 @@ body {
     transition: 0.25s;
     background-color: var(--col-orange);
     box-shadow: 0 0 0.05em var(--col-orange-shadow);
+}
+
+#wikiPage a.invalid {
+    color: var(--col-red);
+    text-shadow: 0 0 0.5em var(--col-red-shadow);
+}
+
+#wikiPage a.invalid::after {
+    background-color: var(--col-red);
+    box-shadow: 0 0 0.1em var(--col-red-shadow);
+}
+
+#wikiPage a:hover {
+    color: var(--col-red-orange);
+    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
 }
 
 #wikiPage a:hover::after {
