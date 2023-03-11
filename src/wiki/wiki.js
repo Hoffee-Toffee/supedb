@@ -225,8 +225,8 @@ function displayWiki() {
       var eraStart = page.position
       var eraEnd = eraPositions[eraPositions.indexOf(eraStart) + 1]
 
-      // Get all heads, subs, and info nodes
-      var events = objects.filter(e => ["Head", "Sub", "Info"].includes(e.class))
+      // Get all heads and subs
+      var events = objects.filter(e => ["Head", "Sub"].includes(e.class))
 
       // Get all the events that happened during that time period
       // If era is the last era, then it will get those that have an x position greater than the era's start
@@ -330,7 +330,7 @@ function displayWiki() {
         sectionDescription.innerText = head.description
         section.appendChild(sectionDescription)
 
-        // Loop through all the subs and info nodes that are children of the head node
+        // Loop through all the subs nodes that are children of the head node
         var subs = events.filter(e => e.headId == head.id)
         subs.forEach(sub => {
           // Create the sub title
@@ -373,7 +373,7 @@ function displayWiki() {
         contentsItem.appendChild(contentsLink)
       })
     }
-    // If it's a head page, then show the details of that event, its subs, and its info nodes
+    // If it's a head page, then show the details of that event and its subs
     else if (page.class == "Head") {
       // Populate the page with the head page
       var wiki = document.getElementById("wikiPage")
@@ -517,8 +517,8 @@ function displayWiki() {
       wiki.appendChild(description)
 
       // Create the raw data
-      var raw = document.createElement("pre")
-      raw.innerText = page
+      var raw = document.createElement("div")
+      raw.innerText = page.content
       wiki.appendChild(raw)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
@@ -544,6 +544,67 @@ function displayWiki() {
       link.href = `?id=${window["id"]}&new`
       link.innerText = `Create New Page`
       description.appendChild(link)
+    }
+
+    // Add 'tags' and 'categories' sections if they exist (in collapsable divs)
+    if (page.tags.length > 0) {
+      // Create the tags section
+      var tags = document.createElement("div")
+      tags.classList.add("collapsable", "collapsed")
+
+      // Create the header
+      var tagsHeader = document.createElement("h3")
+      tagsHeader.innerText = "Tags"
+      tags.appendChild(tagsHeader)
+
+      // Toggle 'collapsed' class on click
+      tagsHeader.addEventListener("click", () => tags.classList.toggle("collapsed"))
+
+      // Create the content
+      var tagsList = document.createElement("ul")
+      tags.appendChild(tagsList)
+
+      page.tags.forEach(tag => {
+        var tagItem = document.createElement("li")
+        tagsList.appendChild(tagItem)
+
+        var tagLink = document.createElement("a")
+        tagLink.href = `?id=${window["id"]}&tag=${tag}`
+        tagLink.innerText = tag
+        tagItem.appendChild(tagLink)
+      })
+
+      wiki.appendChild(tags)
+    }
+
+    if (page.categories.length > 0) {
+      // Create the categories section
+      var categories = document.createElement("div")
+      categories.classList.add("collapsable", "collapsed")
+
+      // Create the header
+      var categoriesHeader = document.createElement("h3")
+      categoriesHeader.innerText = "Categories"
+      categories.appendChild(categoriesHeader)
+
+      // Toggle 'collapsed' class on click
+      categoriesHeader.addEventListener("click", () => categories.classList.toggle("collapsed"))
+
+      // Create the content
+      var categoriesList = document.createElement("ul")
+      categories.appendChild(categoriesList)
+
+      page.categories.forEach(category => {
+        var categoryItem = document.createElement("li")
+        categoriesList.appendChild(categoryItem)
+
+        var categoryLink = document.createElement("a")
+        categoryLink.href = `?id=${window["id"]}&category=${category}`
+        categoryLink.innerText = category
+        categoryItem.appendChild(categoryLink)
+      })
+
+      wiki.appendChild(categories)
     }
   }
 }
