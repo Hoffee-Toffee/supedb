@@ -308,6 +308,20 @@ function displayWiki() {
         sectionTitle.innerText = head.title
         section.appendChild(sectionTitle)
 
+        // Create the head page link
+        var headPage = document.createElement("a")
+        headPage.href = `?id=${window["id"]}&page=${head.id}`
+        headPage.innerText = head.title
+
+        // Create the head page text
+        var headPageText = document.createElement("span")
+        headPageText.classList.add("note")
+        headPageText.innerText = "See Main Page: "
+        
+        // Add the head page link to the text and then to the section
+        headPageText.appendChild(headPage)
+        section.appendChild(headPageText)
+
         // Check if it has a main article
         if (head.mainArticle != undefined) {
           // Create the main article link
@@ -462,6 +476,23 @@ function displayWiki() {
         subTitle.id = sub.id
 
         wiki.appendChild(subTitle)
+
+        // Check if it has a main article
+        if (sub.mainArticle != undefined) {
+          // Create the main article link
+          var mainArticleLink = document.createElement("a")
+          mainArticleLink.href = `?id=${window["id"]}&page=${sub.mainArticle}`
+          mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
+          
+          // Create the main article text
+          var mainArticleText = document.createElement("span")
+          mainArticleText.classList.add("note")
+          mainArticleText.innerText = "See Main Article: "
+
+          // Add the main article link to the text and then to the section
+          mainArticleText.appendChild(mainArticleLink)
+          wiki.appendChild(mainArticleText)
+        }
 
         // Create the sub description
         var subDescription = document.createElement("p")
