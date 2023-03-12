@@ -317,7 +317,7 @@ function displayWiki() {
         window.location.href = `?id=${window["id"]}&page=${objects[random - categories.length - 1].id}`
       }
     }
-    else if (special == "Invalid") {
+    else if (special == "Weak") {
       // Create the page
       var wiki = document.getElementById("wikiPage")
 
@@ -328,7 +328,7 @@ function displayWiki() {
 
       // Create the subtitle
       var subtitle = document.createElement("h2")
-      subtitle.innerText = `Invalid Pages`
+      subtitle.innerText = `Weak and Invaild Pages`
       wiki.appendChild(subtitle)
 
       // Create the list of invalid tags
@@ -353,13 +353,13 @@ function displayWiki() {
 
       // Create the list of weak objects
       var weakObjectList = document.createElement("ul")
-      weakObjectList.title = "Weak Objects"
+      weakObjectList.title = "Weak Pages"
 
       // Loop through all the objects, checking them against their type's default title and description
       objects.forEach(object => {
         switch (object.class) {
           case "Head":
-            if (object.title == "New Head Block" || object.description == "A storyline, event or person.") {
+            if (["", "New Head Block"].includes(object.title) || ["", "A storyline, event or person."].includes(object.description)) {
               var weakObjectItem = document.createElement("li")
               weakObjectList.appendChild(weakObjectItem)
 
@@ -368,14 +368,14 @@ function displayWiki() {
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
-              weakness.innerText = ` (Default ${object.title == "New Head Block" ? "Title" : "Description"}${object.description == "A storyline, event or person." && object.title == "New Head Block" ? " and Description" : ""})`
+              weakness.innerText = ` (Default ${["", "New Head Block"].includes(object.title) ? "Title" : "Description"}${["", "A storyline, event or person."].includes(object.description) && ["", "New Head Block"].includes(object.title) ? " and Description" : ""})`
 
               weakObjectItem.appendChild(weakObjectLink)
               weakObjectItem.appendChild(weakness)
             }
             break
           case "Sub":
-            if (object.title == "New Sub Block" || object.description == "A specific event") {
+            if (["", "New Sub Block"].includes(object.title) || ["", "A specific event"].includes(object.description)) {
               var weakObjectItem = document.createElement("li")
               weakObjectList.appendChild(weakObjectItem)
 
@@ -384,14 +384,14 @@ function displayWiki() {
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
-              weakness.innerText = ` (Default ${object.title == "New Sub Block" ? "Title" : "Description"}${object.description == "A specific event" && object.title == "New Sub Block" ? " and Description" : ""})`
+              weakness.innerText = ` (Default ${["", "New Sub Block"].includes(object.title) ? "Title" : "Description"}${["", "A specific event"].includes(object.description) && ["", "New Sub Block"].includes(object.title) ? " and Description" : ""})`
 
               weakObjectItem.appendChild(weakObjectLink)
               weakObjectItem.appendChild(weakness)
             }
             break
           case "Era":
-            if (object.title == "New Era" || object.description == "Description of this era") {
+            if (["", "New Era"].includes(object.title) || ["", "Description of this era"].includes(object.description)) {
               var weakObjectItem = document.createElement("li")
               weakObjectList.appendChild(weakObjectItem)
 
@@ -400,7 +400,7 @@ function displayWiki() {
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
-              weakness.innerText = ` (Default ${object.title == "New Era" ? "Title" : "Description"}${object.description == "Description of this era" && object.title == "New Era" ? " and Description" : ""})`
+              weakness.innerText = ` (Default ${["", "New Era"].includes(object.title) ? "Title" : "Description"}${["", "Description of this era"].includes(object.description) && ["", "New Era"].includes(object.title) ? " and Description" : ""})`
 
               weakObjectItem.appendChild(weakObjectLink)
               weakObjectItem.appendChild(weakness)
@@ -429,10 +429,10 @@ function displayWiki() {
       var specialPageList = document.createElement("ul")
       specialPageList.title = "Special Pages"
       specialPageList.innerHTML = `
-        <li><a href="?id=${window["id"]}&special=Categories">All Categories</a></li>
-        <li><a href="?id=${window["id"]}&special=Random">Random Page</a></li>
-        <li><a href="?id=${window["id"]}&special=Invalid">Invalid Pages</a></li>
-        <li><a href="?id=${window["id"]}&special=SpecialPages">Special Pages</a></li>
+        <li><a href="?id=${window["id"]}&page=Special:Categories">All Categories</a></li>
+        <li><a href="?id=${window["id"]}&page=Special:Random">Random Page</a></li>
+        <li><a href="?id=${window["id"]}&page=Special:Weak">Weak and Invaild Pages</a></li>
+        <li><a href="?id=${window["id"]}&page=Special:SpecialPages">Special Pages</a></li>
       `
       wiki.appendChild(specialPageList)
     }
