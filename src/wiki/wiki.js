@@ -718,10 +718,11 @@ function settingsMenu() {
   title.innerText = "Edit Objects (Crude JSON Editor For Now)";
   popup.appendChild(title);
 
-  // Show the raw objects data (formatted at the least)
+  // Show the raw objects data (formatted at the least), (don't include 'hidden' and 'toggle' attributes within each object)
   var raw = document.createElement("textarea");
   raw.id = "raw";
-  raw.value = JSON.stringify(objects, null, 2);
+  raw.value = JSON.stringify(objects.map(e => Object.keys(e).reduce((obj, key) => (key != "hidden" && key != "toggle") ? {...obj, [key]: e[key]} : obj, {})), null, 2);
+  
   raw.style.height = "40em";
   popup.appendChild(raw);
 

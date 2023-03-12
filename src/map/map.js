@@ -15,6 +15,9 @@ function display(all = true, objs = objects, embedEl = null) {
     if (window["embedded"]) {
         // Delete 'mapSettings'
         document.getElementById("mapSettings").remove()
+
+        // If 'objs' is empty then delete the embedEl
+        if (objs.length === 0) embedEl.remove()
     }
 
     var scrollX = null
@@ -619,6 +622,8 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
 
             break
     }
+
+    if (type == "Info") return;
 
     tag.addEventListener("mouseover", function() {
         if (window["embedded"]) return
