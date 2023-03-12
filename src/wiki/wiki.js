@@ -678,6 +678,9 @@ function displayWiki() {
       wiki.appendChild(categories)
     }
   }
+
+  // Remove the table of contents if it exists and is empty
+  if (!document.querySelector(".toc > li")) document.querySelector(".toc").remove()
 }
 
 function helpMenu() {
