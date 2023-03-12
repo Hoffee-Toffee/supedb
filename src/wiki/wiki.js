@@ -198,6 +198,29 @@ function displayWiki() {
       headItem.appendChild(headLink)
     })
     wiki.appendChild(headList)
+
+    // Create a list of additional links
+    var links = document.createElement("ul")
+    links.title = "Additional Links"
+    wiki.appendChild(links)
+
+    // Show a link to the special pages
+    var specialTitle = document.createElement("li")
+    links.appendChild(specialTitle)
+
+    var specialLink = document.createElement("a")
+    specialLink.href = `?id=${window["id"]}&page=Special:SpecialPages`
+    specialLink.innerText = "Special Pages"
+    specialTitle.appendChild(specialLink)
+
+    // Show a link to create a new page
+    var newTitle = document.createElement("li")
+    links.appendChild(newTitle)
+
+    var newLink = document.createElement("a")
+    newLink.href = `?id=${window["id"]}&new`
+    newLink.innerText = "Create New Page"
+    newTitle.appendChild(newLink)
   }
   // If it starts with "category:", then show all the pages in that category
   else if (pageId.startsWith("Category:")) {
@@ -235,6 +258,184 @@ function displayWiki() {
     })
 
     wiki.appendChild(pageList)
+  }
+  // If it starts with "special:", then show that special page
+  else if (pageId.startsWith("Special:")) {
+    // Get the special page name
+    var special = pageId.substring(8)
+
+    if (special == "Categories") {
+      // Get all the categories
+      var categories = Array.from(new Set(objects.filter(e => e.categories).flatMap(e => e.categories))).sort()
+
+      // Populate the page with the contents of the category
+      var wiki = document.getElementById("wikiPage")
+
+      // Create the title
+      var title = document.createElement("h1")
+      title.innerText = `${window["mapSettings"].title} - Special Page`
+      wiki.appendChild(title)
+
+      // Create the subtitle
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = `All Categories`
+      wiki.appendChild(subtitle)
+
+      // Create the list of categories
+      var categoryList = document.createElement("ul")
+
+      categories.forEach(category => {
+        var categoryItem = document.createElement("li")
+        categoryList.appendChild(categoryItem)
+
+        var categoryLink = document.createElement("a")
+        categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
+        categoryLink.innerText = category
+
+        categoryItem.appendChild(categoryLink)
+      })
+
+      wiki.appendChild(categoryList)
+    }
+    else if (special == "Random") {
+      // Get all the categories
+      var categories = Array.from(new Set(objects.filter(e => e.categories).flatMap(e => e.categories))).sort()
+
+      // Get a random number between 0 and the number of categories + objects + 1 (for the main page)
+      var random = Math.floor(Math.random() * (categories.length + objects.length + 1))
+
+      if (random == 0) {
+        // Go to the main page
+        window.location.href = `?id=${window["id"]}`
+      }
+      else if (random <= categories.length) {
+        // Go to a random category page
+        window.location.href = `?id=${window["id"]}&page=Category:${categories[random - 1]}`
+      }
+      else {
+        // Go to a random object page
+        window.location.href = `?id=${window["id"]}&page=${objects[random - categories.length - 1].id}`
+      }
+    }
+    else if (special == "Invalid") {
+      // Create the page
+      var wiki = document.getElementById("wikiPage")
+
+      // Create the title
+      var title = document.createElement("h1")
+      title.innerText = `${window["mapSettings"].title} - Special Page`
+      wiki.appendChild(title)
+
+      // Create the subtitle
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = `Invalid Pages`
+      wiki.appendChild(subtitle)
+
+      // Create the list of invalid tags
+      var invalidTagList = document.createElement("ul")
+      invalidTagList.title = "Invalid Tags"
+
+      // Get all tags that don't have a corresponding object
+      var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => !objects.find(f => f.title == e))))
+
+      invalidTags.forEach(tag => {
+        var invalidTagItem = document.createElement("li")
+        invalidTagList.appendChild(invalidTagItem)
+
+        var invalidTagLink = document.createElement("a")
+        invalidTagLink.href = `?id=${window["id"]}&new=${tag}`
+        invalidTagLink.innerText = tag
+
+        invalidTagItem.appendChild(invalidTagLink)
+      })
+
+      wiki.appendChild(invalidTagList)
+
+      // Create the list of weak objects
+      var weakObjectList = document.createElement("ul")
+      weakObjectList.title = "Weak Objects"
+
+      // Loop through all the objects, checking them against their type's default title and description
+      objects.forEach(object => {
+        switch (object.class) {
+          case "Head":
+            if (object.title == "New Head Block" || object.description == "A storyline, event or person.") {
+              var weakObjectItem = document.createElement("li")
+              weakObjectList.appendChild(weakObjectItem)
+
+              var weakObjectLink = document.createElement("a")
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.id}`
+              weakObjectLink.innerText = object.title
+
+              var weakness = document.createElement("span")
+              weakness.innerText = ` (Default ${object.title == "New Head Block" ? "Title" : "Description"}${object.description == "A storyline, event or person." && object.title == "New Head Block" ? " and Description" : ""})`
+
+              weakObjectItem.appendChild(weakObjectLink)
+              weakObjectItem.appendChild(weakness)
+            }
+            break
+          case "Sub":
+            if (object.title == "New Sub Block" || object.description == "A specific event") {
+              var weakObjectItem = document.createElement("li")
+              weakObjectList.appendChild(weakObjectItem)
+
+              var weakObjectLink = document.createElement("a")
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.id}`
+              weakObjectLink.innerText = object.title
+
+              var weakness = document.createElement("span")
+              weakness.innerText = ` (Default ${object.title == "New Sub Block" ? "Title" : "Description"}${object.description == "A specific event" && object.title == "New Sub Block" ? " and Description" : ""})`
+
+              weakObjectItem.appendChild(weakObjectLink)
+              weakObjectItem.appendChild(weakness)
+            }
+            break
+          case "Era":
+            if (object.title == "New Era" || object.description == "Description of this era") {
+              var weakObjectItem = document.createElement("li")
+              weakObjectList.appendChild(weakObjectItem)
+
+              var weakObjectLink = document.createElement("a")
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.id}`
+              weakObjectLink.innerText = object.title
+
+              var weakness = document.createElement("span")
+              weakness.innerText = ` (Default ${object.title == "New Era" ? "Title" : "Description"}${object.description == "Description of this era" && object.title == "New Era" ? " and Description" : ""})`
+
+              weakObjectItem.appendChild(weakObjectLink)
+              weakObjectItem.appendChild(weakness)
+            }
+            break
+          }
+      })
+
+      wiki.appendChild(weakObjectList)
+    }
+    else if (special == "SpecialPages") {
+      // Create the page
+      var wiki = document.getElementById("wikiPage")
+
+      // Create the title
+      var title = document.createElement("h1")
+      title.innerText = `${window["mapSettings"].title} - Special Page`
+      wiki.appendChild(title)
+
+      // Create the subtitle
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = `Special Pages`
+      wiki.appendChild(subtitle)
+
+      // Create the list of special pages
+      var specialPageList = document.createElement("ul")
+      specialPageList.title = "Special Pages"
+      specialPageList.innerHTML = `
+        <li><a href="?id=${window["id"]}&special=Categories">All Categories</a></li>
+        <li><a href="?id=${window["id"]}&special=Random">Random Page</a></li>
+        <li><a href="?id=${window["id"]}&special=Invalid">Invalid Pages</a></li>
+        <li><a href="?id=${window["id"]}&special=SpecialPages">Special Pages</a></li>
+      `
+      wiki.appendChild(specialPageList)
+    }
   }
   else {
     // If a page ID is provided, then get that object

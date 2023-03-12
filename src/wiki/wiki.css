@@ -139,6 +139,16 @@ body {
 
 #wikiPage ol.toc::before {
     content: "Table of Contents";
+}
+
+#wikiPage ul[title]::before,
+#wikiPage ol[title]::before {
+    content: attr(title);
+}
+
+#wikiPage ol.toc::before,
+#wikiPage ul[title]::before,
+#wikiPage ol[title]::before {
     display: block;
     font-weight: bold;
     font-size: 1.25em;
