@@ -808,9 +808,115 @@ function displayWiki() {
       wiki.appendChild(description)
 
       // Create the raw data
-      var raw = document.createElement("div")
+      var raw = document.createElement("pre")
       raw.innerText = JSON.stringify(page.content, null, 2)
       wiki.appendChild(raw)
+
+      if (page.content && page.content.infobox) {
+        var i = page.content.infobox
+
+        // Make the infobox table
+        var infobox = document.createElement("table")
+        infobox.classList.add("infobox")
+        wiki.appendChild(infobox)
+
+        // Make the infobox caption
+        var caption = document.createElement("caption")
+        infobox.appendChild(caption)
+
+        // Make the caption title
+        var captionTitle = document.createElement("h3")
+        captionTitle.innerText = i.banner.title
+        caption.appendChild(captionTitle)
+
+        // Make the caption subtitle
+        var captionSubtitle = document.createElement("h4")
+        captionSubtitle.innerText = i.banner.subtitle
+        caption.appendChild(captionSubtitle)
+
+        // Create the table body
+        var tableBody = document.createElement("tbody")
+        infobox.appendChild(tableBody)
+
+        // Loop through the rows
+        for (var key in i.content) {
+          // Make the row
+          var row = document.createElement("tr")
+          tableBody.appendChild(row)
+
+          // Make the key cell
+          var keyCell = document.createElement("th")
+          keyCell.innerText = key
+          row.appendChild(keyCell)
+
+          // Make a copy of the cell content
+          var cellContent = i.content[key]
+
+          // Make the value cell
+          var valueCell = document.createElement("td")
+          row.appendChild(valueCell)
+
+          // Loop and extract until there are no more links / text
+          while (cellContent) {
+            if (cellContent[0] == "[") {
+              // Get the link block
+              var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
+
+              // Get the destination
+              var destination = link.split("|")[0]
+
+              // Get the text (if it exists)
+              var text = link.split("|")[1] || destination
+
+              // Find the destination object
+              var destObj = objects.find(e => e.title == destination)
+
+              // Make the link
+              var linkElement = document.createElement("a")
+              linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&title=${destination}`
+              linkElement.innerText = text
+              if (!destObj) linkElement.classList.add("invalid")
+              valueCell.appendChild(linkElement)
+
+              // Remove the link from the cell content
+              cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
+            }
+            else {
+              // Get the text up to the next link
+              var text = cellContent.split("[")[0]
+
+              // Loop through swapping out new lines for breaks
+              while (text) {
+                // Get the text up to the new line
+                if (text[0] == "\n") {
+                  valueCell.appendChild(document.createElement("br"))
+
+                  // Remove the new line from the text
+                  text = text.substring(1, text.length)
+                }
+                // Otherwise, add the text
+                else {
+                  valueCell.appendChild(document.createTextNode(text.split("\n")[0]))
+
+                  // Remove the text from the text
+                  text = text.substring(text.indexOf("\n"), text.length)
+
+                  // If there are no more new lines, then break
+                  if (!text.includes("\n")) break
+                }
+              }
+
+              // Remove the text from the cell content (if another link exists)
+              if (cellContent.includes("[")) {
+                cellContent = cellContent.substring(cellContent.indexOf("["), cellContent.length)
+              }
+              else {
+                cellContent = null
+              }
+            }
+          }
+        }
+      }
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null) {
