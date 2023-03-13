@@ -809,7 +809,7 @@ function displayWiki() {
 
       // Create the raw data
       var raw = document.createElement("div")
-      raw.innerText = page.content
+      raw.innerText = JSON.stringify(page.content, null, 2)
       wiki.appendChild(raw)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
