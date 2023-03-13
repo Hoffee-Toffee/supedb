@@ -141,14 +141,14 @@ body {
     content: "Table of Contents";
 }
 
-#wikiPage ul[title]::before,
-#wikiPage ol[title]::before {
-    content: attr(title);
+#wikiPage ul[headerText]::before,
+#wikiPage ol[headerText]::before {
+    content: attr(headerText);
 }
 
 #wikiPage ol.toc::before,
-#wikiPage ul[title]::before,
-#wikiPage ol[title]::before {
+#wikiPage ul[headerText]::before,
+#wikiPage ol[headerText]::before {
     display: block;
     font-weight: bold;
     font-size: 1.25em;

@@ -33,9 +33,10 @@ function start() {
 
   // Sync all data from the timeline
   db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
-      if (map) {
-          document.getElementsByTagName("title")[0].innerText = map.data().title
-  
+    // Clear the page
+    document.getElementById("wikiPage").innerHTML = ""
+
+      if (map) {  
           window["mapSettings"] = {
               id: map.id,
               title: map.data().title,
@@ -201,7 +202,7 @@ function displayWiki() {
 
     // Create a list of additional links
     var links = document.createElement("ul")
-    links.title = "Additional Links"
+    links.setAttribute("headerText", "Additional Links")
     wiki.appendChild(links)
 
     // Show a link to the special pages
@@ -328,12 +329,12 @@ function displayWiki() {
 
       // Create the subtitle
       var subtitle = document.createElement("h2")
-      subtitle.innerText = `Weak and Invaild Pages`
+      subtitle.innerText = `Weak and Invalid Pages`
       wiki.appendChild(subtitle)
 
       // Create the list of invalid tags
       var invalidTagList = document.createElement("ul")
-      invalidTagList.title = "Non-Existent Pages"
+      invalidTagList.setAttribute("headerText", "Non-Existent Pages")
 
       // Get all tags that don't have a corresponding object
       var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => !objects.find(f => f.title == e))))
@@ -345,7 +346,6 @@ function displayWiki() {
         var invalidTagLink = document.createElement("a")
         invalidTagLink.href = `?id=${window["id"]}&new=${tag}`
         invalidTagLink.innerText = tag
-        invalidTagLink.title = tag
         invalidTagLink.classList.add("invalid")
 
         invalidTagItem.appendChild(invalidTagLink)
@@ -355,7 +355,7 @@ function displayWiki() {
 
       // Create the list of weak objects
       var weakObjectList = document.createElement("ul")
-      weakObjectList.title = "Pages with Default Values"
+      weakObjectList.setAttribute("headerText", "Pages with Default Values")
 
       // Loop through all the objects, checking them against their type's default title and description
       objects.forEach(object => {
@@ -429,7 +429,7 @@ function displayWiki() {
 
       // Create the list of special pages
       var specialPageList = document.createElement("ul")
-      specialPageList.title = "Special Pages"
+      specialPageList.setAttribute("headerText", "Special Pages")
       specialPageList.innerHTML = `
         <li><a href="?id=${window["id"]}&page=Special:Categories">All Categories</a></li>
         <li><a href="?id=${window["id"]}&page=Special:Random">Random Page</a></li>
@@ -883,7 +883,11 @@ function displayWiki() {
   }
 
   // Remove the table of contents if it exists and is empty
-  if (!document.querySelector(".toc > li")) document.querySelector(".toc").remove()
+  if (document.querySelector(".toc") && !document.querySelector(".toc > li")) document.querySelector(".toc").remove()
+
+  // Set the title of the tab
+  document.getElementsByTagName("title")[0].innerText = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
+
 }
 
 function helpMenu() {
