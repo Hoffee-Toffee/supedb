@@ -723,6 +723,20 @@ function displayWiki() {
 
         wiki.appendChild(subTitle)
 
+        // Create the sub page link
+        var subPage = document.createElement("a")
+        subPage.href = `?id=${window["id"]}&page=${sub.id}`
+        subPage.innerText = sub.title
+
+        // Create the sub page text
+        var subPageText = document.createElement("span")
+        subPageText.classList.add("note")
+        subPageText.innerText = "See Main Page: "
+        
+        // Add the sub page link to the text and then to the section
+        subPageText.appendChild(subPage)
+        wiki.appendChild(subPageText)
+
         // Check if it has a main article
         if (sub.mainArticle != undefined) {
           // Create the main article link
@@ -974,7 +988,9 @@ function toggleEdit() {
   // Show message stating the toggle
   if (window["editing"]) {
     notify("Edit Mode Enabled")
+    document.body.classList = "editing"
   } else {
     notify("Edit Mode Disabled")
+    document.body.classList = ""
   }
 }
