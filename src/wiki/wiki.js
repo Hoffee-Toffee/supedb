@@ -1,5 +1,6 @@
 window["ready"] = false
 window["permissions"] = []
+window["editing"] = false
 
 var objects = []
 
@@ -98,6 +99,9 @@ function displayWiki() {
 
   // If none is provided, then show links to all heads and all era pages
   if (pageId == null) {
+    // Remove the edit button from the page
+    document.querySelector("label[for='editMode']").remove()
+
     // Check if it has the 'new' param in the URL (won't be set, but will be present)
     if (url.searchParams.get("new") != undefined) {
         // Show a placeholder page
@@ -262,6 +266,8 @@ function displayWiki() {
   }
   // If it starts with "special:", then show that special page
   else if (pageId.startsWith("Special:")) {
+    // Remove the edit button from the page
+    document.querySelector("label[for='editMode']").remove()
     // Get the special page name
     var special = pageId.substring(8)
 
@@ -959,4 +965,16 @@ function saveObjects() {
       map: data,
       lastChange: sessionStorage.getItem("ID")
   })
+}
+
+function toggleEdit() {
+  // Toggle the edit mode
+  window["editing"] = !window["editing"]
+
+  // Show message stating the toggle
+  if (window["editing"]) {
+    notify("Edit Mode Enabled")
+  } else {
+    notify("Edit Mode Disabled")
+  }
 }

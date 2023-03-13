@@ -1717,46 +1717,6 @@ function checkStatus(event) {
     }
 }
 
-function notify(message) {
-    var notices = document.getElementById("notices")
-    var notice = document.createElement("div")
-    notice.classList.add("notice")
-    notice.setAttribute("aria-hidden", "true")
-    
-    var p = document.createElement("p")
-    p.innerText = message
-    notice.appendChild(p)
-
-    var close = document.createElement("i")
-    close.classList.add("fa")
-    close.classList.add("fa-times")
-
-    // On click, add the 'hide' class, then remove the element after 0.2 seconds
-    close.onclick = function() {
-        notice.classList.add("hide")
-        setTimeout(() => {
-            notice.remove()
-        }, 200)
-    }
-
-    // After 5 seconds, activate the close button
-    setTimeout(() => {
-        close.click()
-    }, 5000)
-
-    notice.appendChild(close)
-
-    // Add the notice to the top of the notices div (if there are any other notices)
-    if (notices.children.length > 0) notices.insertBefore(notice, notices.children[0])
-    // Otherwise just add it to the div
-    else notices.appendChild(notice)
-
-    // Lastly, add the show class to the notice
-    setTimeout(() => {
-        notice.classList.add("show")
-    }, 1)
-}
-
 function modeToggled(initialDelay = true) {
     var mode = document.getElementById("online").checked // false = online, true = offline
     setTimeout(() => {

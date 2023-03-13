@@ -28,11 +28,20 @@
     <body>
         <div id="helpScreen"></div>
         <div id="mapSettings" aria-hidden="true">
-            <i class="fa fa-sign-out" onclick="window.location.href = '../login/login.html#logout'"></i>
-            <i class="fa fa-question-circle" onclick="help()"></i>
+            <!-- Sign out -->
+            <i class="fa fa-sign-out" onclick="window.location.href = '../login/login.html#logout'" title="Sign Out"></i>
+            <!-- Help -->
+            <i class="fa fa-question-circle" onclick="help()" title="Help"></i>
+            <!-- Edit mode -->
+            <label for="editMode" class="switch">
+                <input type="checkbox" id="editMode" onclick="toggleEdit()">
+                <i class="fa fa-file-text-o" title="Edit Mode"></i>
+            </label>
+            <!-- Settings -->
             <i class="fa fa-cog" onclick="settingsMenu()"></i>
         </div>
         <div id="popup"></div>
+        <div id="notices" aria-hidden="true"></div>
 
         <div id="wikiPage"></div>
     </body>
