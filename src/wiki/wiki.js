@@ -333,7 +333,7 @@ function displayWiki() {
 
       // Create the list of invalid tags
       var invalidTagList = document.createElement("ul")
-      invalidTagList.title = "Invalid Tags"
+      invalidTagList.title = "Non-Existent Pages"
 
       // Get all tags that don't have a corresponding object
       var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => !objects.find(f => f.title == e))))
@@ -345,6 +345,8 @@ function displayWiki() {
         var invalidTagLink = document.createElement("a")
         invalidTagLink.href = `?id=${window["id"]}&new=${tag}`
         invalidTagLink.innerText = tag
+        invalidTagLink.title = tag
+        invalidTagLink.classList.add("invalid")
 
         invalidTagItem.appendChild(invalidTagLink)
       })
@@ -353,7 +355,7 @@ function displayWiki() {
 
       // Create the list of weak objects
       var weakObjectList = document.createElement("ul")
-      weakObjectList.title = "Weak Pages"
+      weakObjectList.title = "Pages with Default Values"
 
       // Loop through all the objects, checking them against their type's default title and description
       objects.forEach(object => {
@@ -431,7 +433,7 @@ function displayWiki() {
       specialPageList.innerHTML = `
         <li><a href="?id=${window["id"]}&page=Special:Categories">All Categories</a></li>
         <li><a href="?id=${window["id"]}&page=Special:Random">Random Page</a></li>
-        <li><a href="?id=${window["id"]}&page=Special:Weak">Weak and Invaild Pages</a></li>
+        <li><a href="?id=${window["id"]}&page=Special:Weak">Weak and Invalid Pages</a></li>
         <li><a href="?id=${window["id"]}&page=Special:SpecialPages">Special Pages</a></li>
       `
       wiki.appendChild(specialPageList)
