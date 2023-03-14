@@ -345,6 +345,57 @@ function displayWiki() {
       // Get all tags that don't have a corresponding object
       var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => !objects.find(f => f.title == e))))
 
+      // Get all links within infoboxes that don't have a corresponding object
+      objects.forEach(object => {
+        if (object.content && object.content.infobox) {
+          var i = object.content.infobox
+
+          // Loop through the rows
+          for (var key in i.content) {
+            // Make a copy of the cell content
+            var cellContent = i.content[key]
+
+            // Loop and extract until there are no more links / text
+            while (cellContent) {
+              if (cellContent[0] == "[") {
+                // Get the link block
+                var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
+
+                // Get the destination
+                var destination = link.split("|")[0]
+
+                // Get the text (if it exists)
+                var text = link.split("|")[1] || destination
+
+                // Find the destination object
+                var destObj = objects.find(e => e.title == destination)
+
+                // If the destination object doesn't exist, add it to the invalid tags list
+                if (!destObj) invalidTags.push(destination)
+
+                // Remove the link from the cell content
+                cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
+              }
+              else {
+                // Get the text up to the next link
+                var text = cellContent.split("[")[0]
+
+                // Remove the text from the cell content (if another link exists)
+                if (cellContent.includes("[")) {
+                  cellContent = cellContent.substring(cellContent.indexOf("["), cellContent.length)
+                }
+                else {
+                  cellContent = null
+                }
+              }
+            }
+          }
+        }
+      })
+
+      // Sort alphabetically and remove any duplicates
+      invalidTags = Array.from(new Set(invalidTags)).sort()
+
       invalidTags.forEach(tag => {
         var invalidTagItem = document.createElement("li")
         invalidTagList.appendChild(invalidTagItem)
