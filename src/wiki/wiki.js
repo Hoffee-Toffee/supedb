@@ -34,6 +34,9 @@ function start() {
 
   // Sync all data from the timeline
   db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
+    // Ignore if the change was made by you (your session id)
+    if (map.data().lastChange == sessionStorage.getItem("ID")) return
+
     // Clear the page
     document.getElementById("wikiPage").innerHTML = ""
 
@@ -501,7 +504,12 @@ function displayWiki() {
     var page = objects.find(e => e.id == pageId)
 
     // If that id doesn't exist, then set 'page.class' to null
-    if (page == undefined) page = {class: null}
+    if (page == undefined) {
+      page = {class: null}
+    }
+    else {
+      window["page"] = page.id
+    }
 
     // Create a new document element for the timeline
     var iframe = document.createElement("iframe")
@@ -566,7 +574,7 @@ function displayWiki() {
       wiki.appendChild(title)
 
       var subtitle = document.createElement("h2");
-      subtitle.innerText = page.title;
+      textSet(subtitle, page.title)
       subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle);
 
@@ -576,7 +584,7 @@ function displayWiki() {
       wiki.appendChild(description)
 
       var description2 = document.createElement("p")
-      description2.innerText = page.description
+      textSet(description2, page.description)
       description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
 
@@ -697,7 +705,7 @@ function displayWiki() {
       wiki.appendChild(title)
 
       var subtitle = document.createElement("h2")
-      subtitle.innerText = page.title
+      textSet(subtitle, page.title)
       subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
 
@@ -707,7 +715,7 @@ function displayWiki() {
       wiki.appendChild(description)
 
       var description2 = document.createElement("p")
-      description2.innerText = page.description
+      textSet(description2, page.description)
       description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
 
@@ -831,7 +839,7 @@ function displayWiki() {
       wiki.appendChild(title)
 
       var subtitle = document.createElement("h2")
-      subtitle.innerText = (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`
+      textSet(subtitle, (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`)
       if (page.type == "Sub") subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
 
@@ -864,13 +872,13 @@ function displayWiki() {
 
         // Make the caption title
         var captionTitle = document.createElement("h3")
-        captionTitle.innerText = i.banner.title
+        textSet(captionTitle, i.banner.title)
         captionTitle.setAttribute("prop-ref", "content.infobox.banner.title")
         caption.appendChild(captionTitle)
 
         // Make the caption subtitle
         var captionSubtitle = document.createElement("h4")
-        captionSubtitle.innerText = i.banner.subtitle
+        textSet(captionSubtitle, i.banner.subtitle)
         captionSubtitle.setAttribute("prop-ref", "content.infobox.banner.subtitle")
         caption.appendChild(captionSubtitle)
 
@@ -886,77 +894,15 @@ function displayWiki() {
 
           // Make the key cell
           var keyCell = document.createElement("th")
-          keyCell.innerText = key
+          textSet(keyCell, key)
           keyCell.setAttribute("prop-ref", `content.infobox.content.${key}!`)
           row.appendChild(keyCell)
 
-          // Make a copy of the cell content
-          var cellContent = i.content[key]
-
           // Make the value cell
           var valueCell = document.createElement("td")
+          textSet(valueCell, i.content[key])
           valueCell.setAttribute("prop-ref", `content.infobox.content.${key}`)
           row.appendChild(valueCell)
-
-          // Loop and extract until there are no more links / text
-          while (cellContent) {
-            if (cellContent[0] == "[") {
-              // Get the link block
-              var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
-
-              // Get the destination
-              var destination = link.split("|")[0]
-
-              // Get the text (if it exists)
-              var text = link.split("|")[1] || destination
-
-              // Find the destination object
-              var destObj = objects.find(e => e.title == destination)
-
-              // Make the link
-              var linkElement = document.createElement("a")
-              linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&title=${destination}`
-              linkElement.innerText = text
-              if (!destObj) linkElement.classList.add("invalid")
-              valueCell.appendChild(linkElement)
-
-              // Remove the link from the cell content
-              cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
-            }
-            else {
-              // Get the text up to the next link
-              var text = cellContent.split("[")[0]
-
-              // Loop through swapping out new lines for breaks
-              while (text) {
-                // Get the text up to the new line
-                if (text[0] == "\n") {
-                  valueCell.appendChild(document.createElement("br"))
-
-                  // Remove the new line from the text
-                  text = text.substring(1, text.length)
-                }
-                // Otherwise, add the text
-                else {
-                  valueCell.appendChild(document.createTextNode(text.split("\n")[0]))
-
-                  // Remove the text from the text
-                  text = text.substring(text.indexOf("\n"), text.length)
-
-                  // If there are no more new lines, then break
-                  if (!text.includes("\n")) break
-                }
-              }
-
-              // Remove the text from the cell content (if another link exists)
-              if (cellContent.includes("[")) {
-                cellContent = cellContent.substring(cellContent.indexOf("["), cellContent.length)
-              }
-              else {
-                cellContent = null
-              }
-            }
-          }
         }
       }
 
@@ -1016,7 +962,7 @@ function displayWiki() {
 
       // Create the content
       var tagsList = document.createElement("ul")
-      tagsList.setAttribute("prop-ref", "tags")
+      // tagsList.setAttribute("prop-ref", "tags")
       tags.appendChild(tagsList)
 
       page.tags.forEach(tag => {
@@ -1050,7 +996,7 @@ function displayWiki() {
 
       // Create the content
       var categoriesList = document.createElement("ul")
-      categoriesList.setAttribute("prop-ref", "categories")
+      // categoriesList.setAttribute("prop-ref", "categories")
       categories.appendChild(categoriesList)
 
       page.categories.forEach(category => {
@@ -1073,6 +1019,11 @@ function displayWiki() {
   // Set the title of the tab
   document.getElementsByTagName("title")[0].innerText = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
 
+  // If page syncs on edit then re-enter edit mode
+  if (window["editing"]) {
+    window["editing"] = false
+    toggleEdit(false)
+  }
 }
 
 function helpMenu() {
@@ -1146,29 +1097,157 @@ function saveObjects() {
   })
 }
 
-function toggleEdit() {
+function toggleEdit(alert = true) {
   // Toggle the edit mode
   window["editing"] = !window["editing"]
-
+  
   // Show message stating the toggle
-  if (window["editing"]) {
-    notify("Edit Mode Enabled")
-    setTimeout(() => notify("This feature is in development. No changes will be saved."), 2000)
+  if (window["editing"] && window["page"]) {
+    var page = objects.find(e => e.id == window["page"])
+
+    if (alert) notify("Edit Mode Enabled")
     document.getElementById("wikiPage").classList = "editing"
 
     // Get all with the 'prop-ref' attribute and make them editable
     document.querySelectorAll("[prop-ref]").forEach(e => {
       e.contentEditable = true
-      // e.addEventListener("input", () => { /* TBD */ })
+      // Events for...
+      // - Focus (change all links back to original text format)
+      // - Blur (change all links back to link format)
+      // - Input (change the object property)
+      // - Keydown (aids link creation)
+      e.addEventListener("focus", () => {
+        // Change the innertext back to its original value (from the prop-ref)
+        // E.G.
+        // prop-ref="title", then get page.title
+        // prop-ref="content.infobox.content.Born", then get page.content.infobox.content.Born
+        if (e.getAttribute("prop-ref").endsWith("!")) return
+        e.innerText = e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page)
+      })
+      e.addEventListener("blur", () => {
+        // Change the prop at prop-ref to the innerText
+        // E.G.
+        // prop-ref="title", then set page.title to e.innerText
+        // prop-ref="content.infobox.content.Born", then set page.content.infobox.content.Born to e.innerText
+        // prop-ref="content.infobox.content.Born!", then change the name of the 'Born' property to e.innerText
+        if (!e.getAttribute("prop-ref").endsWith("!")) {
+          e.getAttribute("prop-ref").split(".").reduce((obj, i, index, array) => {
+            console.log(obj, i, index, array)
+            if (index == array.length - 1) {
+              obj[i] = e.innerText
+            } else {
+              return obj[i]
+            }
+          }, page)
+        } else {
+          // Get the value past the last dot
+          var prop = e.getAttribute("prop-ref").split(".").slice(-1)[0].slice(0, -1)
+          var parentProp = e.getAttribute("prop-ref").split(".").slice(0, -1).reduce((obj, i) => obj[i], page) || page
+
+          var newParentProp = {}
+
+          // Loop through the parentProp, adding each property to the newParentProp, except for the one that matches the prop we're changing
+          Object.keys(parentProp).forEach(key => {
+            if (key != prop) newParentProp[key] = parentProp[key];
+            else newParentProp[e.innerText] = parentProp[key];
+          })
+
+          // Set the parentProp to the newParentProp
+          e.getAttribute("prop-ref").split(".").slice(0, -1).reduce((obj, i, index, array) => {
+            // If it's the parentProp, set it to the newParentProp and end the loop
+            if (index == array.length - 1) {
+              obj[i] = newParentProp
+            }
+            // Otherwise, return the next object
+            else {
+              return obj[i]
+            }
+          }, page)
+
+          // Change all prop-refs that start with 'content.infobox.content.Born' to start with 'content.infobox.content.{e.innerText}'
+          document.querySelectorAll("[prop-ref]").forEach(e => {
+            if (e.getAttribute("prop-ref").startsWith(e.getAttribute("prop-ref").split(".").slice(0, -2).join("."))) {
+              e.setAttribute("prop-ref", e.getAttribute("prop-ref").replace(prop, e.innerText))
+            }
+          })
+        }
+
+        saveObjects()
+
+        textSet(e, e.innerText, true)
+      })
     })
-  } else {
-    notify("Edit Mode Disabled")
+  } else if (window["page"]) {
+    if (alert) notify("Edit Mode Disabled")
     document.getElementById("wikiPage").classList = ""
 
     // Get all with the 'prop-ref' attribute and make them uneditable
     document.querySelectorAll("[prop-ref]").forEach(e => {
       e.contentEditable = false
-      // e.removeEventListener("input", () => { /* TBD */ })
     })
+  }
+}
+
+function textSet(element, text, replace = false) {
+  if (replace) element.innerHTML = ""
+  // Loop and extract until there are no more links / text
+  while (text) {
+    if (text[0] == "[") {
+      // Get the link block
+      // Do the end bracket or the end of the string, whichever comes first
+      var link = text.substring(text.indexOf("[") + 1, text.indexOf("]") || text.length)
+
+      // Get the destination
+      var destination = link.split("|")[0]
+
+      // Get the innerText (if it exists)
+      var innerText = link.split("|")[1] || destination
+
+      // Find the destination object
+      var destObj = objects.find(e => e.title == destination)
+
+      // Make the link
+      var linkElement = document.createElement("a")
+      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&title=${destination}`
+      linkElement.innerText = innerText
+      if (!destObj) linkElement.classList.add("invalid")
+      element.appendChild(linkElement)
+
+      // Remove the link from the text
+      text = text.substring(text.indexOf("]") + 1 || text.length, text.length)
+    }
+    else {
+      // Get the text up to the next link
+      var textSeg = text.split("[")[0]
+
+      // Loop through swapping out new lines for breaks
+      while (textSeg) {
+        // Get the text up to the new line
+        if (textSeg[0] == "\n") {
+          element.appendChild(document.createElement("br"))
+
+          // Remove the new line from the text
+          textSeg = textSeg.substring(1, textSeg.length)
+        }
+        // Otherwise, add the text
+        else {
+          element.appendChild(document.createTextNode(textSeg.split("\n")[0]))
+
+          // Remove the text from the text
+          textSeg = textSeg.substring(textSeg.indexOf("\n"), textSeg.length)
+
+          // If there are no more new lines, then break
+          if (!textSeg.includes("\n")) break
+        }
+      }
+
+      // Remove the text from the cell content (if another link exists)
+      if (text.includes("[")) {
+        text = text.substring(text.indexOf("["), text.length)
+      }
+      else {
+        text = null
+      }
+    }
   }
 }
