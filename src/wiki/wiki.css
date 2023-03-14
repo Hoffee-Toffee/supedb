@@ -28,6 +28,9 @@ body {
     color: #e8e8e8;
     text-shadow: 0 0 0.25em var(--col-orange-hover);
     font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+    display: inline-block;
+    transition: 0.25s;
+    outline-color: transparent;
 }
 
 #wikiPage h1 {
@@ -261,6 +264,11 @@ body {
     float: right;
 }
 
+#wikiPage .infobox * {
+    transition: 0.25s;
+    outline-color: transparent;
+}
+
 #wikiPage .infobox caption {
     background-color: #111;
     padding-bottom: 1em;
@@ -297,32 +305,55 @@ body {
     width: 66%;
 }
 
-#wikiPage.editing .infobox tr:hover::before,
-#wikiPage.editing .infobox tr:hover::after {
-    content: "\f067";
-    font-family: FontAwesome;
-    display: inline;
-    position: absolute;
-    width: 100%;
-    height: 5px;
-    background-color: #222;
-    left: 0;
-    cursor: pointer;
-    z-index: 1;
+#wikiPage.editing [contenteditable="true"] {
+    background-color: #1c1c1c;
+    transition: 0.25s;
+    outline: 1px solid #181818;
+    border-radius: 0.25em;
+    padding: 0.25em;
+    margin: 0.25em 0.5em;
 }
 
-#wikiPage.editing .infobox tr::before:hover,
-#wikiPage.editing .infobox tr::after:hover {
+#wikiPage.editing [contenteditable="true"] a {
+    pointer-events: none;
+}
+
+#wikiPage.editing [contenteditable="true"]:focus {
+    background-color: #0c0c0c;
+}
+
+/* #wikiPage.editing .infobox tr::before,
+#wikiPage.editing .infobox tr::after {
+    content: "\f067";
+    font-family: FontAwesome;
+    display: inline-block;
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    background-color: #222;
+    left: calc(50% - 0.5em);
+    cursor: pointer;
+    z-index: 1;
+    text-align: center;
+    line-height: 1em;
+    outline: 1px solid #181818;
+    border-radius: 0.5em;
+    transition: 0.25s;
+    opacity: 0;
+}
+
+#wikiPage.editing .infobox tr:hover::before,
+#wikiPage.editing .infobox tr:hover::after {
     opacity: 1;
 }
 
-#wikiPage.editing .infobox tr:hover::before {
-    top: -3px;
+#wikiPage.editing .infobox tr::before {
+    top: -8px;
 }
 
-#wikiPage.editing .infobox tr:hover::after {
-    bottom: -3px;
-}
+#wikiPage.editing .infobox tr::after {
+    bottom: -9px;
+} */
 
 @media screen and (max-width: 600px) {
     #wikiPage .infobox {

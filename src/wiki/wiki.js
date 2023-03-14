@@ -565,9 +565,10 @@ function displayWiki() {
       title.innerText = `${window["mapSettings"].title} - Era Page`
       wiki.appendChild(title)
 
-      var subtitle = document.createElement("h2")
-      subtitle.innerText = page.title
-      wiki.appendChild(subtitle)
+      var subtitle = document.createElement("h2");
+      subtitle.innerText = page.title;
+      subtitle.setAttribute("prop-ref", "title")
+      wiki.appendChild(subtitle);
 
       // Create the descriptions
       var description = document.createElement("p")
@@ -576,6 +577,7 @@ function displayWiki() {
 
       var description2 = document.createElement("p")
       description2.innerText = page.description
+      description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
 
       // Fill the embed with the events
@@ -696,6 +698,7 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = page.title
+      subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
 
       // Create the descriptions
@@ -705,6 +708,7 @@ function displayWiki() {
 
       var description2 = document.createElement("p")
       description2.innerText = page.description
+      description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
 
       var subs = objects.filter(e => e.headId == page.id)
@@ -728,12 +732,8 @@ function displayWiki() {
       // Remove nulls and duplicates
       destinations = new Set(destinations.filter(e => e != null))
 
-      console.log(destinations)
-
       // Add all links and destinations to the incLinks array (flattened)
       var incLinks = subs.concat([...destinations].flat())
-
-      console.log(incLinks)
 
       // Get all heads required for the subs
       var heads = incLinks.map(e => {
@@ -832,6 +832,7 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`
+      if (page.type == "Sub") subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
 
       // Create the descriptions
@@ -864,11 +865,13 @@ function displayWiki() {
         // Make the caption title
         var captionTitle = document.createElement("h3")
         captionTitle.innerText = i.banner.title
+        captionTitle.setAttribute("prop-ref", "content.infobox.banner.title")
         caption.appendChild(captionTitle)
 
         // Make the caption subtitle
         var captionSubtitle = document.createElement("h4")
         captionSubtitle.innerText = i.banner.subtitle
+        captionSubtitle.setAttribute("prop-ref", "content.infobox.banner.subtitle")
         caption.appendChild(captionSubtitle)
 
         // Create the table body
@@ -884,6 +887,7 @@ function displayWiki() {
           // Make the key cell
           var keyCell = document.createElement("th")
           keyCell.innerText = key
+          keyCell.setAttribute("prop-ref", `content.infobox.content.${key}!`)
           row.appendChild(keyCell)
 
           // Make a copy of the cell content
@@ -891,6 +895,7 @@ function displayWiki() {
 
           // Make the value cell
           var valueCell = document.createElement("td")
+          valueCell.setAttribute("prop-ref", `content.infobox.content.${key}`)
           row.appendChild(valueCell)
 
           // Loop and extract until there are no more links / text
@@ -957,6 +962,7 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = page.title
+      subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
 
       // Create the descriptions
@@ -1010,6 +1016,7 @@ function displayWiki() {
 
       // Create the content
       var tagsList = document.createElement("ul")
+      tagsList.setAttribute("prop-ref", "tags")
       tags.appendChild(tagsList)
 
       page.tags.forEach(tag => {
@@ -1043,6 +1050,7 @@ function displayWiki() {
 
       // Create the content
       var categoriesList = document.createElement("ul")
+      categoriesList.setAttribute("prop-ref", "categories")
       categories.appendChild(categoriesList)
 
       page.categories.forEach(category => {
@@ -1145,9 +1153,22 @@ function toggleEdit() {
   // Show message stating the toggle
   if (window["editing"]) {
     notify("Edit Mode Enabled")
+    setTimeout(() => notify("This feature is in development. No changes will be saved."), 2000)
     document.getElementById("wikiPage").classList = "editing"
+
+    // Get all with the 'prop-ref' attribute and make them editable
+    document.querySelectorAll("[prop-ref]").forEach(e => {
+      e.contentEditable = true
+      // e.addEventListener("input", () => { /* TBD */ })
+    })
   } else {
     notify("Edit Mode Disabled")
     document.getElementById("wikiPage").classList = ""
+
+    // Get all with the 'prop-ref' attribute and make them uneditable
+    document.querySelectorAll("[prop-ref]").forEach(e => {
+      e.contentEditable = false
+      // e.removeEventListener("input", () => { /* TBD */ })
+    })
   }
 }
