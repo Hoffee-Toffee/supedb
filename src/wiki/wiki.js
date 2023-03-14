@@ -798,20 +798,6 @@ function displayWiki() {
       title.innerText = `${window["mapSettings"].title} - Custom Wiki Page`
       wiki.appendChild(title)
 
-      var subtitle = document.createElement("h2")
-      subtitle.innerText = page.title
-      wiki.appendChild(subtitle)
-
-      // Create the descriptions
-      var description = document.createElement("p")
-      description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below.\nThe formatting of this page has not yet been implemented.`
-      wiki.appendChild(description)
-
-      // Create the raw data
-      var raw = document.createElement("pre")
-      raw.innerText = JSON.stringify(page.content, null, 2)
-      wiki.appendChild(raw)
-
       if (page.content && page.content.infobox) {
         var i = page.content.infobox
 
@@ -917,6 +903,20 @@ function displayWiki() {
           }
         }
       }
+
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = page.title
+      wiki.appendChild(subtitle)
+
+      // Create the descriptions
+      var description = document.createElement("p")
+      description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below.\nThe formatting of this page has not yet been implemented.`
+      wiki.appendChild(description)
+
+      // Create the raw data
+      var raw = document.createElement("pre")
+      raw.innerText = JSON.stringify(page.content, null, 2)
+      wiki.appendChild(raw)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null) {

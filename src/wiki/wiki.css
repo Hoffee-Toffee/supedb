@@ -186,10 +186,14 @@ body {
 }
 
 #wikiPage .collapsable {
+    top: 1em;
+    position: relative;
     margin-top: 1em;
     background-color: #0c0c0c;
     outline: #222 0.1em solid;
     transition: 0.25s;
+    display: grid;
+    width: 100%;
 }
 
 #wikiPage .collapsable h3 {
@@ -249,11 +253,12 @@ body {
     outline: 1px solid #181818;
     border-radius: 0.5em;
     padding: 0.5em;
-    border-collapse: collapse; 
-    width: 50vw;
+    border-collapse: collapse;
+    width: 550px;
     max-width: 50vw;
     min-width: 20vw;
-    margin: 1em 0;
+    margin: 1em 0em 0em 1em;
+    float: right;
 }
 
 #wikiPage .infobox caption {
