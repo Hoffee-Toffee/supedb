@@ -1145,9 +1145,9 @@ function toggleEdit() {
   // Show message stating the toggle
   if (window["editing"]) {
     notify("Edit Mode Enabled")
-    document.body.classList = "editing"
+    document.getElementById("wikiPage").classList = "editing"
   } else {
     notify("Edit Mode Disabled")
-    document.body.classList = ""
+    document.getElementById("wikiPage").classList = ""
   }
 }

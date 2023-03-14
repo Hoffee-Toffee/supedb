@@ -271,6 +271,11 @@ body {
     background-color: #222;
 }
 
+#wikiPage .infobox tr {
+    position: relative;
+    display: flex;
+}
+
 #wikiPage .infobox tr:not(:last-child) {
     border-bottom: 1px solid #181818;
 }
@@ -282,10 +287,49 @@ body {
     color: #999;
     vertical-align: top;
     border-right: 1px solid #181818;
+    width: 33%;
 }
 
 #wikiPage .infobox td {
     padding: 0.5em;
     padding-left: 0.5em;
     vertical-align: top;
+    width: 66%;
+}
+
+#wikiPage.editing .infobox tr:hover::before,
+#wikiPage.editing .infobox tr:hover::after {
+    content: "\f067";
+    font-family: FontAwesome;
+    display: inline;
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background-color: #222;
+    left: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+#wikiPage.editing .infobox tr::before:hover,
+#wikiPage.editing .infobox tr::after:hover {
+    opacity: 1;
+}
+
+#wikiPage.editing .infobox tr:hover::before {
+    top: -3px;
+}
+
+#wikiPage.editing .infobox tr:hover::after {
+    bottom: -3px;
+}
+
+@media screen and (max-width: 600px) {
+    #wikiPage .infobox {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        margin: 1em 0em 0em 0em;
+        float: none;
+    }
 }
