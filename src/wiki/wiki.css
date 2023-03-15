@@ -233,9 +233,7 @@ body {
     display: inline;
 }
 
-#wikiPage .collapsable ul li:not(:last-child)::after {
-    content: ", ";
-    background: none;
+#wikiPage .collapsable ul li::after {
     display: inline;
 }
 

@@ -962,22 +962,9 @@ function displayWiki() {
 
       // Create the content
       var tagsList = document.createElement("ul")
-      // tagsList.setAttribute("prop-ref", "tags")
+      tagsList.setAttribute("prop-ref", "tags")
+      textSet(tagsList, page.tags.join(", "))
       tags.appendChild(tagsList)
-
-      page.tags.forEach(tag => {
-        var tagItem = document.createElement("li")
-        tagsList.appendChild(tagItem)
-
-        var tagDest = objects.find(e => e.title == tag)
-
-        var tagLink = document.createElement("a")
-        tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&title=${tag}`
-        tagLink.innerText = tag
-        if (!tagDest) tagLink.classList.add("invalid")
-        tagItem.appendChild(tagLink)
-      })
-
       wiki.appendChild(tags)
     }
 
@@ -996,19 +983,9 @@ function displayWiki() {
 
       // Create the content
       var categoriesList = document.createElement("ul")
-      // categoriesList.setAttribute("prop-ref", "categories")
+      categoriesList.setAttribute("prop-ref", "categories")
+      textSet(categoriesList, page.categories.join(", "))
       categories.appendChild(categoriesList)
-
-      page.categories.forEach(category => {
-        var categoryItem = document.createElement("li")
-        categoriesList.appendChild(categoryItem)
-
-        var categoryLink = document.createElement("a")
-        categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
-        categoryLink.innerText = category
-        categoryItem.appendChild(categoryLink)
-      })
-
       wiki.appendChild(categories)
     }
   }
@@ -1122,7 +1099,8 @@ function toggleEdit(alert = true) {
         // prop-ref="title", then get page.title
         // prop-ref="content.infobox.content.Born", then get page.content.infobox.content.Born
         if (e.getAttribute("prop-ref").endsWith("!")) return
-        e.innerText = e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page)
+
+        e.innerText = (["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page)
       })
       e.addEventListener("blur", () => {
         // Change the prop at prop-ref to the innerText
@@ -1134,7 +1112,7 @@ function toggleEdit(alert = true) {
           e.getAttribute("prop-ref").split(".").reduce((obj, i, index, array) => {
             console.log(obj, i, index, array)
             if (index == array.length - 1) {
-              obj[i] = e.innerText
+              obj[i] = (["tags", "categories"].includes(i)) ? e.innerText.split(", ") : e.innerText
             } else {
               return obj[i]
             }
@@ -1190,6 +1168,49 @@ function toggleEdit(alert = true) {
 
 function textSet(element, text, replace = false) {
   if (replace) element.innerHTML = ""
+
+  console.log(text)
+
+  if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "tags") {
+    text.split(", ").forEach((tag, index) => {
+      var tagItem = document.createElement("li")
+      element.appendChild(tagItem)
+
+      var tagDest = objects.find(e => e.title == tag)
+
+      var tagLink = document.createElement("a")
+      tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&title=${tag}`
+      tagLink.innerText = tag
+      if (!tagDest) tagLink.classList.add("invalid")
+      tagItem.appendChild(tagLink)
+
+      // If the tag is not the last one, add a comma and space
+      if (index != text.split(", ").length - 1) {
+        var tagComma = document.createElement("span")
+        tagComma.innerText = ", "
+        tagItem.appendChild(tagComma)
+      }
+    })
+    return
+  } else if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "categories") {
+    text.split(", ").forEach((category, index) => {
+      var categoryItem = document.createElement("li")
+      element.appendChild(categoryItem)
+
+      var categoryLink = document.createElement("a")
+      categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
+      categoryLink.innerText = category
+      categoryItem.appendChild(categoryLink)
+
+      // If the category is not the last one, add a comma and space
+      if (index != text.split(", ").length - 1) {
+        var categoryComma = document.createElement("span")
+        categoryComma.innerText = ", "
+        categoryItem.appendChild(categoryComma)
+      }
+    })
+    return
+  }
   // Loop and extract until there are no more links / text
   while (text) {
     if (text[0] == "[") {
