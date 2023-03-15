@@ -1143,9 +1143,9 @@ function toggleEdit(alert = true) {
           }, page)
 
           // Change all prop-refs that start with 'content.infobox.content.Born' to start with 'content.infobox.content.{e.innerText}'
-          document.querySelectorAll("[prop-ref]").forEach(e => {
-            if (e.getAttribute("prop-ref").startsWith(e.getAttribute("prop-ref").split(".").slice(0, -2).join("."))) {
-              e.setAttribute("prop-ref", e.getAttribute("prop-ref").replace(prop, e.innerText))
+          document.querySelectorAll("[prop-ref]").forEach(el => {
+            if (el.getAttribute("prop-ref").startsWith(e.getAttribute("prop-ref").split(".").slice(0, -2).join("."))) {
+              el.setAttribute("prop-ref", el.getAttribute("prop-ref").replace(prop, e.innerText))
             }
           })
         }
