@@ -41,6 +41,8 @@ body {
     color: #999;
 }
 
+#wikiPage h1 a {filter: grayscale(0.5);}
+
 #wikiPage h1::after {
     content: "";
     display: block;

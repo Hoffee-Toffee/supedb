@@ -100,6 +100,22 @@ function displayWiki() {
   var url = new URL(window.location.href)
   var pageId = url.searchParams.get("page")
 
+  // Get the wiki
+  var wiki = document.getElementById("wikiPage")
+
+  // Add the title
+  var title = document.createElement("h1")
+  wiki.appendChild(title)
+
+  var titleLink = document.createElement("a")
+  titleLink.href = `wiki.html?id=${window["id"]}`
+  titleLink.innerText = window["mapSettings"].title
+  title.appendChild(titleLink)
+
+  var titleText = document.createElement("span")
+  titleText.innerText = "\u00A0-\u00A0"
+  title.appendChild(titleText)
+
   // If none is provided, then show links to all heads and all era pages
   if (pageId == null) {
     // Remove the edit button from the page
@@ -107,12 +123,8 @@ function displayWiki() {
 
     // Check if it has the 'new' param in the URL (won't be set, but will be present)
     if (url.searchParams.get("new") != undefined) {
-        // Show a placeholder page
-        var wiki = document.getElementById("wikiPage")
-
-        // Create the title
-        var title = document.createElement("h1")
-        title.innerText = `${window["mapSettings"].title} - New Page`
+        // Add the title
+        titleText.innerText += "New Page"
         wiki.appendChild(title)
 
         // Create the subtitle
@@ -141,13 +153,8 @@ function displayWiki() {
 
     console.log(`All: ${objects.length}, Eras: ${eras.length}, Heads: ${heads.length}`)
 
-    // Populate the page with the main wiki page
-    var wiki = document.getElementById("wikiPage")
-
-    // Create the title
-    var title = document.createElement("h1")
-    title.innerText = `${window["mapSettings"].title} - Main Page`
-    wiki.appendChild(title)
+    // Add the title
+    titleText.innerText += "Main Page"
 
     // Create the subtitle
     var subtitle = document.createElement("h2")
@@ -238,13 +245,8 @@ function displayWiki() {
     // Get all the pages in that category (in alphabetical order)
     var pages = objects.filter(e => e.categories && e.categories.includes(category)).sort((a, b) => a.title.localeCompare(b.title))
 
-    // Populate the page with the contents of the category
-    var wiki = document.getElementById("wikiPage")
-
-    // Create the title
-    var title = document.createElement("h1")
-    title.innerText = `${window["mapSettings"].title} - Category Page`
-    wiki.appendChild(title)
+    // Add the title
+    titleText.innerText += "Category Page"
 
     // Create the subtitle
     var subtitle = document.createElement("h2")
@@ -278,13 +280,8 @@ function displayWiki() {
       // Get all the categories
       var categories = Array.from(new Set(objects.filter(e => e.categories).flatMap(e => e.categories))).sort()
 
-      // Populate the page with the contents of the category
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the title
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Special Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Special Page"
 
       // Create the subtitle
       var subtitle = document.createElement("h2")
@@ -328,13 +325,8 @@ function displayWiki() {
       }
     }
     else if (special == "Weak") {
-      // Create the page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the title
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Special Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Special Page"
 
       // Create the subtitle
       var subtitle = document.createElement("h2")
@@ -404,7 +396,7 @@ function displayWiki() {
         invalidTagList.appendChild(invalidTagItem)
 
         var invalidTagLink = document.createElement("a")
-        invalidTagLink.href = `?id=${window["id"]}&new=${tag}`
+        invalidTagLink.href = `?id=${window["id"]}&new&page=${tag}`
         invalidTagLink.innerText = tag
         invalidTagLink.classList.add("invalid")
 
@@ -474,13 +466,8 @@ function displayWiki() {
       wiki.appendChild(weakObjectList)
     }
     else if (special == "SpecialPages") {
-      // Create the page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the title
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Special Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Special Pages"
 
       // Create the subtitle
       var subtitle = document.createElement("h2")
@@ -565,13 +552,8 @@ function displayWiki() {
       // Add the objects to the iframe
       iframe.setAttribute("objects", JSON.stringify(incHidden))
 
-      // Populate the page with the era page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the titles
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Era Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Era Page"
 
       var subtitle = document.createElement("h2");
       textSet(subtitle, page.title)
@@ -696,13 +678,8 @@ function displayWiki() {
     }
     // If it's a head page, then show the details of that event and its subs
     else if (page.class == "Head") {
-      // Populate the page with the head page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the titles
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Head Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Head Page"
 
       var subtitle = document.createElement("h2")
       textSet(subtitle, page.title)
@@ -830,13 +807,8 @@ function displayWiki() {
     }
     // If it's a link or sub then show a placeholder telling the user that no such feature exists yet
     else if (page.class == "Link" || page.class == "Sub") {
-      // Populate the page with the head page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the titles
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - ${page.class} Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += page.class + " Page"
 
       var subtitle = document.createElement("h2")
       textSet(subtitle, (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`)
@@ -850,13 +822,8 @@ function displayWiki() {
     }
     // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
     else if (page.class == "Info") {
-      // Populate the page with the head page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the titles
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Custom Wiki Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Custom Page"
 
       if (page.content && page.content.infobox) {
         var i = page.content.infobox
@@ -923,13 +890,8 @@ function displayWiki() {
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null) {
-      // Populate the page with the head page
-      var wiki = document.getElementById("wikiPage")
-
-      // Create the titles
-      var title = document.createElement("h1")
-      title.innerText = `${window["mapSettings"].title} - Non-Existent Page`
-      wiki.appendChild(title)
+      // Add the title
+      titleText.innerText += "Non-Existent Page"
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = page.title
