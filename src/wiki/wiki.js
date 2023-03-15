@@ -100,6 +100,16 @@ function displayWiki() {
   var url = new URL(window.location.href)
   var pageId = url.searchParams.get("page")
 
+  // If 'new' then set pageId to 'newPage'
+  // If 'newPage' is taken then keep add -01 and so on until it isn't
+  if (url.searchParams.get("new") != undefined && !pageId) {
+      pageId = "New Page"
+      var i = 0
+
+      while(objects.find(e => e.title == `${pageId}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`) != undefined) i++
+      pageId = `${pageId}${i == 0 ? "" : " - " + (i < 10 ? "0" + i : i)}`
+  }
+
   // Get the wiki
   var wiki = document.getElementById("wikiPage")
 
@@ -121,24 +131,6 @@ function displayWiki() {
     // Remove the edit button from the page
     document.querySelector("label[for='editMode']").remove()
 
-    // Check if it has the 'new' param in the URL (won't be set, but will be present)
-    if (url.searchParams.get("new") != undefined) {
-        // Add the title
-        titleText.innerText += "New Page"
-        wiki.appendChild(title)
-
-        // Create the subtitle
-        var subtitle = document.createElement("h2")
-        subtitle.innerText = "New Page"
-        wiki.appendChild(subtitle)
-
-        // Create the main description
-        var description = document.createElement("p")
-        description.innerText = "This feature is coming soon, but will allow you to create new custom pages."
-        wiki.appendChild(description)
-
-        return
-    }
     // Get all eras
     var eras = objects.filter(e => e.class == "Era")
 
@@ -889,12 +881,12 @@ function displayWiki() {
       wiki.appendChild(raw)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
-    else if (page.class == null) {
+    else if (page.class == null && url.searchParams.get("new") == null) {
       // Add the title
       titleText.innerText += "Non-Existent Page"
 
       var subtitle = document.createElement("h2")
-      subtitle.innerText = page.title
+      subtitle.innerText = pageId
       wiki.appendChild(subtitle)
 
       // Create the description (with a link inside)
@@ -903,9 +895,118 @@ function displayWiki() {
       wiki.appendChild(description)
 
       var link = document.createElement("a")
-      link.href = `?id=${window["id"]}&new`
-      link.innerText = `Create New Page`
+      link.href = `?id=${window["id"]}&new&page=${pageId}`
+      link.innerText = `Create "${pageId}" Page`
       description.appendChild(link)
+    }
+    // If the page is new, then show the new page form
+    else if (url.searchParams.get("new") != null) {
+      // Add the title
+      titleText.innerText += "New Page"
+
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = "New Page Form"
+      wiki.appendChild(subtitle)
+
+      // Create the form
+      var form = document.createElement("form")
+      form.id = "newPageForm"
+      wiki.appendChild(form)
+
+      // Create the title input
+      var titleLabel = document.createElement("h3")
+      titleLabel.innerText = "Title:"
+      form.appendChild(titleLabel)
+
+      var title = document.createElement("input")
+      title.type = "text"
+      title.id = "title"
+      title.value = pageId
+      title.placeholder = "Title"
+      title.required = true
+      form.appendChild(title)
+
+      // Show list of templates
+      var tempsText = document.createElement("h3")
+      tempsText.innerText = "Template:"
+      form.appendChild(tempsText)
+
+      var temps = document.createElement("select")
+      temps.id = "templates"
+      form.appendChild(temps)
+
+      // Add the default option ('none')
+      var none = document.createElement("option")
+      none.value = "none"
+      none.innerText = "None"
+      temps.appendChild(none)
+
+      // Add the other options (all in the template category)
+      var options = objects.filter(e => e.categories && e.categories.includes("Templates"))
+
+      options.forEach(e => {
+        var option = document.createElement("option")
+        option.value = e.id
+        option.innerText = e.title
+        temps.appendChild(option)
+      })
+
+      // Add the 'create' button
+      var create = document.createElement("button")
+      create.innerText = "Create"
+      create.type = "submit"
+      form.appendChild(create)
+
+      // Configure the submit event
+      form.onsubmit = function(e) {
+        e.preventDefault()
+
+        // Get the title
+        var title = document.getElementById("title").value
+
+        // Make sure the title is available
+        if (objects.some(obj => obj.title == title)) {
+          notify("Page already exists with that title!")
+          return
+        }
+
+        // Get the template
+        var template = document.getElementById("templates").value
+
+        // Get the first available ID
+        var id = 0
+        while (objects.some(obj => obj.id == id)) {
+            id++
+        }
+
+        // Add 1 again if the id already exists
+        if (objects.some(obj => obj.id == id)) id++
+
+        // Copy the template (if selected)
+        var temp = (template == "none") ? {} : objects.find(obj => obj.id == template).content
+
+        // Create the object
+        var obj = {
+          "id": id,
+          "title": title,
+          "description": "Short description...",
+          "class": "Info",
+          "content": temp,
+          "tags": [],
+          "categories": []
+        }
+
+        console.log(obj)
+
+        // Add the object to the list
+        objects.push(obj)
+
+        // Save the list of objects (with callback)
+        saveObjects(function () {
+          // Redirect to the new page
+          window.location.href = `?id=${window["id"]}&edit&page=${obj.id}`
+        })
+      }
     }
 
     // Add 'tags' and 'categories' sections if they exist (in collapsable divs)
@@ -958,7 +1059,7 @@ function displayWiki() {
   // Set the title of the tab
   document.getElementsByTagName("title")[0].innerText = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
 
-  // If page syncs on edit then re-enter edit mode
+  // If page syncs on edit then re-enter edit mode, or if edit is in the url
   if (window["editing"]) {
     window["editing"] = false
     toggleEdit(false)
@@ -1026,13 +1127,16 @@ function settingsMenu() {
   popup.appendChild(save);
 }
 
-function saveObjects() {
+function saveObjects(callback = null) {
   var data = JSON.stringify(objects)
 
   // Update firestore document
   db.collection("timelines").doc(window["mapSettings"].id).update({
       map: data,
       lastChange: sessionStorage.getItem("ID")
+  }).then(() => {
+    // If callback exists then call it
+    if (callback) callback()
   })
 }
 
@@ -1141,7 +1245,7 @@ function textSet(element, text, replace = false) {
       var tagDest = objects.find(e => e.title == tag)
 
       var tagLink = document.createElement("a")
-      tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&title=${tag}`
+      tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&page=${tag}`
       tagLink.innerText = tag
       if (!tagDest) tagLink.classList.add("invalid")
       tagItem.appendChild(tagLink)
@@ -1191,7 +1295,7 @@ function textSet(element, text, replace = false) {
 
       // Make the link
       var linkElement = document.createElement("a")
-      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&title=${destination}`
+      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&page=${destination}`
       linkElement.innerText = innerText
       if (!destObj) linkElement.classList.add("invalid")
       element.appendChild(linkElement)
@@ -1232,5 +1336,14 @@ function textSet(element, text, replace = false) {
         text = null
       }
     }
+  }
+}
+
+window.onload = () => {
+  var url = new URL(window.location.href)
+  if (url.searchParams.get("edit") != null) {
+    window["editing"] = false
+    toggleEdit(false)
+    console.log("Edit mode enabled")
   }
 }

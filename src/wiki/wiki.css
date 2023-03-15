@@ -320,6 +320,39 @@ body {
 
 #wikiPage.editing [contenteditable="true"]:focus {
     background-color: #0c0c0c;
+    outline: 1px solid var(--col-orange-hover);
+}
+
+#wikiPage form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 1em 0em;
+}
+
+#wikiPage form input,
+#wikiPage form select,
+#wikiPage form button {
+    margin: 0.5em 0em;
+    padding: 0.5em;
+    border-radius: 0.25em;
+    outline: 1px solid #181818;
+    background-color: #1c1c1c;
+    color: #999;
+    border: none;
+    transition: 0.25s;
+}
+
+#wikiPage form button:hover {
+    color: #fff;
+    outline: 1px solid var(--col-orange-hover);
+}
+
+#wikiPage form input:focus,
+#wikiPage form select:focus,
+#wikiPage form button:focus {
+    background-color: #0c0c0c;
+    outline: 1px solid var(--col-orange-hover);
 }
 
 /* #wikiPage.editing .infobox tr::before,
