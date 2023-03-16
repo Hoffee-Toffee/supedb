@@ -1147,10 +1147,18 @@ function saveObjects(callback = null) {
 function toggleEdit(alert = true) {
   // Toggle the edit mode
   window["editing"] = !window["editing"]
+
+  var url = new URL(window.location.href)
   
   // Show message stating the toggle
   if (window["editing"] && window["page"]) {
     var page = objects.find(e => e.id == window["page"])
+
+    // Add 'edit' to the URL without reloading the page (if it doesn't already exist)
+    if (url.searchParams.get("edit") == null) {
+      url.searchParams.append("edit", '')
+      window.history.pushState({}, "", url)
+    }
 
     if (alert) notify("Edit Mode Enabled")
     document.getElementById("wikiPage").classList = "editing"
@@ -1226,6 +1234,12 @@ function toggleEdit(alert = true) {
       })
     })
   } else if (window["page"]) {
+    // Remove 'edit' from the URL without reloading the page (if it exists)
+    if (url.searchParams.get("edit") != undefined) {
+      url.searchParams.delete("edit")
+      window.history.pushState({}, "", url)
+    }
+
     if (alert) notify("Edit Mode Disabled")
     document.getElementById("wikiPage").classList = ""
 
