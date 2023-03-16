@@ -333,8 +333,8 @@ function displayWiki() {
       var invalidTagList = document.createElement("ul")
       invalidTagList.setAttribute("headerText", "Non-Existent Pages")
 
-      // Get all tags that don't have a corresponding object
-      var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => !objects.find(f => f.title == e))))
+      // Get all tags that don't have a corresponding object (will be a string, not a number)
+      var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => typeof e == "string")))
 
       // Get all links within infoboxes that don't have a corresponding object
       objects.forEach(object => {
@@ -350,7 +350,7 @@ function displayWiki() {
             while (cellContent) {
               if (cellContent[0] == "[") {
                 // Get the link block
-                var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
+                var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
 
                 // Get the destination
                 var destination = link.split("|")[0]
@@ -358,22 +358,19 @@ function displayWiki() {
                 // Get the text (if it exists)
                 var text = link.split("|")[1] || destination
 
-                // Find the destination object
-                var destObj = objects.find(e => e.title == destination)
-
-                // If the destination object doesn't exist, add it to the invalid tags list
-                if (!destObj) invalidTags.push(destination)
+                // Add to the list
+                invalidTags.push(destination)
 
                 // Remove the link from the cell content
                 cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
               }
               else {
                 // Get the text up to the next link
-                var text = cellContent.split("[")[0]
+                var text = cellContent.split("[!")[0]
 
                 // Remove the text from the cell content (if another link exists)
-                if (cellContent.includes("[")) {
-                  cellContent = cellContent.substring(cellContent.indexOf("["), cellContent.length)
+                if (cellContent.includes("[!")) {
+                  cellContent = cellContent.substring(cellContent.indexOf("[!"), cellContent.length)
                 }
                 else {
                   cellContent = null
@@ -484,7 +481,7 @@ function displayWiki() {
   }
   else {
     // If a page ID is provided, then get that object
-    var page = objects.find(e => e.id == pageId)
+    var page = objects.find(e => e.title == pageId)
 
     // If that id doesn't exist, then set 'page.class' to null
     if (page == undefined) {
@@ -1166,31 +1163,20 @@ function toggleEdit(alert = true) {
     // Get all with the 'prop-ref' attribute and make them editable
     document.querySelectorAll("[prop-ref]").forEach(e => {
       e.contentEditable = true
-      // Events for...
-      // - Focus (change all links back to original text format)
-      // - Blur (change all links back to link format)
-      // - Input (change the object property)
-      // - Keydown (aids link creation)
+
       e.addEventListener("focus", () => {
-        // Change the innertext back to its original value (from the prop-ref)
-        // E.G.
-        // prop-ref="title", then get page.title
-        // prop-ref="content.infobox.content.Born", then get page.content.infobox.content.Born
         if (e.getAttribute("prop-ref").endsWith("!")) return
 
-        e.innerText = (["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page)
+        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page))
       })
       e.addEventListener("blur", () => {
-        // Change the prop at prop-ref to the innerText
-        // E.G.
-        // prop-ref="title", then set page.title to e.innerText
-        // prop-ref="content.infobox.content.Born", then set page.content.infobox.content.Born to e.innerText
-        // prop-ref="content.infobox.content.Born!", then change the name of the 'Born' property to e.innerText
+        var set = formatSet(e.innerText, true)
+
         if (!e.getAttribute("prop-ref").endsWith("!")) {
           e.getAttribute("prop-ref").split(".").reduce((obj, i, index, array) => {
             console.log(obj, i, index, array)
             if (index == array.length - 1) {
-              obj[i] = (["tags", "categories"].includes(i)) ? e.innerText.split(", ") : e.innerText
+              obj[i] = (["tags", "categories"].includes(i)) ? set.split(", ") : set
             } else {
               return obj[i]
             }
@@ -1223,14 +1209,14 @@ function toggleEdit(alert = true) {
           // Change all prop-refs that start with 'content.infobox.content.Born' to start with 'content.infobox.content.{e.innerText}'
           document.querySelectorAll("[prop-ref]").forEach(el => {
             if (el.getAttribute("prop-ref").startsWith(e.getAttribute("prop-ref").split(".").slice(0, -2).join("."))) {
-              el.setAttribute("prop-ref", el.getAttribute("prop-ref").replace(prop, e.innerText))
+              el.setAttribute("prop-ref", el.getAttribute("prop-ref").replace(prop, set))
             }
           })
         }
 
         saveObjects()
 
-        textSet(e, e.innerText, true)
+        textSet(e, set, true)
       })
     })
   } else if (window["page"]) {
@@ -1326,15 +1312,18 @@ function textSet(element, text, replace = false) {
       // Get the destination
       var destination = link.split("|")[0]
 
+      // Find the destination object ( {!id} is valid, but not {id}), if invalid then try to get the object with that title
+      var destObj = (destination.startsWith("!")) ? objects.find(e => e.id == destination.substring(1)) : objects.find(e => e.title == destination)
+
+      // If it is valid, then set 'destination' to the title of that object
+      if (destObj) destination = destObj.title
+
       // Get the innerText (if it exists)
       var innerText = link.split("|")[1] || destination
 
-      // Find the destination object
-      var destObj = objects.find(e => e.title == destination)
-
       // Make the link
       var linkElement = document.createElement("a")
-      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&page=${destination}`
+      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.title}` : `?id=${window["id"]}&new&page=${destination}`
       linkElement.innerText = innerText
       if (destObj && destObj.description) {
         linkElement.setAttribute("link-desc", destObj.description)
@@ -1383,6 +1372,78 @@ function textSet(element, text, replace = false) {
       }
     }
   }
+}
+
+function formatSet(text, forCode = false) {
+  if (forCode) {
+    var toReturn = text
+    var indexOffset = 0
+
+    // Loop through each link [title] or [title|text]
+    // Replace the title with the id of the object (if it exists) [!id] or [!id|text]
+    while (text.includes("[") && text.includes("]")) {
+      // Get the link block
+      // Do to the first end bracket, vertical bar, or end of the string, whichever comes first
+      var link = text.substring(text.indexOf("[") + 1, text.indexOf("]") || text.indexOf("|") || text.length)
+
+      // Swap the title with the id
+      var prevLen = toReturn.length
+
+      if (objects.find(e => e.title == link)) {
+        // Don't replace, use the indexes to replace
+        toReturn = toReturn.substring(0, text.indexOf("[") + indexOffset) + `[!${objects.find(e => e.title == link).id}]` + toReturn.substring(text.indexOf("]") + indexOffset + 1, toReturn.length)
+      }
+
+      // Update the index offset
+      indexOffset -= (prevLen - toReturn.length)
+
+      // Remove the link from the text
+      var prevLen = text.length
+      text = text.substring(text.indexOf("]") + 1 || text.length, text.length)
+
+      // Update the index offset
+      indexOffset += (prevLen - text.length)
+
+      console.log(toReturn, text)
+    }
+
+    text = toReturn
+  }
+  else {
+    var toReturn = text
+    var indexOffset = 0
+
+    // Loop through each link [!id] or [!id|text]
+    // Replace the id with the title of the object (if it exists) [title] or [title|text]
+    while (text.includes("[!") && text.includes("]")) {
+      // Get the link block
+      // Do to the first end bracket, vertical bar, or end of the string, whichever comes first
+      var link = text.substring(text.indexOf("[!") + 2, text.indexOf("]") || text.indexOf("|") || text.length)
+
+      // Swap the id with the title
+      var prevLen = toReturn.length
+
+      if (objects.find(e => e.id == link)) {
+        // Don't replace, use the indexes to replace
+        toReturn = toReturn.substring(0, text.indexOf("[!") + indexOffset) + `[${objects.find(e => e.id == link).title}]` + toReturn.substring(text.indexOf("]") + indexOffset + 1, toReturn.length)
+      }
+
+      // Update the index offset
+      indexOffset -= (prevLen - toReturn.length)
+
+      // Remove the link from the text
+      var prevLen = text.length
+      text = text.substring(text.indexOf("]") + 1 || text.length, text.length)
+
+      // Update the index offset
+      indexOffset += (prevLen - text.length)
+
+      console.log(toReturn, text)
+    }
+    
+    text = toReturn
+  }
+  return text
 }
 
 window.onload = () => {
