@@ -1279,7 +1279,14 @@ function textSet(element, text, replace = false) {
       var tagLink = document.createElement("a")
       tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&page=${tag}`
       tagLink.innerText = tag
-      if (!tagDest) tagLink.classList.add("invalid")
+      if (tagDest && tagDest.description) {
+        tagLink.setAttribute("link-desc", tagDest.description)
+      } 
+      else if (!tagDest) {
+        tagLink.classList.add("invalid")
+        tagLink.setAttribute("link-desc", `Create "${tag}"?`)
+      }
+      else tagLink.setAttribute("link-desc", "No description")
       tagItem.appendChild(tagLink)
 
       // If the tag is not the last one, add a comma and space
@@ -1329,7 +1336,14 @@ function textSet(element, text, replace = false) {
       var linkElement = document.createElement("a")
       linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.id}` : `?id=${window["id"]}&new&page=${destination}`
       linkElement.innerText = innerText
-      if (!destObj) linkElement.classList.add("invalid")
+      if (destObj && destObj.description) {
+        linkElement.setAttribute("link-desc", destObj.description)
+      }
+      else if (!destObj) {
+        linkElement.classList.add("invalid")
+        linkElement.setAttribute("link-desc", `Create "${destination}"?`)
+      }
+      else linkElement.setAttribute("link-desc", "No description")
       element.appendChild(linkElement)
 
       // Remove the link from the text
@@ -1385,4 +1399,32 @@ document.addEventListener("keypress", e => {
   if (e.key == "e" && document.activeElement == document.body) {
     toggleEdit()
   }
+})
+
+// Mouse over link to show description
+document.addEventListener("mouseover", e => {
+  if (e.target.tagName == "A" && e.target.getAttribute("link-desc")) {
+    // Create the tooltip
+    let tooltip = document.createElement("span");
+    tooltip.id = "tooltip";
+    tooltip.innerText = e.target.getAttribute("link-desc");
+    document.body.appendChild(tooltip);
+
+    // Position the tooltip
+    tooltip.style.left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX + "px";
+    tooltip.style.top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY + "px";
+
+    // If the tooltip is off the screen, compensate
+    if (tooltip.getBoundingClientRect().x + tooltip.getBoundingClientRect().width > window.innerWidth) {
+      tooltip.style.left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX - tooltip.getBoundingClientRect().width + "px";
+    }
+    if (tooltip.getBoundingClientRect().y + tooltip.getBoundingClientRect().height > window.innerHeight) {
+      tooltip.style.top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY - tooltip.getBoundingClientRect().height + "px";
+    }
+  }
+})
+
+// Mouse out link to hide description
+document.addEventListener("mouseout", e => {
+  if (e.target.tagName == "A" && e.target.getAttribute("link-desc") && document.getElementById("tooltip")) document.getElementById("tooltip").remove()
 })
