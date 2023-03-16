@@ -257,7 +257,7 @@ function displayWiki() {
       pageList.appendChild(pageItem)
 
       var pageLink = document.createElement("a")
-      pageLink.href = `?id=${window["id"]}&page=${page.id}`
+      pageLink.href = `?id=${window["id"]}&page=${page.title}`
       pageLink.innerText = page.title
 
       pageItem.appendChild(pageLink)
@@ -348,7 +348,7 @@ function displayWiki() {
 
             // Loop and extract until there are no more links / text
             while (cellContent) {
-              if (cellContent[0] == "[") {
+              if (cellContent.startsWith("[!")) {
                 // Get the link block
                 var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
 
@@ -411,7 +411,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.id}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
@@ -427,7 +427,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.id}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
@@ -443,7 +443,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.id}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
@@ -1005,7 +1005,7 @@ function displayWiki() {
         // Save the list of objects (with callback)
         saveObjects(function () {
           // Redirect to the new page
-          window.location.href = `?id=${window["id"]}&edit&page=${obj.id}`
+          window.location.href = `?id=${window["id"]}&edit&page=${obj.title}`
         })
       }
     }
@@ -1440,7 +1440,7 @@ function formatSet(text, forCode = false) {
 
       console.log(toReturn, text)
     }
-    
+
     text = toReturn
   }
   return text
