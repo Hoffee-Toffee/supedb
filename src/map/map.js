@@ -203,7 +203,10 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                     "position": [
                         x,
                         y
-                    ]
+                    ],
+                    "categories": [],
+                    "tags": [],
+                    "content": []
                 }
                 objects.push(obj)
             }
@@ -316,7 +319,10 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                     "position": [
                         x + 5,
                         y + 5
-                    ]
+                    ],
+                    "categories": [],
+                    "tags": [],
+                    "content": []
                 }
                 objects.push(obj)
             }
@@ -396,7 +402,10 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                     "class": "Era",
                     "title": "New Era",
                     "description": "Description of this era",
-                    "position": x
+                    "position": x,
+                    "categories": [],
+                    "tags": [],
+                    "content": []
                 }
                 objects.push(obj)
             }

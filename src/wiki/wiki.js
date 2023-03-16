@@ -548,9 +548,9 @@ function displayWiki() {
       titleText.innerText += "Era Page"
 
       var subtitle = document.createElement("h2");
-      textSet(subtitle, page.title)
       subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle);
+      textSet(subtitle, page.title)
 
       // Create the descriptions
       var description = document.createElement("p")
@@ -558,9 +558,9 @@ function displayWiki() {
       wiki.appendChild(description)
 
       var description2 = document.createElement("p")
-      textSet(description2, page.description)
       description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
+      textSet(description2, page.description)
 
       // Fill the embed with the events
       wiki.appendChild(iframe)
@@ -674,9 +674,9 @@ function displayWiki() {
       titleText.innerText += "Head Page"
 
       var subtitle = document.createElement("h2")
-      textSet(subtitle, page.title)
       subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
+      textSet(subtitle, page.title)
 
       // Create the descriptions
       var description = document.createElement("p")
@@ -684,9 +684,9 @@ function displayWiki() {
       wiki.appendChild(description)
 
       var description2 = document.createElement("p")
-      textSet(description2, page.description)
       description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
+      textSet(description2, page.description)
 
       var subs = objects.filter(e => e.headId == page.id)
 
@@ -803,9 +803,9 @@ function displayWiki() {
       titleText.innerText += page.class + " Page"
 
       var subtitle = document.createElement("h2")
-      textSet(subtitle, (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`)
       if (page.type == "Sub") subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
+      textSet(subtitle, (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`)
 
       // Create the descriptions
       var description = document.createElement("p")
@@ -831,15 +831,15 @@ function displayWiki() {
 
         // Make the caption title
         var captionTitle = document.createElement("h3")
-        textSet(captionTitle, i.banner.title)
         captionTitle.setAttribute("prop-ref", "content.infobox.banner.title")
         caption.appendChild(captionTitle)
+        textSet(captionTitle, i.banner.title)
 
         // Make the caption subtitle
         var captionSubtitle = document.createElement("h4")
-        textSet(captionSubtitle, i.banner.subtitle)
         captionSubtitle.setAttribute("prop-ref", "content.infobox.banner.subtitle")
         caption.appendChild(captionSubtitle)
+        textSet(captionSubtitle, i.banner.subtitle)
 
         // Create the table body
         var tableBody = document.createElement("tbody")
@@ -853,15 +853,15 @@ function displayWiki() {
 
           // Make the key cell
           var keyCell = document.createElement("th")
-          textSet(keyCell, key)
           keyCell.setAttribute("prop-ref", `content.infobox.content.${key}!`)
           row.appendChild(keyCell)
+          textSet(keyCell, key)
 
           // Make the value cell
           var valueCell = document.createElement("td")
-          textSet(valueCell, i.content[key])
           valueCell.setAttribute("prop-ref", `content.infobox.content.${key}`)
           row.appendChild(valueCell)
+          textSet(valueCell, i.content[key])
         }
       }
 
@@ -1010,7 +1010,7 @@ function displayWiki() {
     }
 
     // Add 'tags' and 'categories' sections if they exist (in collapsable divs)
-    if (page.tags && page.tags.length > 0) {
+    if (page.tags) {
       // Create the tags section
       var tags = document.createElement("div")
       tags.classList.add("collapsable", "collapsed")
@@ -1026,12 +1026,12 @@ function displayWiki() {
       // Create the content
       var tagsList = document.createElement("ul")
       tagsList.setAttribute("prop-ref", "tags")
-      textSet(tagsList, page.tags.join(", "))
       tags.appendChild(tagsList)
+      textSet(tagsList, page.tags.join(", "))
       wiki.appendChild(tags)
     }
 
-    if (page.categories && page.categories.length > 0) {
+    if (page.categories) {
       // Create the categories section
       var categories = document.createElement("div")
       categories.classList.add("collapsable", "collapsed")
@@ -1047,9 +1047,9 @@ function displayWiki() {
       // Create the content
       var categoriesList = document.createElement("ul")
       categoriesList.setAttribute("prop-ref", "categories")
-      textSet(categoriesList, page.categories.join(", "))
       categories.appendChild(categoriesList)
       wiki.appendChild(categories)
+      textSet(categoriesList, page.categories.join(", "))
     }
   }
 
@@ -1235,7 +1235,19 @@ function toggleEdit(alert = true) {
 function textSet(element, text, replace = false) {
   if (replace) element.innerHTML = ""
 
-  console.log(text)
+  // If the value is empty then set it to "N/A"
+  if (text == "") text = "N/A"
+
+  // If the value is "N/A" or [] then set the class to 'hidden', if not then remove the class
+  // If it's a table cell or has a prop-ref of "categories" or "tags" then add the 'hidden' class to the parent element
+  if (text == "N/A" || text == []) {
+    if (element.tagName == "TD" || (element.getAttribute("prop-ref") && ["categories", "tags"].includes(element.getAttribute("prop-ref")))) element.parentElement.classList.add("hidden")
+    else element.classList.add("hidden")
+  }
+  else {
+    if (element.tagName == "TD" || (element.getAttribute("prop-ref") && ["categories", "tags"].includes(element.getAttribute("prop-ref")))) element.parentElement.classList.remove("hidden")
+    else if (element.classList) element.classList.remove("hidden")
+  }
 
   if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "tags") {
     text.split(", ").forEach((tag, index) => {
