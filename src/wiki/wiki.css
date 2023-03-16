@@ -288,6 +288,7 @@ body {
     border-bottom: 1px solid #181818;
 }
 
+#wikiPage:not(.editing) .infobox h4.hidden,
 #wikiPage:not(.editing) .infobox tr.hidden,
 #wikiPage:not(.editing) .collapsable.hidden {
     display: none;
