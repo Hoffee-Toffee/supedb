@@ -1246,6 +1246,8 @@ function toggleEdit(alert = true) {
     // Get all with the 'prop-ref' attribute and make them uneditable
     document.querySelectorAll("[prop-ref]").forEach(e => {
       e.contentEditable = false
+      // Remove event listeners by replacing with a clone
+      e.parentNode.replaceChild(e.cloneNode(true), e)
     })
   }
 }
