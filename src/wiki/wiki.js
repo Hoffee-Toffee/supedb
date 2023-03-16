@@ -45,7 +45,8 @@ function start() {
               id: map.id,
               title: map.data().title,
               description: map.data().description,
-              encrypted: map.data().encrypted
+              encrypted: map.data().encrypted,
+              project: map.data().project
           }
   
           objects = JSON.parse(map.data().map)
@@ -147,6 +148,9 @@ function displayWiki() {
 
     // Add the title
     titleText.innerText += "Main Page"
+
+    // Change the title link to that of the project
+    titleLink.href = `../versions/versions.html?id=${window["mapSettings"].project}`
 
     // Create the subtitle
     var subtitle = document.createElement("h2")
