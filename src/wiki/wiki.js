@@ -499,6 +499,54 @@ function displayWiki() {
     iframe.id = "wikiMap"
     iframe.src = "../map/map.html?id=wikiMap"
 
+    if (page.content && page.content.infobox) {
+      var i = page.content.infobox
+
+      // Make the infobox table
+      var infobox = document.createElement("table")
+      infobox.classList.add("infobox")
+      wiki.appendChild(infobox)
+
+      // Make the infobox caption
+      var caption = document.createElement("caption")
+      infobox.appendChild(caption)
+
+      // Make the caption title
+      var captionTitle = document.createElement("h3")
+      captionTitle.setAttribute("prop-ref", "content.infobox.banner.title")
+      caption.appendChild(captionTitle)
+      textSet(captionTitle, i.banner.title)
+
+      // Make the caption subtitle
+      var captionSubtitle = document.createElement("h4")
+      captionSubtitle.setAttribute("prop-ref", "content.infobox.banner.subtitle")
+      caption.appendChild(captionSubtitle)
+      textSet(captionSubtitle, i.banner.subtitle)
+
+      // Create the table body
+      var tableBody = document.createElement("tbody")
+      infobox.appendChild(tableBody)
+
+      // Loop through the rows
+      for (var key in i.content) {
+        // Make the row
+        var row = document.createElement("tr")
+        tableBody.appendChild(row)
+
+        // Make the key cell
+        var keyCell = document.createElement("th")
+        keyCell.setAttribute("prop-ref", `content.infobox.content.${key}!`)
+        row.appendChild(keyCell)
+        textSet(keyCell, key)
+
+        // Make the value cell
+        var valueCell = document.createElement("td")
+        valueCell.setAttribute("prop-ref", `content.infobox.content.${key}`)
+        row.appendChild(valueCell)
+        textSet(valueCell, i.content[key])
+      }
+    }
+
     // If it's an era page, then show all the events that happened during that time period
     if (page.class == "Era") {
       // Get all the events that happened during that time period
@@ -820,54 +868,6 @@ function displayWiki() {
     else if (page.class == "Info") {
       // Add the title
       titleText.innerText += "Custom Page"
-
-      if (page.content && page.content.infobox) {
-        var i = page.content.infobox
-
-        // Make the infobox table
-        var infobox = document.createElement("table")
-        infobox.classList.add("infobox")
-        wiki.appendChild(infobox)
-
-        // Make the infobox caption
-        var caption = document.createElement("caption")
-        infobox.appendChild(caption)
-
-        // Make the caption title
-        var captionTitle = document.createElement("h3")
-        captionTitle.setAttribute("prop-ref", "content.infobox.banner.title")
-        caption.appendChild(captionTitle)
-        textSet(captionTitle, i.banner.title)
-
-        // Make the caption subtitle
-        var captionSubtitle = document.createElement("h4")
-        captionSubtitle.setAttribute("prop-ref", "content.infobox.banner.subtitle")
-        caption.appendChild(captionSubtitle)
-        textSet(captionSubtitle, i.banner.subtitle)
-
-        // Create the table body
-        var tableBody = document.createElement("tbody")
-        infobox.appendChild(tableBody)
-
-        // Loop through the rows
-        for (var key in i.content) {
-          // Make the row
-          var row = document.createElement("tr")
-          tableBody.appendChild(row)
-
-          // Make the key cell
-          var keyCell = document.createElement("th")
-          keyCell.setAttribute("prop-ref", `content.infobox.content.${key}!`)
-          row.appendChild(keyCell)
-          textSet(keyCell, key)
-
-          // Make the value cell
-          var valueCell = document.createElement("td")
-          valueCell.setAttribute("prop-ref", `content.infobox.content.${key}`)
-          row.appendChild(valueCell)
-          textSet(valueCell, i.content[key])
-        }
-      }
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = page.title
