@@ -1377,3 +1377,10 @@ window.onload = () => {
     console.log("Edit mode enabled")
   }
 }
+
+// keypress 'e' to toggle edit (if nothing is focused)
+document.addEventListener("keypress", e => {
+  if (e.key == "e" && document.activeElement == document.body) {
+    toggleEdit()
+  }
+})
