@@ -1413,14 +1413,6 @@ document.addEventListener("mouseover", e => {
     // Position the tooltip
     tooltip.style.left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX + "px";
     tooltip.style.top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY + "px";
-
-    // If the tooltip is off the screen, compensate
-    if (tooltip.getBoundingClientRect().x + tooltip.getBoundingClientRect().width > window.innerWidth) {
-      tooltip.style.left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX - tooltip.getBoundingClientRect().width + "px";
-    }
-    if (tooltip.getBoundingClientRect().y + tooltip.getBoundingClientRect().height > window.innerHeight) {
-      tooltip.style.top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY - tooltip.getBoundingClientRect().height + "px";
-    }
   }
 })
 
