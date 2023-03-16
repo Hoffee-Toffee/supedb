@@ -182,7 +182,7 @@ function displayWiki() {
       eraList.appendChild(eraItem)
 
       var eraLink = document.createElement("a")
-      eraLink.href = `?id=${window["id"]}&page=${era.id}`
+      eraLink.href = `?id=${window["id"]}&page=${era.title}`
       eraLink.innerText = era.title
       eraItem.appendChild(eraLink)
     })
@@ -204,7 +204,7 @@ function displayWiki() {
       headList.appendChild(headItem)
 
       var headLink = document.createElement("a")
-      headLink.href = `?id=${window["id"]}&page=${head.id}`
+      headLink.href = `?id=${window["id"]}&page=${head.title}`
       headLink.innerText = head.title
       headItem.appendChild(headLink)
     })
@@ -317,7 +317,7 @@ function displayWiki() {
       }
       else {
         // Go to a random object page
-        window.location.href = `?id=${window["id"]}&page=${objects[random - categories.length - 1].id}`
+        window.location.href = `?id=${window["id"]}&page=${objects[random - categories.length - 1].title}`
       }
     }
     else if (special == "Weak") {
@@ -389,7 +389,7 @@ function displayWiki() {
         invalidTagList.appendChild(invalidTagItem)
 
         var invalidTagLink = document.createElement("a")
-        invalidTagLink.href = `?id=${window["id"]}&new&page=${tag}`
+        invalidTagLink.href = `?id=${window["id"]}&page=${tag}`
         invalidTagLink.innerText = tag
         invalidTagLink.classList.add("invalid")
 
@@ -640,7 +640,7 @@ function displayWiki() {
 
         // Create the head page link
         var headPage = document.createElement("a")
-        headPage.href = `?id=${window["id"]}&page=${head.id}`
+        headPage.href = `?id=${window["id"]}&page=${head.title}`
         headPage.innerText = head.title
 
         // Create the head page text
@@ -656,7 +656,7 @@ function displayWiki() {
         if (head.mainArticle != undefined) {
           // Create the main article link
           var mainArticleLink = document.createElement("a")
-          mainArticleLink.href = `?id=${window["id"]}&page=${head.mainArticle}`
+          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == head.mainArticle).title}`
           mainArticleLink.innerText = objects.find(e => e.id == head.mainArticle).title
 
           // Create the main article text
@@ -688,7 +688,7 @@ function displayWiki() {
             console.log(objects.find(e => e.id == sub.mainArticle).title)
             // Create the main article link
             var mainArticleLink = document.createElement("a")
-            mainArticleLink.href = `?id=${window["id"]}&page=${sub.mainArticle}`
+            mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title}`
             mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
 
             // Create the main article text
@@ -802,7 +802,7 @@ function displayWiki() {
 
         // Create the sub page link
         var subPage = document.createElement("a")
-        subPage.href = `?id=${window["id"]}&page=${sub.id}`
+        subPage.href = `?id=${window["id"]}&page=${sub.title}`
         subPage.innerText = sub.title
 
         // Create the sub page text
@@ -818,7 +818,7 @@ function displayWiki() {
         if (sub.mainArticle != undefined) {
           // Create the main article link
           var mainArticleLink = document.createElement("a")
-          mainArticleLink.href = `?id=${window["id"]}&page=${sub.mainArticle}`
+          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title}`
           mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
           
           // Create the main article text
@@ -1052,6 +1052,68 @@ function displayWiki() {
       wiki.appendChild(categories)
       textSet(categoriesList, page.categories.join(", "))
     }
+
+    // Add a 'what links here' section
+    var refsSection = document.createElement("div")
+    refsSection.classList.add("collapsable", "collapsed")
+    wiki.appendChild(refsSection)
+
+    // Create the header
+    var refsHeader = document.createElement("h3")
+    refsHeader.innerText = "What links here?"
+    refsSection.appendChild(refsHeader)
+
+    // Toggle 'collapsed' class on click
+    refsHeader.addEventListener("click", () => refsSection.classList.toggle("collapsed"))
+
+    // Create the content
+    var refsList = document.createElement("ul")
+    refsSection.appendChild(refsList)
+
+    // Get all pages with this in their tags (will be a string)
+    var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
+
+    var id = objects.find(e => e.title == pageId).id
+
+    // Get all links within infoboxes that link to this page
+    objects.forEach(object => {
+      if (object.content && object.content.infobox && !pageRefs.includes(object.title)) {
+        var i = object.content.infobox
+
+        // Loop through the rows
+        for (var key in i.content) {
+          // Make a copy of the cell content
+          var cellContent = i.content[key]
+
+          // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content
+          if (cellContent.includes(`[${pageId}]`) || cellContent.includes(`[${pageId}|`) || cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)) {
+            // Add the title to the list of tag refs
+            pageRefs.push(object.title)
+
+            // Stop checking this one as it's already been added
+            break
+          }
+        }
+      }
+    })
+
+    // Sort alphabetically
+    pageRefs.sort()
+
+    pageRefs.forEach(ref => {
+      var refItem = document.createElement("li")
+      var refLink = document.createElement("a")
+      refLink.href = `?id=${window["id"]}&page=${ref}`
+      refLink.innerText = ref
+      refItem.appendChild(refLink)
+      refsList.appendChild(refItem)
+    })
+
+    if (pageRefs.length == 0) {
+      var refItem = document.createElement("li")
+      refItem.innerText = "None"
+      refsList.appendChild(refItem)
+    }
   }
 
   // Remove the table of contents if it exists and is empty
@@ -1263,7 +1325,7 @@ function textSet(element, text, replace = false) {
       var tagDest = objects.find(e => e.title == tag)
 
       var tagLink = document.createElement("a")
-      tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tagDest.id}` : `?id=${window["id"]}&new&page=${tag}`
+      tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tag}` : `?id=${window["id"]}&new&page=${tag}`
       tagLink.innerText = tag
       if (tagDest && tagDest.description) {
         tagLink.setAttribute("link-desc", tagDest.description)
