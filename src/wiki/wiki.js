@@ -1028,7 +1028,7 @@ function displayWiki() {
       var tagsList = document.createElement("ul")
       tagsList.setAttribute("prop-ref", "tags")
       tags.appendChild(tagsList)
-      textSet(tagsList, page.tags.join(", "))
+      textSet(tagsList, page.tags.map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", "))
       wiki.appendChild(tags)
     }
 
@@ -1229,7 +1229,7 @@ function toggleEdit(alert = true) {
       e.addEventListener("focus", () => {
         if (e.getAttribute("prop-ref").endsWith("!")) return
 
-        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page))
+        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page.tags.map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page))
       })
       e.addEventListener("blur", () => {
         var set = formatSet(e.innerText, true)
@@ -1238,7 +1238,10 @@ function toggleEdit(alert = true) {
           e.getAttribute("prop-ref").split(".").reduce((obj, i, index, array) => {
             console.log(obj, i, index, array)
             if (index == array.length - 1) {
-              obj[i] = (["tags", "categories"].includes(i)) ? set.split(", ") : set
+              if (["tags", "categories"].includes(i)) {
+                set = set.split(", ").map(e => e.startsWith("[!") ? Number(e.slice(2, -1)) : e.slice(1, -1))
+              }
+              obj[i] = set
             } else {
               return obj[i]
             }
@@ -1278,7 +1281,7 @@ function toggleEdit(alert = true) {
 
         saveObjects()
 
-        textSet(e, set, true)
+        textSet(e, (typeof set == "object" ? set.map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : set), typeof set == "object")
       })
     })
   } else if (window["page"]) {
@@ -1317,35 +1320,7 @@ function textSet(element, text, replace = false) {
     else if (element.classList) element.classList.remove("hidden")
   }
 
-  if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "tags") {
-    text.split(", ").forEach((tag, index) => {
-      var tagItem = document.createElement("li")
-      element.appendChild(tagItem)
-
-      var tagDest = objects.find(e => e.title == tag)
-
-      var tagLink = document.createElement("a")
-      tagLink.href = (tagDest) ? `?id=${window["id"]}&page=${tag}` : `?id=${window["id"]}&new&page=${tag}`
-      tagLink.innerText = tag
-      if (tagDest && tagDest.description) {
-        tagLink.setAttribute("link-desc", tagDest.description)
-      } 
-      else if (!tagDest) {
-        tagLink.classList.add("invalid")
-        tagLink.setAttribute("link-desc", `Create "${tag}"?`)
-      }
-      else tagLink.setAttribute("link-desc", "No description")
-      tagItem.appendChild(tagLink)
-
-      // If the tag is not the last one, add a comma and space
-      if (index != text.split(", ").length - 1) {
-        var tagComma = document.createElement("span")
-        tagComma.innerText = ", "
-        tagItem.appendChild(tagComma)
-      }
-    })
-    return
-  } else if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "categories") {
+  if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "categories") {
     text.split(", ").forEach((category, index) => {
       var categoryItem = document.createElement("li")
       element.appendChild(categoryItem)
