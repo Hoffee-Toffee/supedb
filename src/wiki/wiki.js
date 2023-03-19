@@ -334,7 +334,9 @@ function displayWiki() {
       invalidTagList.setAttribute("headerText", "Non-Existent Pages")
 
       // Get all tags that don't have a corresponding object (will be a string, not a number)
-      var invalidTags = Array.from(new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => typeof e == "string")))
+      var invalidTags = new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => typeof e == "string"))
+
+      invalidTags = Array.from(invalidTags).sort()
 
       // Get all links within infoboxes that don't have a corresponding object
       objects.forEach(object => {
@@ -348,15 +350,12 @@ function displayWiki() {
 
             // Loop and extract until there are no more links / text
             while (cellContent) {
-              if (cellContent.startsWith("[!")) {
+              if (cellContent.startsWith("[") && !cellContent.startsWith("[!")) {
                 // Get the link block
-                var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
+                var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
 
                 // Get the destination
                 var destination = link.split("|")[0]
-
-                // Get the text (if it exists)
-                var text = link.split("|")[1] || destination
 
                 // Add to the list
                 invalidTags.push(destination)
@@ -364,13 +363,20 @@ function displayWiki() {
                 // Remove the link from the cell content
                 cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
               }
-              else {
-                // Get the text up to the next link
-                var text = cellContent.split("[!")[0]
+              else if (cellContent.startsWith("[!")) {
+                // Get the link block
+                var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
 
+                // Get the destination
+                var destination = link.split("|")[0]
+
+                // Remove the link from the cell content
+                cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
+              }
+              else {
                 // Remove the text from the cell content (if another link exists)
-                if (cellContent.includes("[!")) {
-                  cellContent = cellContent.substring(cellContent.indexOf("[!"), cellContent.length)
+                if (cellContent.includes("[")) {
+                  cellContent = cellContent.substring(cellContent.indexOf("["), cellContent.length)
                 }
                 else {
                   cellContent = null
@@ -1071,11 +1077,13 @@ function displayWiki() {
     refsSection.appendChild(refsList)
 
     // Get all pages with this in their tags (will be a string)
-    var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(Number(pageId))).map(e => e.title)))
+    var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
 
     var id = objects.find(e => e.title == pageId)
 
-    id = id ? id.id : id
+    console.log(`id: ${id}, pageId: ${pageId}`)
+
+    id = id ? id.id : undefined
 
     // Get all links within infoboxes that link to this page
     objects.forEach(object => {
@@ -1089,7 +1097,7 @@ function displayWiki() {
 
           // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
           // Don't check id if it's undefined
-          if (cellContent.includes(`[${pageId}]`) || cellContent.includes(`[${pageId}|`) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
+          if ( (cellContent.includes(`[${pageId}]`) && !cellContent.includes(`[!${pageId}]`)) || (cellContent.includes(`[${pageId}|`) && !cellContent.includes(`[!${pageId}|`)) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
             // Add the title to the list of tag refs
             pageRefs.push(object.title)
 
