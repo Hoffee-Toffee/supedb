@@ -940,11 +940,6 @@ function displayWiki() {
       description2.setAttribute("prop-ref", "description")
       wiki.appendChild(description2)
       textSet(description2, page.description)
-      
-      // Create the raw data
-      var raw = document.createElement("pre")
-      raw.innerText = JSON.stringify(page.content, null, 2)
-      wiki.appendChild(raw)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null && url.searchParams.get("new") == null) {
@@ -1073,6 +1068,97 @@ function displayWiki() {
           window.location.href = `?id=${window["id"]}&edit&page=${obj.title}`
         })
       }
+    }
+
+    // Show the content section if not new, a sub, or a non
+    if (![null, "Sub"].includes(page.class) && url.searchParams.get("new") == null) {
+      // Create the raw data section
+      var raw = document.createElement("div")
+      raw.classList.add("collapsable", "collapsed")
+
+      // Create the header
+      var rawHeader = document.createElement("h3")
+      raw.appendChild(rawHeader)
+
+      // Toggle 'collapsed' class on click
+      rawHeader.addEventListener("click", () => raw.classList.toggle("collapsed"))
+
+      // Check if it needs to show thw raw content or allow you to populate it from the content of a template
+      if (page.content) {
+        rawHeader.innerText = "View Raw Content"
+
+        // Create the content
+        var rawContent = document.createElement("pre")
+        rawContent.innerText = JSON.stringify(page.content, null, 2)
+        raw.appendChild(rawContent)
+      }
+      else {
+        // Show a menu so the user can select a template to populate the content with
+        rawHeader.innerText = "Populate Content"
+
+        // Create the form
+        var form = document.createElement("form")
+        form.id = "populateContentForm"
+        raw.appendChild(form)
+
+        // Show list of templates, you can't select 'none' because the content is empty
+        var tempsText = document.createElement("h3")
+        tempsText.innerText = "From Template:"
+        form.appendChild(tempsText)
+
+        var temps = document.createElement("select")
+        temps.id = "templates"
+        form.appendChild(temps)
+
+        // Add the default option ('none') (invalid option)
+        var none = document.createElement("option")
+        none.value = "none"
+        none.innerText = "None"
+        none.disabled = true
+        none.selected = true
+        temps.appendChild(none)
+
+        // Add the other options (all in the template category)
+        var options = objects.filter(e => e.categories && e.categories.includes("Templates"))
+
+        options.forEach(e => {
+          var option = document.createElement("option")
+          option.value = e.id
+          option.innerText = e.title
+          temps.appendChild(option)
+        })
+
+        // Add the 'populate' button
+        var create = document.createElement("button")
+        create.innerText = "Populate"
+        create.type = "submit"
+        form.appendChild(create)
+
+        // Configure the submit event
+        form.onsubmit = function(e) {
+          // Prevent the default action
+          e.preventDefault()
+
+          // Error if you picked 'none'
+          if (temps.value == "none") {
+            notify("You must pick a template!")
+            return
+          }
+
+          // Get the content of template selected
+          var temp = objects.find(obj => obj.id == temps.value).content
+
+          // Set the content of the page to the template
+          page.content = temp
+
+          // Save the list of objects (with callback to reload the page with edit mode on)
+          saveObjects(function () {
+            window.location.href = `?id=${window["id"]}&edit&page=${page.title}`
+          })
+        } 
+      }
+
+      wiki.appendChild(raw)
     }
 
     // Add 'tags' and 'categories' sections if they exist (in collapsable divs)

@@ -199,10 +199,10 @@ body {
     outline: #222 0.1em solid;
     transition: 0.25s;
     display: grid;
-    width: 100%;
+    overflow: auto;
 }
 
-#wikiPage .collapsable h3 {
+#wikiPage .collapsable > h3:first-child {
     padding: 0.5em;
     margin: 0;
     position: relative;
@@ -210,7 +210,7 @@ body {
     background-color: #111;
 }
 
-#wikiPage .collapsable h3::after {
+#wikiPage .collapsable > h3:first-child::after {
     content: '\f077';
     font-family: FontAwesome;
     display: inline;
@@ -240,16 +240,37 @@ body {
     display: inline;
 }
 
-#wikiPage .collapsable.collapsed h3::after {
+#wikiPage .collapsable form {
+    display: inline-flex;
+    width: calc(100% - 0em);
+}
+
+#wikiPage .collapsable form * {
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+}
+
+#wikiPage .collapsable form h3 {
+    margin: 0;
+    margin-left: 1em;
+    margin-right: 2em;
+}
+
+#wikiPage .collapsable form h3::after {
+    width: calc(100% + 1em);
+}
+
+#wikiPage .collapsable.collapsed > h3:first-child::after {
     transform: rotate(180deg);
 }
 
-#wikiPage .collapsable.collapsed ul {
-    display: none;
+#wikiPage .collapsable.collapsed *:not(:first-child) {
+    display: none !important;
 }
 
 #wikiPage pre {
     white-space: pre-wrap;
+    margin: 1em;
 }
 
 #wikiPage .infobox {
@@ -348,6 +369,11 @@ body {
     color: #999;
     border: none;
     transition: 0.25s;
+    cursor: pointer;
+}
+
+#wikiPage form input {
+    cursor: text;
 }
 
 #wikiPage form button:hover {
