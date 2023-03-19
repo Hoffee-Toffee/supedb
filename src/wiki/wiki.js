@@ -1103,13 +1103,14 @@ function displayWiki() {
     // Sort alphabetically
     pageRefs.sort()
 
-    pageRefs.forEach(ref => {
+    pageRefs.forEach((ref, i) => {
       var refItem = document.createElement("li")
       var refLink = document.createElement("a")
       refLink.href = `?id=${window["id"]}&page=${ref}`
       refLink.innerText = ref
       refItem.appendChild(refLink)
       refsList.appendChild(refItem)
+      if (i != pageRefs.length - 1) refsList.appendChild(document.createTextNode(", "))
     })
 
     if (pageRefs.length == 0) {
