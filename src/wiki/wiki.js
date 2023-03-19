@@ -1572,8 +1572,34 @@ document.addEventListener("mouseover", e => {
     document.body.appendChild(tooltip);
 
     // Position the tooltip
-    tooltip.style.left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX + "px";
-    tooltip.style.top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY + "px";
+    var left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX
+    var top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY 
+
+    tooltip.style.left = left + "px";
+    tooltip.style.top = top + "px";
+
+    // Get the distance from the side of the screen
+    var leftOffset = tooltip.getBoundingClientRect().x - window.scrollX
+    var rightOffset = window.innerWidth - (tooltip.getBoundingClientRect().x - window.scrollX + tooltip.getBoundingClientRect().width)
+
+    // If wider than the screen, move the tooltip to the middle
+    if (tooltip.getBoundingClientRect().width > window.innerWidth) {
+      tooltip.style.left = window.innerWidth / 2 - tooltip.getBoundingClientRect().width / 2 + "px"
+    }
+    // If within 0.5em (8px) of the left side of the screen, move the tooltip to the right by that amount
+    else if (leftOffset < 8) {
+      tooltip.style.left = left + Math.abs(leftOffset - 8) + "px"
+    }
+    // If within 0.5em (8px) of the right side of the screen, move the tooltip to the left by that amount
+    else if (rightOffset < 8) {
+      tooltip.style.left = left - Math.abs(rightOffset - 8) + "px"
+    }
+
+    // If the bottom of the tooltip is 8px above the bottom of the screen or lower, move the tooltip to above the link, not below
+    if (tooltip.getBoundingClientRect().y - window.scrollY + tooltip.getBoundingClientRect().height + 16 > window.innerHeight) {
+      tooltip.style.top = top - tooltip.getBoundingClientRect().height - 16 - e.target.getBoundingClientRect().height + "px"
+    }
+
   }
 })
 
