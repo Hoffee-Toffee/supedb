@@ -1099,72 +1099,74 @@ function displayWiki() {
       textSet(categoriesList, page.categories.map(cat => `[${cat}]`).join(", "))
     }
 
-    // Add a 'what links here' section
-    var refsSection = document.createElement("div")
-    refsSection.classList.add("collapsable", "collapsed")
-    wiki.appendChild(refsSection)
+    // If not 'new' then add a 'what links here' section
+    if (url.searchParams.get("new") == null) {
+      var refsSection = document.createElement("div")
+      refsSection.classList.add("collapsable", "collapsed")
+      wiki.appendChild(refsSection)
 
-    // Create the header
-    var refsHeader = document.createElement("h3")
-    refsHeader.innerText = "What links here?"
-    refsSection.appendChild(refsHeader)
+      // Create the header
+      var refsHeader = document.createElement("h3")
+      refsHeader.innerText = "What links here?"
+      refsSection.appendChild(refsHeader)
 
-    // Toggle 'collapsed' class on click
-    refsHeader.addEventListener("click", () => refsSection.classList.toggle("collapsed"))
+      // Toggle 'collapsed' class on click
+      refsHeader.addEventListener("click", () => refsSection.classList.toggle("collapsed"))
 
-    // Create the content
-    var refsList = document.createElement("ul")
-    refsSection.appendChild(refsList)
+      // Create the content
+      var refsList = document.createElement("ul")
+      refsSection.appendChild(refsList)
 
-    // Get all pages with this in their tags (will be a string)
-    var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
+      // Get all pages with this in their tags (will be a string)
+      var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
 
-    var id = objects.find(e => e.title == pageId)
+      var id = objects.find(e => e.title == pageId)
 
-    console.log(`id: ${id}, pageId: ${pageId}`)
+      console.log(`id: ${id}, pageId: ${pageId}`)
 
-    id = id ? id.id : undefined
+      id = id ? id.id : undefined
 
-    // Get all links within infoboxes that link to this page
-    objects.forEach(object => {
-      if (object.content && object.content.infobox && !pageRefs.includes(object.title)) {
-        var i = object.content.infobox
+      // Get all links within infoboxes that link to this page
+      objects.forEach(object => {
+        if (object.content && object.content.infobox && !pageRefs.includes(object.title)) {
+          var i = object.content.infobox
 
-        // Loop through the rows
-        for (var key in i.content) {
-          // Make a copy of the cell content
-          var cellContent = i.content[key]
+          // Loop through the rows
+          for (var key in i.content) {
+            // Make a copy of the cell content
+            var cellContent = i.content[key]
 
-          // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
-          // Don't check id if it's undefined
-          if ( (cellContent.includes(`[${pageId}]`) && !cellContent.includes(`[!${pageId}]`)) || (cellContent.includes(`[${pageId}|`) && !cellContent.includes(`[!${pageId}|`)) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
-            // Add the title to the list of tag refs
-            pageRefs.push(object.title)
+            // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
+            // Don't check id if it's undefined
+            if ( (cellContent.includes(`[${pageId}]`) && !cellContent.includes(`[!${pageId}]`)) || (cellContent.includes(`[${pageId}|`) && !cellContent.includes(`[!${pageId}|`)) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
+              // Add the title to the list of tag refs
+              pageRefs.push(object.title)
 
-            // Stop checking this one as it's already been added
-            break
+              // Stop checking this one as it's already been added
+              break
+            }
           }
         }
+      })
+
+      // Sort alphabetically
+      pageRefs.sort()
+
+      pageRefs.forEach((ref, i) => {
+        var refItem = document.createElement("li")
+        var refLink = document.createElement("a")
+        refLink.href = `?id=${window["id"]}&page=${ref}`
+        refLink.innerText = ref
+        refItem.appendChild(refLink)
+        refsList.appendChild(refItem)
+        if (i != pageRefs.length - 1) refsList.appendChild(document.createTextNode(", "))
+      })
+
+      if (pageRefs.length == 0) {
+        var refItem = document.createElement("li")
+        refItem.innerText = "No pages link here."
+        refsList.appendChild(refItem)
       }
-    })
-
-    // Sort alphabetically
-    pageRefs.sort()
-
-    pageRefs.forEach((ref, i) => {
-      var refItem = document.createElement("li")
-      var refLink = document.createElement("a")
-      refLink.href = `?id=${window["id"]}&page=${ref}`
-      refLink.innerText = ref
-      refItem.appendChild(refLink)
-      refsList.appendChild(refItem)
-      if (i != pageRefs.length - 1) refsList.appendChild(document.createTextNode(", "))
-    })
-
-    if (pageRefs.length == 0) {
-      var refItem = document.createElement("li")
-      refItem.innerText = "No pages link here."
-      refsList.appendChild(refItem)
     }
   }
 
