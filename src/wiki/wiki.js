@@ -313,8 +313,8 @@ function displayWiki() {
       // Get all the categories
       var categories = Array.from(new Set(objects.filter(e => e.categories).flatMap(e => e.categories))).sort()
 
-      // Get a random number between 0 and the number of categories + objects + 1 (for the main page)
-      var random = Math.floor(Math.random() * (categories.length + objects.length + 1))
+      // Get a random number between 0 and the number of categories + objects(without links) + 1 (for the main page)
+      var random = Math.floor(Math.random() * (categories.length + objects.filter(e => e.class != "link").length + 1))
 
       if (random == 0) {
         // Go to the main page
@@ -326,7 +326,7 @@ function displayWiki() {
       }
       else {
         // Go to a random object page
-        window.location.href = `?id=${window["id"]}&page=${objects[random - categories.length - 1].title}`
+        window.location.href = `?id=${window["id"]}&page=${objects.filter(e => e.class != "link")[random - categories.length - 1].title}`
       }
     }
     else if (special == "Weak") {
@@ -901,19 +901,18 @@ function displayWiki() {
         contentsItem.appendChild(contentsLink)
       })
     }
-    // If it's a link or sub then show a placeholder telling the user that no such feature exists yet
-    else if (page.class == "Link" || page.class == "Sub") {
+    // If it's a sub then show a placeholder telling the user that no such feature exists yet
+    else if (page.class == "Sub") {
       // Add the title
-      titleText.innerText += page.class + " Page"
+      titleText.innerText += "Sub Page"
 
       var subtitle = document.createElement("h2")
-      if (page.type == "Sub") subtitle.setAttribute("prop-ref", "title")
+      subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
-      textSet(subtitle, (page.title) ? page.title : `${objects.find(e => e.id == page.parentId).title} --${page.type.toUpperCase()}--> ${objects.find(e => e.id == page.childId).title}`)
-
+      textSet(subtitle, page.title)
       // Create the descriptions
       var description = document.createElement("p")
-      description.innerText = `This is the page for this ${page.class}. This feature is not yet implemented.`
+      description.innerText = `This is the page for this Sub. This feature is not yet implemented.`
       wiki.appendChild(description)
     }
     // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
