@@ -421,7 +421,8 @@ function displayWiki() {
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
-              weakness.innerText = ` (Default ${["", "New Head Block"].includes(object.title) ? "Title" : "Description"}${["", "A storyline, event or person."].includes(object.description) && ["", "New Head Block"].includes(object.title) ? " and Description" : ""})`
+              weakness.innerText = ` (${["", "New Head Block"].includes(object.title) ? (object.title == "" ? "Missing Title, " : "Default Title, ") : ""}${["", "A storyline, event or person."].includes(object.description) ? (object.description == "" ? "Missing Description, " : "Default Description, ") : ""})`
+              weakness.innerText = weakness.innerText.substring(0, weakness.innerText.length - 3) + ")"
 
               weakObjectItem.appendChild(weakObjectLink)
               weakObjectItem.appendChild(weakness)
@@ -437,7 +438,8 @@ function displayWiki() {
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
-              weakness.innerText = ` (Default ${["", "New Sub Block"].includes(object.title) ? "Title" : "Description"}${["", "A specific event"].includes(object.description) && ["", "New Sub Block"].includes(object.title) ? " and Description" : ""})`
+              weakness.innerText = ` (${["", "New Sub Block"].includes(object.title) ? (object.title == "" ? "Missing Title, " : "Default Title, ") : ""}${["", "A specific event"].includes(object.description) ? (object.description == "" ? "Missing Description, " : "Default Description, ") : ""})`
+              weakness.innerText = weakness.innerText.substring(0, weakness.innerText.length - 3) + ")"
 
               weakObjectItem.appendChild(weakObjectLink)
               weakObjectItem.appendChild(weakness)
@@ -453,13 +455,31 @@ function displayWiki() {
               weakObjectLink.innerText = object.title
 
               var weakness = document.createElement("span")
-              weakness.innerText = ` (Default ${["", "New Era"].includes(object.title) ? "Title" : "Description"}${["", "Description of this era"].includes(object.description) && ["", "New Era"].includes(object.title) ? " and Description" : ""})`
+              weakness.innerText = ` (${["", "New Era"].includes(object.title) ? (object.title == "" ? "Missing Title, " : "Default Title, ") : ""}${["", "Description of this era"].includes(object.description) ? (object.description == "" ? "Missing Description, " : "Default Description, ") : ""})`
+              weakness.innerText = weakness.innerText.substring(0, weakness.innerText.length - 3) + ")"
 
               weakObjectItem.appendChild(weakObjectLink)
               weakObjectItem.appendChild(weakness)
             }
             break
-          }
+          case "Info":
+            if (object.title == "" || object.title.startsWith("New Page") || object.description == "") {
+              var weakObjectItem = document.createElement("li")
+              weakObjectList.appendChild(weakObjectItem)
+
+              var weakObjectLink = document.createElement("a")
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+              weakObjectLink.innerText = object.title
+
+              var weakness = document.createElement("span")
+              weakness.innerText = ` (${object.title == "" ? "Missing Title, " : ""}${object.title.startsWith("New Page") ? "Default Title, " : ""}${object.description == "" ? "Missing Description, " : ""})`
+              weakness.innerText = weakness.innerText.substring(0, weakness.innerText.length - 3) + ")"
+
+              weakObjectItem.appendChild(weakObjectLink)
+              weakObjectItem.appendChild(weakness)
+            }
+            break
+        }
       })
 
       wiki.appendChild(weakObjectList)
@@ -481,6 +501,8 @@ function displayWiki() {
           emptyObjectItem.appendChild(emptyObjectLink)
         }
       })
+
+      wiki.appendChild(emptyObjectList)
     }
     else if (special == "SpecialPages") {
       // Add the title
