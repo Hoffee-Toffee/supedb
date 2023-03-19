@@ -1462,8 +1462,8 @@ function toggleEdit(alert = true) {
   }
 }
 
-function textSet(element, text, replace = false) {
-  if (replace) element.innerHTML = ""
+function textSet(element, text) {
+  element.innerHTML = ""
 
   // If the value is empty then set it to "N/A"
   if (text == "") text = "N/A"
