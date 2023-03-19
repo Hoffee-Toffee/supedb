@@ -72,6 +72,7 @@ body {
     outline: 0.15em solid var(--col-orange);
     width: 1.5em;
     opacity: 0.25;
+    padding-bottom: 1em;
 }
 
 #mapSettings:hover {
@@ -80,6 +81,7 @@ body {
     transform: translateY(100%);
     opacity: 1;
     outline-color: var(--col-red-orange);
+    padding-bottom: 0.25em;
 }
 
 #mapSettings::after {

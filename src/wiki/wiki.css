@@ -128,7 +128,7 @@ body {
     margin: 2em 0 0.5em 0.5em;
     background-color: #0c0c0c;
     width: calc(100% - 3.5em);
-    max-width: calc(50% - 1em);
+    max-width: calc(100vw - 6em);
     border-radius: 0.5em;
     outline: 1px solid #181818;
 }
@@ -401,5 +401,10 @@ body {
         min-width: 100%;
         margin: 1em 0em 0em 0em;
         float: none;
+    }
+
+    #wikiPage ul,
+    #wikiPage ol {
+        width: 100% !important;
     }
 }
