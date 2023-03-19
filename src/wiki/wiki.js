@@ -224,6 +224,15 @@ function displayWiki() {
     specialLink.innerText = "Special Pages"
     specialTitle.appendChild(specialLink)
 
+    // Show a link to the templates category
+    var templateTitle = document.createElement("li")
+    links.appendChild(templateTitle)
+
+    var templateLink = document.createElement("a")
+    templateLink.href = `?id=${window["id"]}&page=Category:Templates`
+    templateLink.innerText = "Page Templates"
+    templateTitle.appendChild(templateLink)
+
     // Show a link to create a new page
     var newTitle = document.createElement("li")
     links.appendChild(newTitle)
