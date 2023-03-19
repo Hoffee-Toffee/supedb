@@ -406,7 +406,7 @@ function displayWiki() {
 
       // Create the list of weak objects
       var weakObjectList = document.createElement("ul")
-      weakObjectList.setAttribute("headerText", "Pages with Default Values")
+      weakObjectList.setAttribute("headerText", "Pages with Default or Missing Values")
 
       // Loop through all the objects, checking them against their type's default title and description
       objects.forEach(object => {
@@ -463,6 +463,24 @@ function displayWiki() {
       })
 
       wiki.appendChild(weakObjectList)
+
+      // Create the list of objects without content (only for heads, eras, and info pages)
+      var emptyObjectList = document.createElement("ul")
+      emptyObjectList.setAttribute("headerText", "Pages without Content")
+
+      // Loop through all the objects, checking if they have any content (or if they do then if it's not empty)
+      objects.forEach(object => {
+        if (["Head", "Era", "Info"].includes(object.class) && (!object.content || object.content == "")) {
+          var emptyObjectItem = document.createElement("li")
+          emptyObjectList.appendChild(emptyObjectItem)
+
+          var emptyObjectLink = document.createElement("a")
+          emptyObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+          emptyObjectLink.innerText = object.title
+
+          emptyObjectItem.appendChild(emptyObjectLink)
+        }
+      })
     }
     else if (special == "SpecialPages") {
       // Add the title
