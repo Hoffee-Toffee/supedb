@@ -1050,7 +1050,7 @@ function displayWiki() {
       categoriesList.setAttribute("prop-ref", "categories")
       categories.appendChild(categoriesList)
       wiki.appendChild(categories)
-      textSet(categoriesList, page.categories.join(", "))
+      textSet(categoriesList, page.categories.map(cat => `[${cat}]`).join(", "))
     }
 
     // Add a 'what links here' section
@@ -1071,9 +1071,11 @@ function displayWiki() {
     refsSection.appendChild(refsList)
 
     // Get all pages with this in their tags (will be a string)
-    var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
+    var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(Number(pageId))).map(e => e.title)))
 
-    var id = objects.find(e => e.title == pageId).id
+    var id = objects.find(e => e.title == pageId)
+
+    id = id ? id.id : id
 
     // Get all links within infoboxes that link to this page
     objects.forEach(object => {
@@ -1085,8 +1087,9 @@ function displayWiki() {
           // Make a copy of the cell content
           var cellContent = i.content[key]
 
-          // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content
-          if (cellContent.includes(`[${pageId}]`) || cellContent.includes(`[${pageId}|`) || cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)) {
+          // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
+          // Don't check id if it's undefined
+          if (cellContent.includes(`[${pageId}]`) || cellContent.includes(`[${pageId}|`) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
             // Add the title to the list of tag refs
             pageRefs.push(object.title)
 
@@ -1111,7 +1114,7 @@ function displayWiki() {
 
     if (pageRefs.length == 0) {
       var refItem = document.createElement("li")
-      refItem.innerText = "None"
+      refItem.innerText = "No pages link here."
       refsList.appendChild(refItem)
     }
   }
@@ -1229,7 +1232,7 @@ function toggleEdit(alert = true) {
       e.addEventListener("focus", () => {
         if (e.getAttribute("prop-ref").endsWith("!")) return
 
-        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page.tags.map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page))
+        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page))
       })
       e.addEventListener("blur", () => {
         var set = formatSet(e.innerText, true)
@@ -1322,6 +1325,7 @@ function textSet(element, text, replace = false) {
 
   if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "categories") {
     text.split(", ").forEach((category, index) => {
+      category = category.slice(1, -1)
       var categoryItem = document.createElement("li")
       element.appendChild(categoryItem)
 
