@@ -910,10 +910,16 @@ function displayWiki() {
       subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
       textSet(subtitle, page.title)
+
       // Create the descriptions
       var description = document.createElement("p")
       description.innerText = `This is the page for this Sub. This feature is not yet implemented.`
       wiki.appendChild(description)
+
+      var description2 = document.createElement("p")
+      description2.setAttribute("prop-ref", "description")
+      wiki.appendChild(description2)
+      textSet(description2, page.description)
     }
     // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
     else if (page.class == "Info") {
@@ -930,6 +936,11 @@ function displayWiki() {
       description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below.\nThe formatting of this page has not yet been implemented.`
       wiki.appendChild(description)
 
+      var description2 = document.createElement("p")
+      description2.setAttribute("prop-ref", "description")
+      wiki.appendChild(description2)
+      textSet(description2, page.description)
+      
       // Create the raw data
       var raw = document.createElement("pre")
       raw.innerText = JSON.stringify(page.content, null, 2)
