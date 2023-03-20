@@ -1062,6 +1062,67 @@ function displayWiki() {
         // Add the object to the list
         objects.push(obj)
 
+        // Get all tags and links to this page (will only be text form "[title]" or "[title|") and replace them with the id form "[!id]" or "[!id|"
+        // Get all tags that don't have a corresponding object (will be a string, not a number)
+        // var invalidTags = new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => typeof e == "string"))
+        objects.forEach(object => {
+          // Check each tag in the object
+          if (object.tags) {
+            object.tags = object.tags.map(tag => (tag == title) ? id : tag)
+          }
+
+          // Check within the infobox
+          if (object.content && object.content.infobox) {
+            var i = object.content.infobox
+
+            // Loop through the rows
+            for (var key in i.content) {
+              // Make a copy of the cell content
+              var text = i.content[key]
+
+              var newText = ""
+
+              // Loop and extract until there are no more links / text
+              while (text) {
+                console.log(text, newText)
+                if (text.startsWith(`[${title}|`) || text.startsWith(`[${title}]`)) {
+                  // Add the id to the new text (plus the "|" or "]")
+                  newText += `[!${id}${text[title.length + 1]}`
+
+                  // Remove the link from the text, till the '|', ']', or the end of the text, whichever comes first
+                  text = text.substring(Math.min(text.indexOf("|") + 1 || text.length, text.indexOf("]") + 1 || text.length))
+                }
+                else if (text.startsWith(`[`)) {
+                  // If it starts with a '[', then it's a link, so add the text up to the end of the link or the end of the text
+                  newText += text.split("]")[0]
+
+                  // Remove the text from the text
+                  text = text.substring(text.indexOf("]") || text.length, text.length)
+                }
+                else {
+                  // Get the text up to the next link
+                  var textSeg = text.split("[")[0]
+
+                  // Add the text to the new text
+                  newText += textSeg
+
+                  // Remove the text from the text (if another link exists)
+                  if (text.includes("[")) {
+                    text = text.substring(text.indexOf("["), text.length)
+                  }
+                  else {
+                    text = null
+                  }
+                }
+              }
+
+              // Set the new text
+              i.content[key] = newText
+            }
+          }
+        })
+        
+
         // Save the list of objects (with callback)
         saveObjects(function () {
           // Redirect to the new page
