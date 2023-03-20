@@ -9,7 +9,7 @@ function start() {
   // Will look for changes made to the maps accessible by the user
 
   db.collection("permissions").where("user", "==", auth.currentUser.email).onSnapshot((querySnapshot) => {
-    // Loop and log the changes
+    // Loop and log the changes (async)
     querySnapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
         console.log("Added: ", change.doc.data());
@@ -27,7 +27,10 @@ function start() {
           descbox.innerText = doc.data().description
           descbox.classList.add("description")
           tag.appendChild(descbox)
-          
+
+          // Make sure the empty-message is hidden
+          document.getElementById("empty-message").style.display = "none"
+
           document.getElementById("project-menu").appendChild(tag)
         })
       }
@@ -45,6 +48,10 @@ function start() {
         // Remove the map from the list
         db.collection("projects").doc(change.doc.data().entity).get().then((doc) => {
           document.getElementById(doc.id).remove()
+
+          if (document.getElementById("project-menu").children.length === 1) {
+            document.getElementById("empty-message").style.display = ""
+          }
         })
       }
     })
@@ -52,7 +59,7 @@ function start() {
   // Also sync whenever any documents are changed
   db.collection("projects").onSnapshot((querySnapshot) => {
     // Check if the user has access to the map
-    querySnapshot.docChanges().forEach((change) => {
+    querySnapshot.docChanges().forEach((change, index) => {
       db.collection("permissions").where("user", "==", auth.currentUser.email).where("type", "==", "P").where("entity", "==", change.doc.id).get().then((querySnapshot) => {
         if (querySnapshot.empty) {
           // If the user doesn't have access to the map, leave the function
@@ -66,11 +73,6 @@ function start() {
             document.getElementById(doc.id).children[0].innerText = doc.data().title
             document.getElementById(doc.id).children[1].innerText = doc.data().description
           })
-        }
-        if (change.type === "removed" || change.type === "added") {
-          // Shouldn't be needed as the permissions sync should handle this already
-          // Will log incase it is needed
-          console.log(change.type.charAt(0).toUpperCase() + change.type.slice(1) + ": ", change.doc.data());
         }
       })
     })
