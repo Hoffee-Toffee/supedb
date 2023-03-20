@@ -498,17 +498,15 @@ function displayWiki() {
       emptyObjectList.setAttribute("headerText", "Pages without Content")
 
       // Loop through all the objects, checking if they have any content (or if they do then if it's not empty)
-      objects.forEach(object => {
-        if (["Head", "Era", "Info"].includes(object.class) && (!object.content || object.content == "")) {
-          var emptyObjectItem = document.createElement("li")
-          emptyObjectList.appendChild(emptyObjectItem)
+      objects.filter(object => ["Head", "Era", "Info"].includes(object.class) && (!object.content || object.content == "")).sort((a, b) => a.title.localeCompare(b.title)).forEach(object => {
+        var emptyObjectItem = document.createElement("li")
+        emptyObjectList.appendChild(emptyObjectItem)
 
-          var emptyObjectLink = document.createElement("a")
-          emptyObjectLink.href = `?id=${window["id"]}&page=${object.title}`
-          emptyObjectLink.innerText = object.title
+        var emptyObjectLink = document.createElement("a")
+        emptyObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+        emptyObjectLink.innerText = object.title
 
-          emptyObjectItem.appendChild(emptyObjectLink)
-        }
+        emptyObjectItem.appendChild(emptyObjectLink)
       })
 
       wiki.appendChild(emptyObjectList)
