@@ -1749,7 +1749,9 @@ document.addEventListener("mouseover", e => {
 
     // Position the tooltip
     var left = e.target.getBoundingClientRect().x + e.target.getBoundingClientRect().width / 2 + window.scrollX
-    var top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY 
+    var top = e.target.getBoundingClientRect().y + e.target.getBoundingClientRect().height + window.scrollY
+
+    console.log(window.scrollX, window.scrollY)
 
     tooltip.style.left = left + "px";
     tooltip.style.top = top + "px";
@@ -1772,7 +1774,7 @@ document.addEventListener("mouseover", e => {
     }
 
     // If the bottom of the tooltip is 8px above the bottom of the screen or lower, move the tooltip to above the link, not below
-    if (tooltip.getBoundingClientRect().y - window.scrollY + tooltip.getBoundingClientRect().height + 16 > window.innerHeight) {
+    if (tooltip.getBoundingClientRect().y + tooltip.getBoundingClientRect().height + 16 > window.innerHeight) {
       tooltip.style.top = top - tooltip.getBoundingClientRect().height - 16 - e.target.getBoundingClientRect().height + "px"
     }
 
