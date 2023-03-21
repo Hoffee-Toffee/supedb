@@ -121,6 +121,7 @@ function displayWiki() {
   var titleLink = document.createElement("a")
   titleLink.href = `wiki.html?id=${window["id"]}`
   titleLink.innerText = window["mapSettings"].title
+  titleLink.setAttribute("link-desc", "Go to this wiki's main page")
   title.appendChild(titleLink)
 
   var titleText = document.createElement("span")
@@ -184,6 +185,7 @@ function displayWiki() {
       var eraLink = document.createElement("a")
       eraLink.href = `?id=${window["id"]}&page=${era.title}`
       eraLink.innerText = era.title
+      eraLink.setAttribute("link-desc", era.description || "No description")
       eraItem.appendChild(eraLink)
     })
     wiki.appendChild(eraList)
@@ -206,6 +208,7 @@ function displayWiki() {
       var headLink = document.createElement("a")
       headLink.href = `?id=${window["id"]}&page=${head.title}`
       headLink.innerText = head.title
+      headLink.setAttribute("link-desc", head.description || "No description")
       headItem.appendChild(headLink)
     })
     wiki.appendChild(headList)
@@ -222,6 +225,7 @@ function displayWiki() {
     var specialLink = document.createElement("a")
     specialLink.href = `?id=${window["id"]}&page=Special:SpecialPages`
     specialLink.innerText = "Special Pages"
+    specialLink.setAttribute("link-desc", "List of special pages")
     specialTitle.appendChild(specialLink)
 
     // Show a link to the templates category
@@ -231,6 +235,7 @@ function displayWiki() {
     var templateLink = document.createElement("a")
     templateLink.href = `?id=${window["id"]}&page=Category:Templates`
     templateLink.innerText = "Page Templates"
+    templateLink.setAttribute("link-desc", "List of page templates")
     templateTitle.appendChild(templateLink)
 
     // Show a link to create a new page
@@ -240,6 +245,7 @@ function displayWiki() {
     var newLink = document.createElement("a")
     newLink.href = `?id=${window["id"]}&new`
     newLink.innerText = "Create New Page"
+    newLink.setAttribute("link-desc", "Create a new page")
     newTitle.appendChild(newLink)
   }
   // If it starts with "category:", then show all the pages in that category
@@ -268,7 +274,7 @@ function displayWiki() {
       var pageLink = document.createElement("a")
       pageLink.href = `?id=${window["id"]}&page=${page.title}`
       pageLink.innerText = page.title
-
+      pageLink.setAttribute("link-desc", page.description || "No description")
       pageItem.appendChild(pageLink)
     })
 
@@ -303,6 +309,7 @@ function displayWiki() {
         var categoryLink = document.createElement("a")
         categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
         categoryLink.innerText = category
+        categoryLink.setAttribute("link-desc", (objects.find(e => e.title == category) || {}).description || "No description")
 
         categoryItem.appendChild(categoryLink)
       })
@@ -428,6 +435,7 @@ function displayWiki() {
               var weakObjectLink = document.createElement("a")
               weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
+              weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
               var weakness = document.createElement("span")
               weakness.innerText = ` (${["", "New Head Block"].includes(object.title) ? (object.title == "" ? "Missing Title, " : "Default Title, ") : ""}${["", "A storyline, event or person."].includes(object.description) ? (object.description == "" ? "Missing Description, " : "Default Description, ") : ""})`
@@ -445,6 +453,7 @@ function displayWiki() {
               var weakObjectLink = document.createElement("a")
               weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
+              weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
               var weakness = document.createElement("span")
               weakness.innerText = ` (${["", "New Sub Block"].includes(object.title) ? (object.title == "" ? "Missing Title, " : "Default Title, ") : ""}${["", "A specific event"].includes(object.description) ? (object.description == "" ? "Missing Description, " : "Default Description, ") : ""})`
@@ -462,6 +471,7 @@ function displayWiki() {
               var weakObjectLink = document.createElement("a")
               weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
+              weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
               var weakness = document.createElement("span")
               weakness.innerText = ` (${["", "New Era"].includes(object.title) ? (object.title == "" ? "Missing Title, " : "Default Title, ") : ""}${["", "Description of this era"].includes(object.description) ? (object.description == "" ? "Missing Description, " : "Default Description, ") : ""})`
@@ -479,6 +489,7 @@ function displayWiki() {
               var weakObjectLink = document.createElement("a")
               weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
               weakObjectLink.innerText = object.title
+              weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
               var weakness = document.createElement("span")
               weakness.innerText = ` (${object.title == "" ? "Missing Title, " : ""}${object.title.startsWith("New Page") ? "Default Title, " : ""}${object.description == "" ? "Missing Description, " : ""})`
@@ -505,6 +516,7 @@ function displayWiki() {
         var emptyObjectLink = document.createElement("a")
         emptyObjectLink.href = `?id=${window["id"]}&page=${object.title}`
         emptyObjectLink.innerText = object.title
+        emptyObjectLink.setAttribute("link-desc", object.description || "No description")
 
         emptyObjectItem.appendChild(emptyObjectLink)
       })
@@ -695,6 +707,7 @@ function displayWiki() {
         var headPage = document.createElement("a")
         headPage.href = `?id=${window["id"]}&page=${head.title}`
         headPage.innerText = head.title
+        headPage.setAttribute("link-desc", head.description || "No description")
 
         // Create the head page text
         var headPageText = document.createElement("span")
@@ -711,6 +724,7 @@ function displayWiki() {
           var mainArticleLink = document.createElement("a")
           mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == head.mainArticle).title}`
           mainArticleLink.innerText = objects.find(e => e.id == head.mainArticle).title
+          mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == head.mainArticle).description || "No description")
 
           // Create the main article text
           var mainArticleText = document.createElement("span")
@@ -743,6 +757,7 @@ function displayWiki() {
             var mainArticleLink = document.createElement("a")
             mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title}`
             mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
+            mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
 
             // Create the main article text
             var mainArticleText = document.createElement("span")
@@ -857,6 +872,7 @@ function displayWiki() {
         var subPage = document.createElement("a")
         subPage.href = `?id=${window["id"]}&page=${sub.title}`
         subPage.innerText = sub.title
+        subPage.setAttribute("link-desc", sub.description || "No description")
 
         // Create the sub page text
         var subPageText = document.createElement("span")
@@ -873,6 +889,7 @@ function displayWiki() {
           var mainArticleLink = document.createElement("a")
           mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title}`
           mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
+          mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
           
           // Create the main article text
           var mainArticleText = document.createElement("span")
@@ -1321,6 +1338,8 @@ function displayWiki() {
         var refLink = document.createElement("a")
         refLink.href = `?id=${window["id"]}&page=${ref}`
         refLink.innerText = ref
+        refLink.setAttribute("link-desc", (objects.find(e => e.title == ref) || {}).description || "No description.")
+
         refItem.appendChild(refLink)
         refsList.appendChild(refItem)
         if (i != pageRefs.length - 1) refsList.appendChild(document.createTextNode(", "))
@@ -1547,6 +1566,7 @@ function textSet(element, text) {
       var categoryLink = document.createElement("a")
       categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
       categoryLink.innerText = category
+      categoryLink.setAttribute("link-desc", (objects.find(e => e.title == `Category:${category}`) || {}).description || "No description")
       categoryItem.appendChild(categoryLink)
 
       // If the category is not the last one, add a comma and space
@@ -1579,14 +1599,14 @@ function textSet(element, text) {
 
       // Make the link
       var linkElement = document.createElement("a")
-      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.title}` : `?id=${window["id"]}&new&page=${destination}`
+      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.title}` : `?id=${window["id"]}&page=${destination}`
       linkElement.innerText = innerText
       if (destObj && destObj.description) {
         linkElement.setAttribute("link-desc", destObj.description)
       }
       else if (!destObj) {
         linkElement.classList.add("invalid")
-        linkElement.setAttribute("link-desc", `Create "${destination}"?`)
+        linkElement.setAttribute("link-desc", "Non-existent page")
       }
       else linkElement.setAttribute("link-desc", "No description")
       element.appendChild(linkElement)
