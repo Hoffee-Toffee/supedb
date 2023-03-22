@@ -356,13 +356,13 @@ function displayWiki() {
 
       // Get all links within infoboxes that don't have a corresponding object
       objects.forEach(object => {
-        if (object.content && object.content.infobox) {
-          var i = object.content.infobox
+        if (object.content && object.content[0] && object.content[0].type && object.content[0].type == "infobox") {
+          var i = object.content[0]
 
-          // Loop through the rows
-          for (var key in i.content) {
+          // Loop through each object within the infobox's content
+          i.content.forEach(key => {
             // Make a copy of the cell content
-            var cellContent = i.content[key]
+            var cellContent = i.content[key].value
 
             // Loop and extract until there are no more links / text
             while (cellContent) {
@@ -399,7 +399,7 @@ function displayWiki() {
                 }
               }
             }
-          }
+          })
         }
       })
 
@@ -561,8 +561,8 @@ function displayWiki() {
     iframe.id = "wikiMap"
     iframe.src = "../map/map.html?id=wikiMap"
 
-    if (page.content && page.content.infobox) {
-      var i = page.content.infobox
+    if (page.content && page.content[0] && page.content[0].type == "infobox") {
+      var ib = page.content[0]
 
       // Make the infobox table
       var infobox = document.createElement("table")
@@ -575,38 +575,38 @@ function displayWiki() {
 
       // Make the caption title
       var captionTitle = document.createElement("h3")
-      captionTitle.setAttribute("prop-ref", "content.infobox.banner.title")
+      captionTitle.setAttribute("prop-ref", "content[0].banner.title")
       caption.appendChild(captionTitle)
-      textSet(captionTitle, i.banner.title)
+      textSet(captionTitle, ib.banner.title)
 
       // Make the caption subtitle
       var captionSubtitle = document.createElement("h4")
-      captionSubtitle.setAttribute("prop-ref", "content.infobox.banner.subtitle")
+      captionSubtitle.setAttribute("prop-ref", "content[0].banner.subtitle")
       caption.appendChild(captionSubtitle)
-      textSet(captionSubtitle, i.banner.subtitle)
+      textSet(captionSubtitle, ib.banner.subtitle)
 
       // Create the table body
       var tableBody = document.createElement("tbody")
       infobox.appendChild(tableBody)
 
       // Loop through the rows
-      for (var key in i.content) {
+      ib.content.forEach((r, i) => {
         // Make the row
         var row = document.createElement("tr")
         tableBody.appendChild(row)
 
         // Make the key cell
         var keyCell = document.createElement("th")
-        keyCell.setAttribute("prop-ref", `content.infobox.content.${key}!`)
+        keyCell.setAttribute("prop-ref", `content[0]content[${i}].key`)
         row.appendChild(keyCell)
-        textSet(keyCell, key)
+        textSet(keyCell, r.key)
 
         // Make the value cell
         var valueCell = document.createElement("td")
-        valueCell.setAttribute("prop-ref", `content.infobox.content.${key}`)
+        valueCell.setAttribute("prop-ref", `content[0]content[${i}].value`)
         row.appendChild(valueCell)
-        textSet(valueCell, i.content[key])
-      }
+        textSet(valueCell, r.value)
+      })
     }
 
     // If it's an era page, then show all the events that happened during that time period
@@ -1087,13 +1087,13 @@ function displayWiki() {
           }
 
           // Check within the infobox
-          if (object.content && object.content.infobox) {
-            var i = object.content.infobox
+          if (object.content && object.content[0] && page.content[0].type == "infobox") {
+            var ib = object.content[0]
 
             // Loop through the rows
-            for (var key in i.content) {
+            ib.content.forEach((r, i) => {
               // Make a copy of the cell content
-              var text = i.content[key]
+              var text = r.value
 
               var newText = ""
 
@@ -1132,8 +1132,8 @@ function displayWiki() {
               }
 
               // Set the new text
-              i.content[key] = newText
-            }
+              ib.content[i] = newText
+            })
           }
         })
         
@@ -1309,13 +1309,13 @@ function displayWiki() {
 
       // Get all links within infoboxes that link to this page
       objects.forEach(object => {
-        if (object.content && object.content.infobox && !pageRefs.includes(object.title)) {
-          var i = object.content.infobox
+        if (object.content && object.content[0] && page.content[0] == "infobox" && !pageRefs.includes(object.title)) {
+          var ib = object.content[0]
 
           // Loop through the rows
-          for (var key in i.content) {
+          ib.content.forEach(row => {
             // Make a copy of the cell content
-            var cellContent = i.content[key]
+            var cellContent = row.value
 
             // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
             // Don't check id if it's undefined
@@ -1324,9 +1324,9 @@ function displayWiki() {
               pageRefs.push(object.title)
 
               // Stop checking this one as it's already been added
-              break
+              return
             }
-          }
+          })
         }
       })
 
@@ -1464,57 +1464,12 @@ function toggleEdit(alert = true) {
       e.contentEditable = true
 
       e.addEventListener("focus", () => {
-        if (e.getAttribute("prop-ref").endsWith("!")) return
-
-        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : e.getAttribute("prop-ref").split(".").reduce((obj, i) => obj[i], page))
+        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref")))
       })
       e.addEventListener("blur", () => {
         var set = formatSet(e.innerText, true)
 
-        if (!e.getAttribute("prop-ref").endsWith("!")) {
-          e.getAttribute("prop-ref").split(".").reduce((obj, i, index, array) => {
-            console.log(obj, i, index, array)
-            if (index == array.length - 1) {
-              if (["tags", "categories"].includes(i)) {
-                set = set.split(", ").map(e => e.startsWith("[!") ? Number(e.slice(2, -1)) : e.slice(1, -1))
-              }
-              obj[i] = set
-            } else {
-              return obj[i]
-            }
-          }, page)
-        } else {
-          // Get the value past the last dot
-          var prop = e.getAttribute("prop-ref").split(".").slice(-1)[0].slice(0, -1)
-          var parentProp = e.getAttribute("prop-ref").split(".").slice(0, -1).reduce((obj, i) => obj[i], page) || page
-
-          var newParentProp = {}
-
-          // Loop through the parentProp, adding each property to the newParentProp, except for the one that matches the prop we're changing
-          Object.keys(parentProp).forEach(key => {
-            if (key != prop) newParentProp[key] = parentProp[key];
-            else newParentProp[e.innerText] = parentProp[key];
-          })
-
-          // Set the parentProp to the newParentProp
-          e.getAttribute("prop-ref").split(".").slice(0, -1).reduce((obj, i, index, array) => {
-            // If it's the parentProp, set it to the newParentProp and end the loop
-            if (index == array.length - 1) {
-              obj[i] = newParentProp
-            }
-            // Otherwise, return the next object
-            else {
-              return obj[i]
-            }
-          }, page)
-
-          // Change all prop-refs that start with 'content.infobox.content.Born' to start with 'content.infobox.content.{e.innerText}'
-          document.querySelectorAll("[prop-ref]").forEach(el => {
-            if (el.getAttribute("prop-ref").startsWith(e.getAttribute("prop-ref").split(".").slice(0, -2).join("."))) {
-              el.setAttribute("prop-ref", el.getAttribute("prop-ref").replace(prop, set))
-            }
-          })
-        }
+        traverseObj(page, e.getAttribute("prop-ref"), set)
 
         saveObjects()
 
@@ -1651,6 +1606,7 @@ function textSet(element, text) {
 }
 
 function formatSet(text, forCode = false) {
+  console.log(text)
   if (forCode) {
     var toReturn = text
     var indexOffset = 0
@@ -1785,3 +1741,18 @@ document.addEventListener("mouseover", e => {
 document.addEventListener("mouseout", e => {
   if (e.target.tagName == "A" && e.target.getAttribute("link-desc") && document.getElementById("tooltip")) document.getElementById("tooltip").remove()
 })
+
+function traverseObj(obj, path, set = null) {
+  path = path.split(/\.|\[|\]/).filter((key) => key !== "").map(key => isNaN(key) ? key : Number(key));
+
+  return path.reduce((sub, key, index, array) => {
+    if (index == array.length - 1 && set != null) {
+      if (["tags", "categories"].includes(key)) {
+        set = set.split(", ").map(e => e.startsWith("[!") ? Number(e.slice(2, -1)) : e.slice(1, -1))
+      }
+      sub[key] = set
+    } else {
+      return sub[key];
+    }
+  }, obj);
+}
