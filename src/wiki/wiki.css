@@ -81,6 +81,10 @@ body {
     background-color: #555;
 }
 
+#wikiPage p {
+    display: flex;
+}
+
 #wikiPage a {
     color: var(--col-orange);
     border-radius: 0.25em;
@@ -422,6 +426,23 @@ body {
     100% {
         opacity: 0.8;
     }
+}
+
+#wikiPage tr.new {
+    display: flex;
+    height: 5px;
+    border: none;
+    outline: none;
+    width: 100%;
+    align-items: center;
+}
+
+#wikiPage span.new {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background-color: var(--col-orange-hover);
+    border-radius: 0.5em;
 }
 
 @media screen and (max-width: 600px) {

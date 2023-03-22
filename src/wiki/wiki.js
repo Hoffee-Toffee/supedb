@@ -1463,6 +1463,40 @@ function toggleEdit(alert = true) {
     document.querySelectorAll("[prop-ref]").forEach(e => {
       e.contentEditable = true
 
+
+      if (!["title", "description"].includes(e.getAttribute("prop-ref")) && !e.getAttribute("prop-ref").includes("banner") && false) {
+        // Try to put an (new) element above and below the element (don't add if one already exists there)
+        if (e.previousElementSibling == null || !e.previousElementSibling.classList.contains("new")) {
+          var newElement = document.createElement("span")
+          newElement.classList = "new"
+          newElement.onclick = () => {
+            // Placeholder
+          }
+          if (e.parentNode.tagName != "TR") return // e.parentNode.insertBefore(newElement, e)
+          else if (e.parentNode.previousElementSibling == null || !e.parentNode.previousElementSibling.classList.contains("new")) {
+            var tr = document.createElement("tr")
+            tr.classList = "new"
+            tr.appendChild(newElement)
+            e.parentNode.parentNode.insertBefore(tr, e.parentNode)
+          }
+        }
+
+        if (e.nextElementSibling == null || !e.nextElementSibling.classList.contains("new")) {
+          var newElement = document.createElement("span")
+          newElement.classList = "new"
+          newElement.onclick = () => {
+            // Placeholder
+          }
+          if (e.parentNode.tagName != "TR") return // e.parentNode.insertBefore(newElement, e.nextElementSibling)
+          else if (e.parentNode.nextElementSibling == null || !e.parentNode.nextElementSibling.classList.contains("new")) {
+            var tr = document.createElement("tr")
+            tr.classList = "new"
+            tr.appendChild(newElement)
+            e.parentNode.parentNode.insertBefore(tr, e.parentNode.nextElementSibling)
+          }
+        }
+      }
+
       e.addEventListener("focus", () => {
         e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref")))
       })
@@ -1491,6 +1525,9 @@ function toggleEdit(alert = true) {
       e.contentEditable = false
       // Remove event listeners by replacing with a clone
       e.parentNode.replaceChild(e.cloneNode(true), e)
+
+      // Remove all 'new' elements
+      document.querySelectorAll(".new").forEach(e => e.remove())
     })
   }
 }
