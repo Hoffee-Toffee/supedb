@@ -265,11 +265,11 @@ function displayWiki() {
     wiki.appendChild(subtitle)
 
     // Create the list of pages
-    var pageList = document.createElement("ul")
+    var pagesList = document.createElement("ul")
 
     pages.forEach(page => {
       var pageItem = document.createElement("li")
-      pageList.appendChild(pageItem)
+      pagesList.appendChild(pageItem)
 
       var pageLink = document.createElement("a")
       pageLink.href = `?id=${window["id"]}&page=${page.title}`
@@ -278,7 +278,7 @@ function displayWiki() {
       pageItem.appendChild(pageLink)
     })
 
-    wiki.appendChild(pageList)
+    wiki.appendChild(pagesList)
   }
   // If it starts with "special:", then show that special page
   else if (pageId.startsWith("Special:")) {
@@ -362,7 +362,7 @@ function displayWiki() {
           // Loop through each object within the infobox's content
           i.content.forEach(key => {
             // Make a copy of the cell content
-            var cellContent = i.content[key].value
+            var cellContent = key.value
 
             // Loop and extract until there are no more links / text
             while (cellContent) {
@@ -523,6 +523,90 @@ function displayWiki() {
 
       wiki.appendChild(emptyObjectList)
     }
+    else if (special == "Pages") {
+      // Add the title
+      titleText.innerText += "Special Page"
+
+      // Create the subtitle
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = `All Pages`
+      wiki.appendChild(subtitle)
+
+      // Create the list of all pages
+      var pagesList = document.createElement("ul")
+      pagesList.setAttribute("headerText", "All Pages")
+
+      // Get all tags, tags of number type will be ignored (as they will be added later)
+      var tagsList = new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => isNaN(e)))
+
+      tagsList = Array.from(tagsList).sort()
+
+      // Get all links within infoboxes
+      objects.forEach(object => {
+        if (object.content && object.content[0] && object.content[0].type && object.content[0].type == "infobox") {
+          var i = object.content[0]
+
+          // Loop through each object within the infobox's content
+          i.content.forEach(key => {
+            // Make a copy of the cell content
+            var cellContent = key.value
+
+            // Loop and extract until there are no more links / text
+            while (cellContent) {
+              if (cellContent.startsWith("[") && !cellContent.startsWith("[!")) {
+                // Get the link block
+                var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
+
+                // Get the destination
+                var destination = link.split("|")[0]
+
+                // Add to the list
+                tagsList.push(destination)
+
+                // Remove the link from the cell content
+                cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
+              }
+              else if (cellContent.startsWith("[!")) {
+                // Get the link block
+                var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
+
+                // Get the destination
+                var destination = link.split("|")[0]
+
+                // Remove the link from the cell content
+                cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
+              }
+              else {
+                // Remove the text from the cell content (if another link exists)
+                if (cellContent.includes("[")) {
+                  cellContent = cellContent.substring(cellContent.indexOf("["), cellContent.length)
+                }
+                else {
+                  cellContent = null
+                }
+              }
+            }
+          })
+        }
+      })
+
+      // Add all page titles (for pages that have titles) and sort alphabetically and remove any duplicates
+      var allPages = Array.from(new Set(tagsList.concat(objects.filter(e => e.title).map(e => e.title)))).sort()
+
+      allPages.forEach(pg => {
+        var pageItem = document.createElement("li")
+        pagesList.appendChild(pageItem)
+
+        var pageLink = document.createElement("a")
+        pageLink.href = `?id=${window["id"]}&page=${pg}`
+        pageLink.innerText = pg
+        if (!objects.find(e => e.title == pg)) pageLink.classList.add("invalid")
+
+        pageItem.appendChild(pageLink)
+      })
+
+      wiki.appendChild(pagesList)
+    }
     else if (special == "SpecialPages") {
       // Add the title
       titleText.innerText += "Special Pages"
@@ -536,6 +620,7 @@ function displayWiki() {
       var specialPageList = document.createElement("ul")
       specialPageList.setAttribute("headerText", "Special Pages")
       specialPageList.innerHTML = `
+        <li><a href="?id=${window["id"]}&page=Special:Pages">All Pages</a></li>
         <li><a href="?id=${window["id"]}&page=Special:Categories">All Categories</a></li>
         <li><a href="?id=${window["id"]}&page=Special:Random">Random Page</a></li>
         <li><a href="?id=${window["id"]}&page=Special:Weak">Weak and Invalid Pages</a></li>
