@@ -1153,7 +1153,7 @@ function displayWiki() {
     page.content.forEach((e, i) => {
       if (e.type == "infobox" && i == 0) return
 
-      genContent(wiki, e)
+      genContent(wiki, e, `content[${i}]`)
     })
 
 
@@ -1429,11 +1429,10 @@ function settingsMenu() {
   save.onclick = function() {
     // Save the objects
     objects = JSON.parse(document.getElementById("raw").value);
-    saveObjects();
-
-    // Close the popup
-    document.getElementById("popup").style.visibility = "hidden";
-    document.getElementById("popup").innerHTML = "";
+    saveObjects(function() {
+      // Refresh the page
+      window.location.reload();
+    })
   }
   popup.appendChild(save);
 }
@@ -1805,7 +1804,7 @@ function traverseObj(obj, path, set = null) {
   }, obj);
 }
 
-function genContent(parent, info, depth = 1) {
+function genContent(parent, info, path, depth = 1) {
   depth++
 
   switch (info.type) {
@@ -1817,14 +1816,16 @@ function genContent(parent, info, depth = 1) {
       // Use the depth to determine the header size
       var header = document.createElement(`h${depth < 6 ? depth : 6}`)
       header.innerText = info.title || "Untitled Section"
+      header.setAttribute("prop-ref", `${path}.title`)
       section.appendChild(header)
 
       // Add content if existing
-      info.content && info.content.forEach(e => genContent(section, e, depth))
+      info.content && info.content.forEach((e, i) => genContent(section, e, `${path}.content[${i}]`, depth))
       break
     case "paragraph":
       // Create the paragraph
       var paragraph = document.createElement("p")
+      paragraph.setAttribute("prop-ref", `${path}.text`)
       textSet(paragraph, info.text || "")
       parent.appendChild(paragraph)
       break

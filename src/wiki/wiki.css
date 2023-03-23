@@ -82,7 +82,7 @@ body {
 }
 
 #wikiPage p {
-    display: flex;
+    display: flow-root;
 }
 
 #wikiPage a {
