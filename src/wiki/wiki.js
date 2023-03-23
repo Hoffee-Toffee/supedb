@@ -1087,7 +1087,7 @@ function displayWiki() {
           }
 
           // Check within the infobox
-          if (object.content && object.content[0] && page.content[0].type == "infobox") {
+          if (object.content && object.content[0] && object.content[0].type == "infobox") {
             var ib = object.content[0]
 
             // Loop through the rows
@@ -1132,10 +1132,12 @@ function displayWiki() {
               }
 
               // Set the new text
-              ib.content[i] = newText
+              ib.content[i].value = newText
             })
           }
         })
+
+        console.log(objects)
         
 
         // Save the list of objects (with callback)
@@ -1145,6 +1147,15 @@ function displayWiki() {
         })
       }
     }
+
+    // Do all the other elements from the content
+    // Don't repeat the infobox if 
+    page.content.forEach((e, i) => {
+      if (e.type == "infobox" && i == 0) return
+
+      genContent(wiki, e)
+    })
+
 
     // Show the content section if not new, a sub, or a non
     if (![null, "Sub"].includes(page.class) && url.searchParams.get("new") == null) {
@@ -1309,7 +1320,7 @@ function displayWiki() {
 
       // Get all links within infoboxes that link to this page
       objects.forEach(object => {
-        if (object.content && object.content[0] && page.content[0] == "infobox" && !pageRefs.includes(object.title)) {
+        if (object.content && object.content[0] && object.content[0] == "infobox" && !pageRefs.includes(object.title)) {
           var ib = object.content[0]
 
           // Loop through the rows
@@ -1792,4 +1803,36 @@ function traverseObj(obj, path, set = null) {
       return sub[key];
     }
   }, obj);
+}
+
+function genContent(parent, info, depth = 1) {
+  depth++
+
+  switch (info.type) {
+    case "section":
+      // Create the section
+      var section = document.createElement("section")
+      parent.appendChild(section)
+
+      // Use the depth to determine the header size
+      var header = document.createElement(`h${depth < 6 ? depth : 6}`)
+      header.innerText = info.title || "Untitled Section"
+      section.appendChild(header)
+
+      // Add content if existing
+      info.content && info.content.forEach(e => genContent(section, e, depth))
+      break
+    case "paragraph":
+      // Create the paragraph
+      var paragraph = document.createElement("p")
+      textSet(paragraph, info.text || "")
+      parent.appendChild(paragraph)
+      break
+    case "ordered-list": // Coming soon
+    case "unordered-list":
+    case "image":
+    case "table":
+    case "infobox": // Additional
+    case "quote":
+  }
 }
