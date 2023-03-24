@@ -751,15 +751,11 @@ function displayWiki() {
       wiki.appendChild(subtitle);
       textSet(subtitle, page.title)
 
-      // Create the descriptions
+      // Create the description
       var description = document.createElement("p")
-      description.innerText = "This is the era page for this timeline. Click on a link below to go to a specific event page."
+      description.setAttribute("prop-ref", "description")
       wiki.appendChild(description)
-
-      var description2 = document.createElement("p")
-      description2.setAttribute("prop-ref", "description")
-      wiki.appendChild(description2)
-      textSet(description2, page.description)
+      textSet(description, page.description)
 
       // Fill the embed with the events
       wiki.appendChild(iframe)
@@ -880,15 +876,11 @@ function displayWiki() {
       wiki.appendChild(subtitle)
       textSet(subtitle, page.title)
 
-      // Create the descriptions
+      // Create the description
       var description = document.createElement("p")
-      description.innerText = "This is the event page for this timeline. Click on a link below to go to a specific sub page."
+      description.setAttribute("prop-ref", "description")
       wiki.appendChild(description)
-
-      var description2 = document.createElement("p")
-      description2.setAttribute("prop-ref", "description")
-      wiki.appendChild(description2)
-      textSet(description2, page.description)
+      textSet(description, page.description)
 
       var subs = objects.filter(e => e.headId == page.id)
 
@@ -1011,15 +1003,11 @@ function displayWiki() {
       wiki.appendChild(subtitle)
       textSet(subtitle, page.title)
 
-      // Create the descriptions
+      // Create the description
       var description = document.createElement("p")
-      description.innerText = `This is the page for this Sub. This feature is not yet implemented.`
+      description.setAttribute("prop-ref", "description")
       wiki.appendChild(description)
-
-      var description2 = document.createElement("p")
-      description2.setAttribute("prop-ref", "description")
-      wiki.appendChild(description2)
-      textSet(description2, page.description)
+      textSet(description, page.description)
     }
     // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
     else if (page.class == "Info") {
@@ -1031,15 +1019,11 @@ function displayWiki() {
       subtitle.setAttribute("prop-ref", "title")
       wiki.appendChild(subtitle)
 
-      // Create the descriptions
+      // Create the description
       var description = document.createElement("p")
-      description.innerText = `This is the wiki page for a concept within this timeline, the raw data will be shown below.\nThe formatting of this page has not yet been implemented.`
+      description.setAttribute("prop-ref", "description")
       wiki.appendChild(description)
-
-      var description2 = document.createElement("p")
-      description2.setAttribute("prop-ref", "description")
-      wiki.appendChild(description2)
-      textSet(description2, page.description)
+      textSet(description, page.description)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null && url.searchParams.get("new") == null) {
@@ -1235,7 +1219,7 @@ function displayWiki() {
 
     // Do all the other elements from the content
     // Don't repeat the infobox if 
-    page.content.forEach((e, i) => {
+    page.content && page.content.forEach((e, i) => {
       if (e.type == "infobox" && i == 0) return
 
       genContent(wiki, e, `content[${i}]`)
