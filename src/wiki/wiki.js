@@ -646,13 +646,17 @@ function displayWiki() {
     iframe.id = "wikiMap"
     iframe.src = "../map/map.html?id=wikiMap"
 
-    if (page.content && page.content[0] && page.content[0].type == "infobox") {
-      var ib = page.content[0]
+    // Create the top section
+    var topSection = document.createElement("div")
+    wiki.appendChild(topSection)
+
+    if (page.header && page.header[0] && page.header[0].type == "infobox") {
+      var ib = page.header[0]
 
       // Make the infobox table
       var infobox = document.createElement("table")
       infobox.classList.add("infobox")
-      wiki.appendChild(infobox)
+      topSection.appendChild(infobox)
 
       // Make the infobox caption
       var caption = document.createElement("caption")
@@ -660,13 +664,13 @@ function displayWiki() {
 
       // Make the caption title
       var captionTitle = document.createElement("h3")
-      captionTitle.setAttribute("prop-ref", "content[0].banner.title")
+      captionTitle.setAttribute("prop-ref", "header[0].banner.title")
       caption.appendChild(captionTitle)
       textSet(captionTitle, ib.banner.title)
 
       // Make the caption subtitle
       var captionSubtitle = document.createElement("h4")
-      captionSubtitle.setAttribute("prop-ref", "content[0].banner.subtitle")
+      captionSubtitle.setAttribute("prop-ref", "header[0].banner.subtitle")
       caption.appendChild(captionSubtitle)
       textSet(captionSubtitle, ib.banner.subtitle)
 
@@ -682,13 +686,13 @@ function displayWiki() {
 
         // Make the key cell
         var keyCell = document.createElement("th")
-        keyCell.setAttribute("prop-ref", `content[0]content[${i}].key`)
+        keyCell.setAttribute("prop-ref", `header[0]content[${i}].key`)
         row.appendChild(keyCell)
         textSet(keyCell, r.key)
 
         // Make the value cell
         var valueCell = document.createElement("td")
-        valueCell.setAttribute("prop-ref", `content[0]content[${i}].value`)
+        valueCell.setAttribute("prop-ref", `header[0]content[${i}].value`)
         row.appendChild(valueCell)
         textSet(valueCell, r.value)
       })
@@ -748,17 +752,17 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2");
       subtitle.setAttribute("prop-ref", "title")
-      wiki.appendChild(subtitle);
+      topSection.appendChild(subtitle);
       textSet(subtitle, page.title)
 
       // Create the description
       var description = document.createElement("p")
       description.setAttribute("prop-ref", "description")
-      wiki.appendChild(description)
+      topSection.appendChild(description)
       textSet(description, page.description)
 
       // Fill the embed with the events
-      wiki.appendChild(iframe)
+      topSection.appendChild(iframe)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
@@ -873,13 +877,13 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.setAttribute("prop-ref", "title")
-      wiki.appendChild(subtitle)
+      topSection.appendChild(subtitle)
       textSet(subtitle, page.title)
 
       // Create the description
       var description = document.createElement("p")
       description.setAttribute("prop-ref", "description")
-      wiki.appendChild(description)
+      topSection.appendChild(description)
       textSet(description, page.description)
 
       var subs = objects.filter(e => e.headId == page.id)
@@ -927,7 +931,7 @@ function displayWiki() {
       iframe.setAttribute("objects", JSON.stringify(incHidden))
 
       // Fill the embed with the subs
-      wiki.appendChild(iframe)
+      topSection.appendChild(iframe)
 
       // Create a contents table to be populated later
       var contents = document.createElement("ol")
@@ -981,7 +985,7 @@ function displayWiki() {
         // Create the sub description
         var subDescription = document.createElement("p")
         subDescription.innerText = sub.description
-        wiki.appendChild(subDescription)
+        topSection.appendChild(subDescription)
 
         // Add to table of contents
         var contentsItem = document.createElement("li")
@@ -1000,13 +1004,13 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.setAttribute("prop-ref", "title")
-      wiki.appendChild(subtitle)
+      topSection.appendChild(subtitle)
       textSet(subtitle, page.title)
 
       // Create the description
       var description = document.createElement("p")
       description.setAttribute("prop-ref", "description")
-      wiki.appendChild(description)
+      topSection.appendChild(description)
       textSet(description, page.description)
     }
     // If the page is a wiki page, then show the plaintext with a message stating this is not yet implemented
@@ -1017,12 +1021,12 @@ function displayWiki() {
       var subtitle = document.createElement("h2")
       subtitle.innerText = page.title
       subtitle.setAttribute("prop-ref", "title")
-      wiki.appendChild(subtitle)
+      topSection.appendChild(subtitle)
 
       // Create the description
       var description = document.createElement("p")
       description.setAttribute("prop-ref", "description")
-      wiki.appendChild(description)
+      topSection.appendChild(description)
       textSet(description, page.description)
     }
     // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
@@ -1032,12 +1036,12 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = pageId
-      wiki.appendChild(subtitle)
+      topSection.appendChild(subtitle)
 
       // Create the description (with a link inside)
       var description = document.createElement("p")
       description.innerText = `This page does not exist. You can create it by clicking the link below.\n`
-      wiki.appendChild(description)
+      topSection.appendChild(description)
 
       var link = document.createElement("a")
       link.href = `?id=${window["id"]}&new&page=${pageId}`
@@ -1051,12 +1055,12 @@ function displayWiki() {
 
       var subtitle = document.createElement("h2")
       subtitle.innerText = "New Page Form"
-      wiki.appendChild(subtitle)
+      topSection.appendChild(subtitle)
 
       // Create the form
       var form = document.createElement("form")
       form.id = "newPageForm"
-      wiki.appendChild(form)
+      topSection.appendChild(form)
 
       // Create the title input
       var titleLabel = document.createElement("h3")
@@ -1128,7 +1132,7 @@ function displayWiki() {
         if (objects.some(obj => obj.id == id)) id++
 
         // Copy the template (if selected)
-        var temp = (template == "none") ? {} : objects.find(obj => obj.id == template).content
+        var temp = (template == "none") ? {} : objects.find(obj => obj.id == template)
 
         // Create the object
         var obj = {
@@ -1136,7 +1140,9 @@ function displayWiki() {
           "title": title,
           "description": "Short description...",
           "class": "Info",
-          "content": temp,
+          "header": temp.header,
+          "content": temp.content,
+          "talk": [],
           "tags": [],
           "categories": []
         }
@@ -1156,8 +1162,8 @@ function displayWiki() {
           }
 
           // Check within the infobox
-          if (object.content && object.content[0] && object.content[0].type == "infobox") {
-            var ib = object.content[0]
+          if (object.header && object.header[0] && object.header[0].type == "infobox") {
+            var ib = object.header[0]
 
             // Loop through the rows
             ib.content.forEach((r, i) => {
@@ -1217,14 +1223,17 @@ function displayWiki() {
       }
     }
 
-    // Do all the other elements from the content
-    // Don't repeat the infobox if 
-    page.content && page.content.forEach((e, i) => {
+    // Do the rest of the header content
+    page.header && page.header.forEach((e, i) => {
       if (e.type == "infobox" && i == 0) return
 
-      genContent(wiki, e, `content[${i}]`)
+      genContent(topSection, e, `header[${i}]`)
     })
 
+    // Do all the main content
+    page.content && page.content.forEach((e, i) => {
+      genContent(wiki, e, `content[${i}]`)
+    })
 
     // Show the content section if not new, a sub, or a non
     if (![null, "Sub"].includes(page.class) && url.searchParams.get("new") == null) {
@@ -1240,12 +1249,12 @@ function displayWiki() {
       rawHeader.addEventListener("click", () => raw.classList.toggle("collapsed"))
 
       // Check if it needs to show thw raw content or allow you to populate it from the content of a template
-      if (page.content) {
+      if ((page.content && page.content.length > 0) || (page.header && page.header.length > 0)) {
         rawHeader.innerText = "View Raw Content"
 
         // Create the content
         var rawContent = document.createElement("pre")
-        rawContent.innerText = JSON.stringify(page.content, null, 2)
+        rawContent.innerText = JSON.stringify([page.header, ...page.content], null, 2)
         raw.appendChild(rawContent)
       }
       else {
@@ -1301,11 +1310,13 @@ function displayWiki() {
             return
           }
 
-          // Get the content of template selected
-          var temp = objects.find(obj => obj.id == temps.value).content
+          // Get the contents of template selected
+          var tempHead = objects.find(obj => obj.id == temps.value).header
+          var tempContent = objects.find(obj => obj.id == temps.value).content
 
-          // Set the content of the page to the template
-          page.content = temp
+          // Set the contents of the page to the template
+          page.header = tempHead
+          page.content = tempContent
 
           // Save the list of objects (with callback to reload the page with edit mode on)
           saveObjects(function () {
@@ -1389,8 +1400,8 @@ function displayWiki() {
 
       // Get all links within infoboxes that link to this page
       objects.forEach(object => {
-        if (object.content && object.content[0] && object.content[0] == "infobox" && !pageRefs.includes(object.title)) {
-          var ib = object.content[0]
+        if (object.header && object.header[0] && object.header[0].type == "infobox" && !pageRefs.includes(object.title)) {
+          var ib = object.header[0]
 
           // Loop through the rows
           ib.content.forEach(row => {
@@ -1873,7 +1884,7 @@ function traverseObj(obj, path, set = null) {
   }, obj);
 }
 
-function genContent(parent, info, path, depth = 1) {
+function genContent(parent, info, path, depth = 2) {
   depth++
 
   switch (info.type) {

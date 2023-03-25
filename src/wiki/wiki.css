@@ -23,6 +23,10 @@ body {
     z-index: -1;
 }
 
+#wikiPage div {
+    display: flow-root;
+}
+
 #wikiPage h1,
 #wikiPage h2,
 #wikiPage h3 {
@@ -355,6 +359,10 @@ body {
 #wikiPage.editing [contenteditable="true"]:focus {
     background-color: #0c0c0c;
     outline: 1px solid var(--col-orange-hover);
+}
+
+#wikiPage.editing h3[contenteditable="true"] {
+    margin-left: 0em;
 }
 
 #wikiPage form {
