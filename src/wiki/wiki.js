@@ -101,13 +101,21 @@ function displayWiki() {
   var url = new URL(window.location.href)
   var pageId = url.searchParams.get("page").replaceAll("_", " ")
 
+  // Replace the 'page' in the url with the correctly cased version
+  if (pageId != null) {
+    url.searchParams.set("page", (objects.find(e => e.title.toLowerCase() == pageId.toLowerCase()) || {title: pageId}).title.replaceAll(" ", "_"))
+    console.log(url)
+    history.replaceState(null, null, url)
+  }
+
+
   // If 'new' then set pageId to 'newPage'
   // If 'newPage' is taken then keep add -01 and so on until it isn't
   if (url.searchParams.get("new") != undefined && !pageId) {
       pageId = "New Page"
       var i = 0
 
-      while(objects.find(e => e.title == `${pageId}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`) != undefined) i++
+      while(objects.find(e => e.title.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`) != undefined) i++
       pageId = `${pageId}${i == 0 ? "" : " - " + (i < 10 ? "0" + i : i)}`
   }
 
@@ -309,7 +317,7 @@ function displayWiki() {
         var categoryLink = document.createElement("a")
         categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
         categoryLink.innerText = category
-        categoryLink.setAttribute("link-desc", (objects.find(e => e.title == category) || {}).description || "No description")
+        categoryLink.setAttribute("link-desc", (objects.find(e => e.toLowerCase() == category.toLowerCase()) || {}).description || "No description")
 
         categoryItem.appendChild(categoryLink)
       })
@@ -600,7 +608,7 @@ function displayWiki() {
         var pageLink = document.createElement("a")
         pageLink.href = `?id=${window["id"]}&page=${pg.replaceAll(" ", "_")}`
         pageLink.innerText = pg
-        if (!objects.find(e => e.title == pg)) pageLink.classList.add("invalid")
+        if (!objects.find(e => e.title.toLowerCase() == pg.toLowerCase())) pageLink.classList.add("invalid")
 
         pageItem.appendChild(pageLink)
       })
@@ -631,7 +639,7 @@ function displayWiki() {
   }
   else {
     // If a page ID is provided, then get that object
-    var page = objects.find(e => e.title == pageId)
+    var page = objects.find(e => e.title.toLowerCase() == pageId.toLowerCase())
 
     // If that id doesn't exist, then set 'page.class' to null
     if (page == undefined) {
@@ -1114,7 +1122,7 @@ function displayWiki() {
         var title = document.getElementById("title").value
 
         // Make sure the title is available
-        if (objects.some(obj => obj.title == title)) {
+        if (objects.some(obj => obj.title.toLowerCase() == title.toLowerCase())) {
           notify("Page already exists with that title!")
           return
         }
@@ -1158,7 +1166,7 @@ function displayWiki() {
         objects.forEach(object => {
           // Check each tag in the object
           if (object.tags) {
-            object.tags = object.tags.map(tag => (tag == title) ? id : tag)
+            object.tags = object.tags.map(tag => (tag.toLowerCase() == title.toLowerCase()) ? id : tag)
           }
 
           // Check within the infobox
@@ -1175,7 +1183,7 @@ function displayWiki() {
               // Loop and extract until there are no more links / text
               while (text) {
                 console.log(text, newText)
-                if (text.startsWith(`[${title}|`) || text.startsWith(`[${title}]`)) {
+                if (text.toLowerCase().startsWith(`[${title.toLowerCase()}|`) || text.toLowerCase().startsWith(`[${title.toLowerCase()}]`)) {
                   // Add the id to the new text (plus the "|" or "]")
                   newText += `[!${id}${text[title.length + 1]}`
 
@@ -1392,7 +1400,7 @@ function displayWiki() {
       // Get all pages with this in their tags (will be a string)
       var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
 
-      var id = objects.find(e => e.title == pageId)
+      var id = objects.find(e => e.title.toLowerCase() == pageId.toLowerCase())
 
       console.log(`id: ${id}, pageId: ${pageId}`)
 
@@ -1400,17 +1408,17 @@ function displayWiki() {
 
       // Get all links within infoboxes that link to this page
       objects.forEach(object => {
-        if (object.header && object.header[0] && object.header[0].type == "infobox" && !pageRefs.includes(object.title)) {
+        if (object.header && object.header[0] && object.header[0].type == "infobox" && !pageRefs.find(e => e.toLowerCase() == object.title.toLowerCase())) {
           var ib = object.header[0]
 
           // Loop through the rows
           ib.content.forEach(row => {
             // Make a copy of the cell content
-            var cellContent = row.value
+            var cellContent = row.value.toLowerCase()
 
             // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
             // Don't check id if it's undefined
-            if ( (cellContent.includes(`[${pageId}]`) && !cellContent.includes(`[!${pageId}]`)) || (cellContent.includes(`[${pageId}|`) && !cellContent.includes(`[!${pageId}|`)) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
+            if ( (cellContent.includes(`[${pageId.toLowerCase()}]`) && !cellContent.includes(`[!${pageId.toLowerCase()}]`)) || (cellContent.includes(`[${pageId.toLowerCase()}|`) && !cellContent.includes(`[!${pageId.toLowerCase()}|`)) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
               // Add the title to the list of tag refs
               pageRefs.push(object.title)
 
@@ -1429,7 +1437,7 @@ function displayWiki() {
         var refLink = document.createElement("a")
         refLink.href = `?id=${window["id"]}&page=${ref.replaceAll(" ", "_")}`
         refLink.innerText = ref
-        refLink.setAttribute("link-desc", (objects.find(e => e.title == ref) || {}).description || "No description.")
+        refLink.setAttribute("link-desc", (objects.find(e => e.title.toLowerCase() == ref.toLowerCase()) || {}).description || "No description.")
 
         refItem.appendChild(refLink)
         refsList.appendChild(refItem)
@@ -1648,7 +1656,7 @@ function textSet(element, text) {
       var categoryLink = document.createElement("a")
       categoryLink.href = `?id=${window["id"]}&page=Category:${category.replaceAll(" ", "_")}`
       categoryLink.innerText = category
-      categoryLink.setAttribute("link-desc", (objects.find(e => e.title == `Category:${category}`) || {}).description || "No description")
+      categoryLink.setAttribute("link-desc", (objects.find(e => e.title.toLowerCase() == `Category:${category.toLowerCase()}`) || {}).description || "No description")
       categoryItem.appendChild(categoryLink)
 
       // If the category is not the last one, add a comma and space
@@ -1671,7 +1679,7 @@ function textSet(element, text) {
       var destination = link.split("|")[0]
 
       // Find the destination object ( {!id} is valid, but not {id}), if invalid then try to get the object with that title
-      var destObj = (destination.startsWith("!")) ? objects.find(e => e.id == destination.substring(1)) : objects.find(e => e.title == destination)
+      var destObj = (destination.startsWith("!")) ? objects.find(e => e.id == destination.substring(1)) : objects.find(e => e.title.toLowerCase() == destination.toLowerCase())
 
       // If it is valid, then set 'destination' to the title of that object
       if (destObj) destination = destObj.title
@@ -1748,9 +1756,9 @@ function formatSet(text, forCode = false) {
       // Swap the title with the id
       var prevLen = toReturn.length
 
-      if (objects.find(e => e.title == link)) {
+      if (objects.find(e => e.title.toLowerCase() == link.toLowerCase())) {
         // Don't replace, use the indexes to replace
-        toReturn = toReturn.substring(0, text.indexOf("[") + indexOffset) + `[!${objects.find(e => e.title == link).id}]` + toReturn.substring(text.indexOf("]") + indexOffset + 1, toReturn.length)
+        toReturn = toReturn.substring(0, text.indexOf("[") + indexOffset) + `[!${objects.find(e => e.title.toLowerCase() == link.toLowerCase()).id}]` + toReturn.substring(text.indexOf("]") + indexOffset + 1, toReturn.length)
       }
 
       // Update the index offset
