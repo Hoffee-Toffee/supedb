@@ -99,11 +99,11 @@ function displayWiki() {
 
   // Get page ID from URL
   var url = new URL(window.location.href)
-  var pageId = url.searchParams.get("page").replaceAll("_", " ")
+  var pageId = (url.searchParams.get("page")) ? url.searchParams.get("page").replaceAll("_", " ") : null
 
-  // Replace the 'page' in the url with the correctly cased version
-  if (pageId != null) {
-    url.searchParams.set("page", (objects.find(e => e.title && (e.title && e.title.toLowerCase() == pageId.toLowerCase())) || {title: pageId}).title.replaceAll(" ", "_"))
+  // Replace the 'page' in the url with the correctly cased version (unless a category or special page)
+  if (pageId != null && !pageId.startsWith("Category:") && !pageId.startsWith("Special:")) {
+    url.searchParams.set("page", (objects.find(e => e.title && (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())) || {title: pageId}).title.replaceAll(" ", "_"))
     console.log(url)
     history.replaceState(null, null, url)
   }
@@ -115,7 +115,7 @@ function displayWiki() {
       pageId = "New Page"
       var i = 0
 
-      while(objects.find(e => e.title && e.title.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`) != undefined) i++
+      while(objects.find(e => e.title && (e.title.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}` || e.redirects.find(r => r.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`))) != undefined) i++
       pageId = `${pageId}${i == 0 ? "" : " - " + (i < 10 ? "0" + i : i)}`
   }
 
@@ -357,15 +357,15 @@ function displayWiki() {
       var invalidTagList = document.createElement("ul")
       invalidTagList.setAttribute("headerText", "Non-Existent Pages")
 
-      // Get all tags that don't have a corresponding object (will be a string, not a number)
-      var invalidTags = new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => typeof e == "string"))
+      // Get all tags that don't have a corresponding object (will not match a title or redirect
+      var invalidTags = new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => !objects.find(o => o.title && (o.title.toLowerCase() == e.toLowerCase() || o.redirects && o.redirects.some(r => r.toLowerCase() == e.toLowerCase())))))
 
       invalidTags = Array.from(invalidTags).sort()
 
       // Get all links within infoboxes that don't have a corresponding object
       objects.forEach(object => {
-        if (object.content && object.content[0] && object.content[0].type && object.content[0].type == "infobox") {
-          var i = object.content[0]
+        if (object.header && object.header[0] && object.header[0].type && object.header[0].type == "infobox") {
+          var i = object.header[0]
 
           // Loop through each object within the infobox's content
           i.content.forEach(key => {
@@ -374,25 +374,17 @@ function displayWiki() {
 
             // Loop and extract until there are no more links / text
             while (cellContent) {
-              if (cellContent.startsWith("[") && !cellContent.startsWith("[!")) {
+              if (cellContent.startsWith("[")) {
                 // Get the link block
                 var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
 
                 // Get the destination
                 var destination = link.split("|")[0]
 
-                // Add to the list
-                invalidTags.push(destination)
-
-                // Remove the link from the cell content
-                cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
-              }
-              else if (cellContent.startsWith("[!")) {
-                // Get the link block
-                var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
-
-                // Get the destination
-                var destination = link.split("|")[0]
+                // Add to the list if it is not valid
+                if (!objects.find(o => o.title && (o.title.toLowerCase() == destination.toLowerCase() || o.redirects && o.redirects.some(r => r.toLowerCase() == destination.toLowerCase())))) {
+                  invalidTags.push(destination)
+                }
 
                 // Remove the link from the cell content
                 cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
@@ -516,8 +508,8 @@ function displayWiki() {
       var emptyObjectList = document.createElement("ul")
       emptyObjectList.setAttribute("headerText", "Pages without Content")
 
-      // Loop through all the objects, checking if they have any content (or if they do then if it's not empty)
-      objects.filter(object => ["Head", "Era", "Info"].includes(object.class) && (!object.content || object.content == "")).sort((a, b) => a.title.localeCompare(b.title)).forEach(object => {
+      // Loop through all the objects, only adding the ones that have no header and no content (or if they are empty)
+      objects.filter(object => ["Head", "Era", "Info"].includes(object.class) && (!object.content || object.content == []) && (!object.header || object.header == [])).sort((a, b) => a.title.localeCompare(b.title)).forEach(object => {
         var emptyObjectItem = document.createElement("li")
         emptyObjectList.appendChild(emptyObjectItem)
 
@@ -561,7 +553,7 @@ function displayWiki() {
 
             // Loop and extract until there are no more links / text
             while (cellContent) {
-              if (cellContent.startsWith("[") && !cellContent.startsWith("[!")) {
+              if (cellContent.startsWith("[")) {
                 // Get the link block
                 var link = cellContent.substring(cellContent.indexOf("[") + 1, cellContent.indexOf("]"))
 
@@ -570,16 +562,6 @@ function displayWiki() {
 
                 // Add to the list
                 tagsList.push(destination)
-
-                // Remove the link from the cell content
-                cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
-              }
-              else if (cellContent.startsWith("[!")) {
-                // Get the link block
-                var link = cellContent.substring(cellContent.indexOf("[!") + 2, cellContent.indexOf("]"))
-
-                // Get the destination
-                var destination = link.split("|")[0]
 
                 // Remove the link from the cell content
                 cellContent = cellContent.substring(cellContent.indexOf("]") + 1, cellContent.length)
@@ -608,7 +590,7 @@ function displayWiki() {
         var pageLink = document.createElement("a")
         pageLink.href = `?id=${window["id"]}&page=${pg.replaceAll(" ", "_")}`
         pageLink.innerText = pg
-        if (!objects.find(e => e.title && e.title.toLowerCase() == pg.toLowerCase())) pageLink.classList.add("invalid")
+        if (!objects.find(e => e.title && (e.title.toLowerCase() == pg.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pg.toLowerCase())))) pageLink.classList.add("invalid")
 
         pageItem.appendChild(pageLink)
       })
@@ -639,7 +621,7 @@ function displayWiki() {
   }
   else {
     // If a page ID is provided, then get that object
-    var page = objects.find(e => e.title && e.title.toLowerCase() == pageId.toLowerCase())
+    var page = objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())))
 
     // If that id doesn't exist, then set 'page.class' to null
     if (page == undefined) {
@@ -1122,7 +1104,7 @@ function displayWiki() {
         var title = document.getElementById("title").value
 
         // Make sure the title is available
-        if (objects.some(obj => obj.title.toLowerCase() == title.toLowerCase())) {
+        if (objects.some(obj => obj.title.toLowerCase() == title.toLowerCase() || obj.some(r => r.toLowerCase() == title.toLowerCase()))) {
           notify("Page already exists with that title!")
           return
         }
@@ -1151,6 +1133,7 @@ function displayWiki() {
           "header": temp.header,
           "content": temp.content,
           "talk": [],
+          "redirects": [],
           "tags": [],
           "categories": []
         }
@@ -1158,70 +1141,7 @@ function displayWiki() {
         console.log(obj)
 
         // Add the object to the list
-        objects.push(obj)
-
-        // Get all tags and links to this page (will only be text form "[title]" or "[title|") and replace them with the id form "[!id]" or "[!id|"
-        // Get all tags that don't have a corresponding object (will be a string, not a number)
-        // var invalidTags = new Set(objects.filter(e => e.tags).map(e => e.tags).flat().filter(e => typeof e == "string"))
-        objects.forEach(object => {
-          // Check each tag in the object
-          if (object.tags) {
-            object.tags = object.tags.map(tag => (tag.toLowerCase() == title.toLowerCase()) ? id : tag)
-          }
-
-          // Check within the infobox
-          if (object.header && object.header[0] && object.header[0].type == "infobox") {
-            var ib = object.header[0]
-
-            // Loop through the rows
-            ib.content.forEach((r, i) => {
-              // Make a copy of the cell content
-              var text = r.value
-
-              var newText = ""
-
-              // Loop and extract until there are no more links / text
-              while (text) {
-                console.log(text, newText)
-                if (text.toLowerCase().startsWith(`[${title.toLowerCase()}|`) || text.toLowerCase().startsWith(`[${title.toLowerCase()}]`)) {
-                  // Add the id to the new text (plus the "|" or "]")
-                  newText += `[!${id}${text[title.length + 1]}`
-
-                  // Remove the link from the text, till the '|', ']', or the end of the text, whichever comes first
-                  text = text.substring(Math.min(text.indexOf("|") + 1 || text.length, text.indexOf("]") + 1 || text.length))
-                }
-                else if (text.startsWith(`[`)) {
-                  // If it starts with a '[', then it's a link, so add the text up to the end of the link or the end of the text
-                  newText += text.split("]")[0]
-
-                  // Remove the text from the text
-                  text = text.substring(text.indexOf("]") || text.length, text.length)
-                }
-                else {
-                  // Get the text up to the next link
-                  var textSeg = text.split("[")[0]
-
-                  // Add the text to the new text
-                  newText += textSeg
-
-                  // Remove the text from the text (if another link exists)
-                  if (text.includes("[")) {
-                    text = text.substring(text.indexOf("["), text.length)
-                  }
-                  else {
-                    text = null
-                  }
-                }
-              }
-
-              // Set the new text
-              ib.content[i].value = newText
-            })
-          }
-        })
-
-        console.log(objects)
-        
+        objects.push(obj)        
 
         // Save the list of objects (with callback)
         saveObjects(function () {
@@ -1354,7 +1274,7 @@ function displayWiki() {
       var tagsList = document.createElement("ul")
       tagsList.setAttribute("prop-ref", "tags")
       tags.appendChild(tagsList)
-      textSet(tagsList, page.tags.map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", "))
+      textSet(tagsList, page.tags.map(e => `[${e}]`).join(", "))
       wiki.appendChild(tags)
     }
 
@@ -1379,6 +1299,28 @@ function displayWiki() {
       textSet(categoriesList, page.categories.map(cat => `[${cat}]`).join(", "))
     }
 
+    // Add a redirects section to create links that will redirect to this page
+    if (page.redirects) {
+      // Create the redirects section
+      var redirects = document.createElement("div")
+      redirects.classList.add("collapsable", "collapsed")
+
+      // Create the header
+      var redirectsHeader = document.createElement("h3")
+      redirectsHeader.innerText = "Redirects"
+      redirects.appendChild(redirectsHeader)
+
+      // Toggle 'collapsed' class on click
+      redirectsHeader.addEventListener("click", () => redirects.classList.toggle("collapsed"))
+
+      // Create the content
+      var redirectsList = document.createElement("ul")
+      redirectsList.setAttribute("prop-ref", "redirects")
+      redirects.appendChild(redirectsList)
+      wiki.appendChild(redirects)
+      textSet(redirectsList, page.redirects.map(alt => `[${alt}]`).join(", "))
+    }
+
     // If not 'new' then add a 'what links here' section
     if (url.searchParams.get("new") == null) {
       var refsSection = document.createElement("div")
@@ -1398,9 +1340,10 @@ function displayWiki() {
       refsSection.appendChild(refsList)
 
       // Get all pages with this in their tags (will be a string)
-      var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.includes(pageId)).map(e => e.title)))
+      var pageRefs = Array.from(new Set (objects.filter(e => e.tags && e.tags.find(t => t.toLowerCase() == pageId.toLowerCase() || objects.find(o => o.title == pageId && o.redirects.find(r => r.toLowerCase() == t.toLowerCase())))).map(e => e.title)))
 
-      var id = objects.find(e => e.title && e.title.toLowerCase() == pageId.toLowerCase())
+      // var id = objects.find(e => e.title && e.title.toLowerCase() == pageId.toLowerCase())
+      var id = objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())))
 
       console.log(`id: ${id}, pageId: ${pageId}`)
 
@@ -1408,7 +1351,7 @@ function displayWiki() {
 
       // Get all links within infoboxes that link to this page
       objects.forEach(object => {
-        if (object.header && object.header[0] && object.header[0].type == "infobox" && !pageRefs.find(e => e.toLowerCase() == object.title.toLowerCase())) {
+        if (object.header && object.header[0] && object.header[0].type == "infobox" && !pageRefs.find(e => e.toLowerCase() == object.title.toLowerCase() || object.redirects.find(r => r.toLowerCase() == e.toLowerCase()))) {
           var ib = object.header[0]
 
           // Loop through the rows
@@ -1416,9 +1359,9 @@ function displayWiki() {
             // Make a copy of the cell content
             var cellContent = row.value.toLowerCase()
 
-            // Check if '[{title}]', '[{title}|', `[!{id}]`, or `[!{id}|` is in the cell content 
+            // Check if '[{title}]' or '[{title}|' is in the cell content 
             // Don't check id if it's undefined
-            if ( (cellContent.includes(`[${pageId.toLowerCase()}]`) && !cellContent.includes(`[!${pageId.toLowerCase()}]`)) || (cellContent.includes(`[${pageId.toLowerCase()}|`) && !cellContent.includes(`[!${pageId.toLowerCase()}|`)) || (id && (cellContent.includes(`[!${id}]`) || cellContent.includes(`[!${id}|`)))) {
+            if (cellContent.includes(`[${pageId.toLowerCase()}]`) || cellContent.includes(`[${pageId.toLowerCase()}|`) || objects.find(obj => obj.title == pageId && obj.redirects.find(r => cellContent.toLowerCase().includes(`[${r.toLowerCase()}]`) || cellContent.toLowerCase().includes(`[${r.toLowerCase()}|`)))) {
               // Add the title to the list of tag refs
               pageRefs.push(object.title)
 
@@ -1437,7 +1380,7 @@ function displayWiki() {
         var refLink = document.createElement("a")
         refLink.href = `?id=${window["id"]}&page=${ref.replaceAll(" ", "_")}`
         refLink.innerText = ref
-        refLink.setAttribute("link-desc", (objects.find(e => e.title && e.title.toLowerCase() == ref.toLowerCase()) || {}).description || "No description.")
+        refLink.setAttribute("link-desc", (objects.find(e => e.title && (e.title.toLowerCase() == ref.toLowerCase() || e.redirects.find(r => r.toLowerCase() == ref.toLowerCase()))) || {}).description || "No description.")
 
         refItem.appendChild(refLink)
         refsList.appendChild(refItem)
@@ -1596,16 +1539,16 @@ function toggleEdit(alert = true) {
       }
 
       e.addEventListener("focus", () => {
-        e.innerText = formatSet((["tags", "categories"].includes(e.getAttribute("prop-ref"))) ? page[e.getAttribute("prop-ref")].map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref")))
+        e.innerText = ["tags", "categories"].includes(e.getAttribute("prop-ref")) ? page[e.getAttribute("prop-ref")].map(e => `[${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref"))
       })
       e.addEventListener("blur", () => {
-        var set = formatSet(e.innerText, true)
+        var set = e.innerText
 
         traverseObj(page, e.getAttribute("prop-ref"), set)
 
         saveObjects()
 
-        textSet(e, (typeof set == "object" ? set.map(e => typeof e == "string" ? `[${e}]` : `[!${e}]`).join(", ") : set), typeof set == "object")
+        textSet(e, (typeof set == "object" ? set.map(e => `[${e}]`).join(", ") : set), typeof set == "object")
       })
     })
   } else if (window["page"]) {
@@ -1639,11 +1582,11 @@ function textSet(element, text) {
   // If the value is "N/A" or [] then set the class to 'hidden', if not then remove the class
   // If it's a table cell or has a prop-ref of "categories" or "tags" then add the 'hidden' class to the parent element
   if (text == "N/A" || text == []) {
-    if (element.tagName == "TD" || (element.getAttribute("prop-ref") && ["categories", "tags"].includes(element.getAttribute("prop-ref")))) element.parentElement.classList.add("hidden")
+    if (element.tagName == "TD" || (element.getAttribute("prop-ref") && ["categories", "tags", "redirects"].includes(element.getAttribute("prop-ref")))) element.parentElement.classList.add("hidden")
     else element.classList.add("hidden")
   }
   else {
-    if (element.tagName == "TD" || (element.getAttribute("prop-ref") && ["categories", "tags"].includes(element.getAttribute("prop-ref")))) element.parentElement.classList.remove("hidden")
+    if (element.tagName == "TD" || (element.getAttribute("prop-ref") && ["categories", "tags", "redirects"].includes(element.getAttribute("prop-ref")))) element.parentElement.classList.remove("hidden")
     else if (element.classList) element.classList.remove("hidden")
   }
 
@@ -1656,7 +1599,7 @@ function textSet(element, text) {
       var categoryLink = document.createElement("a")
       categoryLink.href = `?id=${window["id"]}&page=Category:${category.replaceAll(" ", "_")}`
       categoryLink.innerText = category
-      categoryLink.setAttribute("link-desc", (objects.find(e => e.title && e.title.toLowerCase() == `Category:${category.toLowerCase()}`) || {}).description || "No description")
+      categoryLink.setAttribute("link-desc", (objects.find(e => e.title && (e.title.toLowerCase() == `Category:${category.toLowerCase()}`)) || {description: "No description"}).description)
       categoryItem.appendChild(categoryLink)
 
       // If the category is not the last one, add a comma and space
@@ -1679,10 +1622,10 @@ function textSet(element, text) {
       var destination = link.split("|")[0]
 
       // Find the destination object ( {!id} is valid, but not {id}), if invalid then try to get the object with that title
-      var destObj = (destination.startsWith("!")) ? objects.find(e => e.id == destination.substring(1)) : objects.find(e => e.title && e.title.toLowerCase() == destination.toLowerCase())
+      var destObj = objects.find(e => e.title && (e.title.toLowerCase() == destination.toLowerCase() || e.redirects.find(r => r.toLowerCase() == destination.toLowerCase())))
 
-      // If it is valid, then set 'destination' to the title of that object
-      if (destObj) destination = destObj.title
+      // If it is valid, then set 'destination' to the title of that object (unless it's a redirect)
+      if (destObj) destination = (destObj.redirects.find(r => r.toLowerCase() == destination.toLowerCase())) ? destination : destObj.title
 
       // Get the innerText (if it exists)
       var innerText = link.split("|")[1] || destination
@@ -1738,79 +1681,6 @@ function textSet(element, text) {
       }
     }
   }
-}
-
-function formatSet(text, forCode = false) {
-  console.log(text)
-  if (forCode) {
-    var toReturn = text
-    var indexOffset = 0
-
-    // Loop through each link [title] or [title|text]
-    // Replace the title with the id of the object (if it exists) [!id] or [!id|text]
-    while (text.includes("[") && text.includes("]")) {
-      // Get the link block
-      // Do to the first end bracket, vertical bar, or end of the string, whichever comes first
-      var link = text.substring(text.indexOf("[") + 1, text.indexOf("]") || text.indexOf("|") || text.length)
-
-      // Swap the title with the id
-      var prevLen = toReturn.length
-
-      if (objects.find(e => e.title && e.title.toLowerCase() == link.toLowerCase())) {
-        // Don't replace, use the indexes to replace
-        toReturn = toReturn.substring(0, text.indexOf("[") + indexOffset) + `[!${objects.find(e => e.title && e.title.toLowerCase() == link.toLowerCase()).id}]` + toReturn.substring(text.indexOf("]") + indexOffset + 1, toReturn.length)
-      }
-
-      // Update the index offset
-      indexOffset -= (prevLen - toReturn.length)
-
-      // Remove the link from the text
-      var prevLen = text.length
-      text = text.substring(text.indexOf("]") + 1 || text.length, text.length)
-
-      // Update the index offset
-      indexOffset += (prevLen - text.length)
-
-      console.log(toReturn, text)
-    }
-
-    text = toReturn
-  }
-  else {
-    var toReturn = text
-    var indexOffset = 0
-
-    // Loop through each link [!id] or [!id|text]
-    // Replace the id with the title of the object (if it exists) [title] or [title|text]
-    while (text.includes("[!") && text.includes("]")) {
-      // Get the link block
-      // Do to the first end bracket, vertical bar, or end of the string, whichever comes first
-      var link = text.substring(text.indexOf("[!") + 2, text.indexOf("]") || text.indexOf("|") || text.length)
-
-      // Swap the id with the title
-      var prevLen = toReturn.length
-
-      if (objects.find(e => e.id == link)) {
-        // Don't replace, use the indexes to replace
-        toReturn = toReturn.substring(0, text.indexOf("[!") + indexOffset) + `[${objects.find(e => e.id == link).title}]` + toReturn.substring(text.indexOf("]") + indexOffset + 1, toReturn.length)
-      }
-
-      // Update the index offset
-      indexOffset -= (prevLen - toReturn.length)
-
-      // Remove the link from the text
-      var prevLen = text.length
-      text = text.substring(text.indexOf("]") + 1 || text.length, text.length)
-
-      // Update the index offset
-      indexOffset += (prevLen - text.length)
-
-      console.log(toReturn, text)
-    }
-
-    text = toReturn
-  }
-  return text
 }
 
 window.onload = () => {
@@ -1882,8 +1752,8 @@ function traverseObj(obj, path, set = null) {
 
   return path.reduce((sub, key, index, array) => {
     if (index == array.length - 1 && set != null) {
-      if (["tags", "categories"].includes(key)) {
-        set = set.split(", ").map(e => e.startsWith("[!") ? Number(e.slice(2, -1)) : e.slice(1, -1))
+      if (["tags", "categories", "redirects"].includes(key)) {
+        set = set.split(", ").map(e => e.slice(1, -1))
       }
       sub[key] = set
     } else {
