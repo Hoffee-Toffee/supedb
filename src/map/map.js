@@ -963,7 +963,7 @@ function contextMenu(e) {
             // Wiki
             {
                 text: "Era Wiki",
-                onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + objects.find(e => e.id == el.id).title
+                onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + objects.find(e => e.id == el.id).title.replaceAll(" ", "_")
             },
             // Delete
             {
@@ -977,7 +977,7 @@ function contextMenu(e) {
     if (tList.concat(pList).includes("head")) {
         attr.unshift({
             text: "Event Wiki",
-            onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + objects.find(e => e.id == el.id).title
+            onclick: () => window.location.href = "../wiki/wiki.html?id=" + window["id"] + "&page=" + objects.find(e => e.id == el.id).title.replaceAll(" ", "_")
         })
     }
 

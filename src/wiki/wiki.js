@@ -99,7 +99,7 @@ function displayWiki() {
 
   // Get page ID from URL
   var url = new URL(window.location.href)
-  var pageId = url.searchParams.get("page")
+  var pageId = url.searchParams.get("page").replaceAll("_", " ")
 
   // If 'new' then set pageId to 'newPage'
   // If 'newPage' is taken then keep add -01 and so on until it isn't
@@ -183,7 +183,7 @@ function displayWiki() {
       eraList.appendChild(eraItem)
 
       var eraLink = document.createElement("a")
-      eraLink.href = `?id=${window["id"]}&page=${era.title}`
+      eraLink.href = `?id=${window["id"]}&page=${era.title.replaceAll(" ", "_")}`
       eraLink.innerText = era.title
       eraLink.setAttribute("link-desc", era.description || "No description")
       eraItem.appendChild(eraLink)
@@ -206,7 +206,7 @@ function displayWiki() {
       headList.appendChild(headItem)
 
       var headLink = document.createElement("a")
-      headLink.href = `?id=${window["id"]}&page=${head.title}`
+      headLink.href = `?id=${window["id"]}&page=${head.title.replaceAll(" ", "_")}`
       headLink.innerText = head.title
       headLink.setAttribute("link-desc", head.description || "No description")
       headItem.appendChild(headLink)
@@ -272,7 +272,7 @@ function displayWiki() {
       pagesList.appendChild(pageItem)
 
       var pageLink = document.createElement("a")
-      pageLink.href = `?id=${window["id"]}&page=${page.title}`
+      pageLink.href = `?id=${window["id"]}&page=${page.title.replaceAll(" ", "_")}`
       pageLink.innerText = page.title
       pageLink.setAttribute("link-desc", page.description || "No description")
       pageItem.appendChild(pageLink)
@@ -329,11 +329,11 @@ function displayWiki() {
       }
       else if (random <= categories.length) {
         // Go to a random category page
-        window.location.href = `?id=${window["id"]}&page=Category:${categories[random - 1]}`
+        window.location.href = `?id=${window["id"]}&page=Category:${categories[random - 1].replaceAll(" ", "_")}`
       }
       else {
         // Go to a random object page
-        window.location.href = `?id=${window["id"]}&page=${objects.filter(e => e.class != "link")[random - categories.length - 1].title}`
+        window.location.href = `?id=${window["id"]}&page=${objects.filter(e => e.class != "link")[random - categories.length - 1].title.replaceAll(" ", "_")}`
       }
     }
     else if (special == "Weak") {
@@ -411,7 +411,7 @@ function displayWiki() {
         invalidTagList.appendChild(invalidTagItem)
 
         var invalidTagLink = document.createElement("a")
-        invalidTagLink.href = `?id=${window["id"]}&page=${tag}`
+        invalidTagLink.href = `?id=${window["id"]}&page=${tag.replaceAll(" ", "_")}`
         invalidTagLink.innerText = tag
         invalidTagLink.classList.add("invalid")
 
@@ -433,7 +433,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title.replaceAll(" ", "_")}`
               weakObjectLink.innerText = object.title
               weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
@@ -451,7 +451,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title.replaceAll(" ", "_")}`
               weakObjectLink.innerText = object.title
               weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
@@ -469,7 +469,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title.replaceAll(" ", "_")}`
               weakObjectLink.innerText = object.title
               weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
@@ -487,7 +487,7 @@ function displayWiki() {
               weakObjectList.appendChild(weakObjectItem)
 
               var weakObjectLink = document.createElement("a")
-              weakObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+              weakObjectLink.href = `?id=${window["id"]}&page=${object.title.replaceAll(" ", "_")}`
               weakObjectLink.innerText = object.title
               weakObjectLink.setAttribute("link-desc", object.description || "No description")
 
@@ -514,7 +514,7 @@ function displayWiki() {
         emptyObjectList.appendChild(emptyObjectItem)
 
         var emptyObjectLink = document.createElement("a")
-        emptyObjectLink.href = `?id=${window["id"]}&page=${object.title}`
+        emptyObjectLink.href = `?id=${window["id"]}&page=${object.title.replaceAll(" ", "_")}`
         emptyObjectLink.innerText = object.title
         emptyObjectLink.setAttribute("link-desc", object.description || "No description")
 
@@ -598,7 +598,7 @@ function displayWiki() {
         pagesList.appendChild(pageItem)
 
         var pageLink = document.createElement("a")
-        pageLink.href = `?id=${window["id"]}&page=${pg}`
+        pageLink.href = `?id=${window["id"]}&page=${pg.replaceAll(" ", "_")}`
         pageLink.innerText = pg
         if (!objects.find(e => e.title == pg)) pageLink.classList.add("invalid")
 
@@ -790,7 +790,7 @@ function displayWiki() {
 
         // Create the head page link
         var headPage = document.createElement("a")
-        headPage.href = `?id=${window["id"]}&page=${head.title}`
+        headPage.href = `?id=${window["id"]}&page=${head.title.replaceAll(" ", "_")}`
         headPage.innerText = head.title
         headPage.setAttribute("link-desc", head.description || "No description")
 
@@ -807,7 +807,7 @@ function displayWiki() {
         if (head.mainArticle != undefined) {
           // Create the main article link
           var mainArticleLink = document.createElement("a")
-          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == head.mainArticle).title}`
+          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == head.mainArticle).title.replaceAll(" ", "_")}`
           mainArticleLink.innerText = objects.find(e => e.id == head.mainArticle).title
           mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == head.mainArticle).description || "No description")
 
@@ -840,7 +840,7 @@ function displayWiki() {
             console.log(objects.find(e => e.id == sub.mainArticle).title)
             // Create the main article link
             var mainArticleLink = document.createElement("a")
-            mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title}`
+            mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title.replaceAll(" ", "_")}`
             mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
             mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
 
@@ -951,7 +951,7 @@ function displayWiki() {
 
         // Create the sub page link
         var subPage = document.createElement("a")
-        subPage.href = `?id=${window["id"]}&page=${sub.title}`
+        subPage.href = `?id=${window["id"]}&page=${sub.title.replaceAll(" ", "_")}`
         subPage.innerText = sub.title
         subPage.setAttribute("link-desc", sub.description || "No description")
 
@@ -968,7 +968,7 @@ function displayWiki() {
         if (sub.mainArticle != undefined) {
           // Create the main article link
           var mainArticleLink = document.createElement("a")
-          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title}`
+          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title.replaceAll(" ", "_")}`
           mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
           mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
           
@@ -985,7 +985,7 @@ function displayWiki() {
         // Create the sub description
         var subDescription = document.createElement("p")
         subDescription.innerText = sub.description
-        topSection.appendChild(subDescription)
+        wiki.appendChild(subDescription)
 
         // Add to table of contents
         var contentsItem = document.createElement("li")
@@ -1044,7 +1044,7 @@ function displayWiki() {
       topSection.appendChild(description)
 
       var link = document.createElement("a")
-      link.href = `?id=${window["id"]}&new&page=${pageId}`
+      link.href = `?id=${window["id"]}&new&page=${pageId.replaceAll(" ", "_")}`
       link.innerText = `Create "${pageId}" Page`
       description.appendChild(link)
     }
@@ -1218,7 +1218,7 @@ function displayWiki() {
         // Save the list of objects (with callback)
         saveObjects(function () {
           // Redirect to the new page
-          window.location.href = `?id=${window["id"]}&edit&page=${obj.title}`
+          window.location.href = `?id=${window["id"]}&edit&page=${obj.title.replaceAll(" ", "_")}`
         })
       }
     }
@@ -1320,7 +1320,7 @@ function displayWiki() {
 
           // Save the list of objects (with callback to reload the page with edit mode on)
           saveObjects(function () {
-            window.location.href = `?id=${window["id"]}&edit&page=${page.title}`
+            window.location.href = `?id=${window["id"]}&edit&page=${page.title.replaceAll(" ", "_")}`
           })
         } 
       }
@@ -1427,7 +1427,7 @@ function displayWiki() {
       pageRefs.forEach((ref, i) => {
         var refItem = document.createElement("li")
         var refLink = document.createElement("a")
-        refLink.href = `?id=${window["id"]}&page=${ref}`
+        refLink.href = `?id=${window["id"]}&page=${ref.replaceAll(" ", "_")}`
         refLink.innerText = ref
         refLink.setAttribute("link-desc", (objects.find(e => e.title == ref) || {}).description || "No description.")
 
@@ -1646,7 +1646,7 @@ function textSet(element, text) {
       element.appendChild(categoryItem)
 
       var categoryLink = document.createElement("a")
-      categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
+      categoryLink.href = `?id=${window["id"]}&page=Category:${category.replaceAll(" ", "_")}`
       categoryLink.innerText = category
       categoryLink.setAttribute("link-desc", (objects.find(e => e.title == `Category:${category}`) || {}).description || "No description")
       categoryItem.appendChild(categoryLink)
@@ -1681,7 +1681,7 @@ function textSet(element, text) {
 
       // Make the link
       var linkElement = document.createElement("a")
-      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.title}` : `?id=${window["id"]}&page=${destination}`
+      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.title.replaceAll(" ", "_")}` : `?id=${window["id"]}&page=${destination.replaceAll(" ", "_")}`
       linkElement.innerText = innerText
       if (destObj && destObj.description) {
         linkElement.setAttribute("link-desc", destObj.description)
