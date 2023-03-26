@@ -136,6 +136,20 @@ function displayWiki() {
   titleText.innerText = "\u00A0-\u00A0"
   title.appendChild(titleText)
 
+  // Add a button to either 'talk' or 'wiki' depending on which you are on
+  var titleMenuButton = document.createElement("a")
+  if (url.searchParams.get("talk") != undefined) {
+    titleMenuButton.innerText = "Wiki"
+    titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}`
+    titleMenuButton.setAttribute("link-desc", "Go to the wiki page for this topic")
+  }
+  else {
+    titleMenuButton.innerText = "Talk"
+    titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}&talk`
+    titleMenuButton.setAttribute("link-desc", "Go to the talk page for this topic")
+  }
+  title.appendChild(titleMenuButton)
+
   // If none is provided, then show links to all heads and all era pages
   if (pageId == null) {
     // Remove the edit button from the page
@@ -627,6 +641,30 @@ function displayWiki() {
     if (page == undefined) {
       page = {class: null}
     }
+    // Check if this is the 'talk' page
+    else if (url.searchParams.get("talk") !== null) {
+      // Add the title
+      titleText.innerText += "Talk Page"
+
+      // Create the subtitle
+      var subtitle = document.createElement("h2")
+      subtitle.innerText = `${pageId} - Talk Page`
+      wiki.appendChild(subtitle)
+
+      // Create the talk page
+      var talkPage = document.createElement("div")
+      talkPage.id = "talkPage"
+      talkPage.classList.add("talkPage")
+      wiki.appendChild(talkPage)
+
+      // Add the content
+      page.talk.forEach((t, i) => { genContent(talkPage, {...t, type: "talk"}, `talk[${i}]`) })
+
+      // Set the title of the tab
+      document.getElementsByTagName("title")[0].innerText = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
+
+      return
+    }   
     else {
       window["page"] = page.id
     }
@@ -1019,7 +1057,7 @@ function displayWiki() {
       topSection.appendChild(description)
       textSet(description, page.description)
     }
-    // Lastly, if the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
+    // If the class is unknown, then tell the user the classic "this page does not exist... make one if you want" stuff
     else if (page.class == null && url.searchParams.get("new") == null) {
       // Add the title
       titleText.innerText += "Non-Existent Page"
@@ -1852,10 +1890,22 @@ function genContent(parent, info, path, depth = 2) {
       parent.appendChild(paragraph)
       break
     case "ordered-list": // Coming soon
+      break
     case "unordered-list":
+      break
     case "image":
+      break
     case "table":
+      break
     case "infobox": // Additional
+      break
     case "quote":
+      break
+    case "talk":
+      alert(`${"-".repeat(depth - 3)} ${info.text}`)
+
+      info.talk.forEach((e, i) => { genContent(parent, {...e, type: "talk"}, `${path}.talk[${i}]`, depth) })
+
+      break
   }
 }
