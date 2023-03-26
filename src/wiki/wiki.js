@@ -1030,7 +1030,7 @@ function displayWiki() {
 
       // Create the description (with a link inside)
       var description = document.createElement("p")
-      description.innerText = `This page does not exist. You can create it by clicking the link below.\n`
+      description.innerText = `This page does not exist. You can create it or redirect it to an existing page by clicking the link below.\n`
       topSection.appendChild(description)
 
       var link = document.createElement("a")
@@ -1044,17 +1044,17 @@ function displayWiki() {
       titleText.innerText += "New Page"
 
       var subtitle = document.createElement("h2")
-      subtitle.innerText = "New Page Form"
+      subtitle.innerText = "Create New Page or Redirect"
       topSection.appendChild(subtitle)
 
-      // Create the form
+      // Create the new form
       var form = document.createElement("form")
       form.id = "newPageForm"
       topSection.appendChild(form)
 
       // Create the title input
       var titleLabel = document.createElement("h3")
-      titleLabel.innerText = "Title:"
+      titleLabel.innerText = "Page Title:"
       form.appendChild(titleLabel)
 
       var title = document.createElement("input")
@@ -1065,9 +1065,11 @@ function displayWiki() {
       title.required = true
       form.appendChild(title)
 
+      form.appendChild(document.createElement("br"))
+
       // Show list of templates
-      var tempsText = document.createElement("h3")
-      tempsText.innerText = "Template:"
+      var tempsText = document.createElement("h4")
+      tempsText.innerText = "Create New Page (Pick Template):"
       form.appendChild(tempsText)
 
       var temps = document.createElement("select")
@@ -1081,7 +1083,7 @@ function displayWiki() {
       temps.appendChild(none)
 
       // Add the other options (all in the template category)
-      var options = objects.filter(e => e.categories && e.categories.includes("Templates"))
+      var options = objects.filter(e => e.categories && e.categories.includes("Templates")).sort((a, b) => a.title.localeCompare(b.title))
 
       options.forEach(e => {
         var option = document.createElement("option")
@@ -1092,7 +1094,7 @@ function displayWiki() {
 
       // Add the 'create' button
       var create = document.createElement("button")
-      create.innerText = "Create"
+      create.innerText = "Create From Template"
       create.type = "submit"
       form.appendChild(create)
 
@@ -1149,6 +1151,68 @@ function displayWiki() {
           window.location.href = `?id=${window["id"]}&edit&page=${obj.title.replaceAll(" ", "_")}`
         })
       }
+
+      // Add redirect form
+      var redirectForm = document.createElement("form")
+      redirectForm.id = "redirectForm"
+      topSection.appendChild(redirectForm)
+
+      // Show a list of all valid pages
+      var redirectText = document.createElement("h4")
+      redirectText.innerText = "Create Redirect (Pick Page):"
+      redirectForm.appendChild(redirectText)
+
+      var redirect = document.createElement("select")
+      redirect.id = "redirect"
+      redirectForm.appendChild(redirect)
+
+      // Add the default option ('none')
+      var none = document.createElement("option")
+      none.value = "none"
+      none.innerText = "None"
+      redirect.appendChild(none)
+
+      // Add the other options (all pages with titles)
+      var options = objects.filter(e => e.title).sort((a, b) => a.title.localeCompare(b.title))
+      
+      options.forEach(e => {
+        var option = document.createElement("option")
+        option.value = e.id
+        option.innerText = e.title
+        redirect.appendChild(option)
+      })
+
+      // Add the 'create' button
+      var create = document.createElement("button")
+      create.innerText = "Create Redirect"
+      create.type = "submit"
+      redirectForm.appendChild(create)
+
+      // Configure the submit event
+      redirectForm.onsubmit = function(e) {
+        e.preventDefault()
+
+        // Get the redirect
+        var redirect = document.getElementById("redirect").value
+
+        // Make sure the title is available
+        if (objects.some(obj => obj.title && (obj.title.toLowerCase() == pageId.toLowerCase() || obj.redirects.some(r => r.toLowerCase() == pageId.toLowerCase())))) {
+          notify("Page already exists with that title!")
+          return
+        }
+
+        // Add the redirect to the object (if not set to none)
+        if (redirect != "none") {
+          objects.find(obj => obj.id == redirect).redirects.push(pageId)
+        }
+
+        // Save the list of objects (with callback)
+        saveObjects(function () {
+          // Redirect to the new page
+          window.location.href = `?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}`
+        })
+      }
+
     }
 
     // Do the rest of the header content
