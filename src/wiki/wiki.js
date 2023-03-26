@@ -1104,7 +1104,7 @@ function displayWiki() {
         var title = document.getElementById("title").value
 
         // Make sure the title is available
-        if (objects.some(obj => obj.title.toLowerCase() == title.toLowerCase() || obj.some(r => r.toLowerCase() == title.toLowerCase()))) {
+        if (objects.some(obj => obj.title && (obj.title.toLowerCase() == title.toLowerCase() || obj.redirects.some(r => r.toLowerCase() == title.toLowerCase())))) {
           notify("Page already exists with that title!")
           return
         }
