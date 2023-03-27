@@ -1269,7 +1269,7 @@ function displayWiki() {
     if (![null, "Sub"].includes(page.class) && url.searchParams.get("new") == null) {
       // Create the raw data section
       var raw = document.createElement("div")
-      raw.classList.add("collapsable", "collapsed")
+      raw.classList.add("collapsible", "collapsed")
 
       // Create the header
       var rawHeader = document.createElement("h3")
@@ -1358,11 +1358,11 @@ function displayWiki() {
       wiki.appendChild(raw)
     }
 
-    // Add 'tags' and 'categories' sections if they exist (in collapsable divs)
+    // Add 'tags' and 'categories' sections if they exist (in collapsible divs)
     if (page.tags) {
       // Create the tags section
       var tags = document.createElement("div")
-      tags.classList.add("collapsable", "collapsed")
+      tags.classList.add("collapsible", "collapsed")
 
       // Create the header
       var tagsHeader = document.createElement("h3")
@@ -1383,7 +1383,7 @@ function displayWiki() {
     if (page.categories) {
       // Create the categories section
       var categories = document.createElement("div")
-      categories.classList.add("collapsable", "collapsed")
+      categories.classList.add("collapsible", "collapsed")
 
       // Create the header
       var categoriesHeader = document.createElement("h3")
@@ -1405,7 +1405,7 @@ function displayWiki() {
     if (page.redirects) {
       // Create the redirects section
       var redirects = document.createElement("div")
-      redirects.classList.add("collapsable", "collapsed")
+      redirects.classList.add("collapsible", "collapsed")
 
       // Create the header
       var redirectsHeader = document.createElement("h3")
@@ -1426,7 +1426,7 @@ function displayWiki() {
     // If not 'new' then add a 'what links here' section
     if (url.searchParams.get("new") == null) {
       var refsSection = document.createElement("div")
-      refsSection.classList.add("collapsable", "collapsed")
+      refsSection.classList.add("collapsible", "collapsed")
       wiki.appendChild(refsSection)
 
       // Create the header
@@ -1902,9 +1902,58 @@ function genContent(parent, info, path, depth = 2) {
     case "quote":
       break
     case "talk":
-      alert(`${"-".repeat(depth - 3)} ${info.text}`)
+      // Create talk section, with header (author, date, and {edited bool}), text, reply field and replies
+      var talk = document.createElement("div")
+      talk.classList.add("talk")
+      parent.appendChild(talk)
 
-      info.talk.forEach((e, i) => { genContent(parent, {...e, type: "talk"}, `${path}.talk[${i}]`, depth) })
+      // Create the header + span
+      var header = document.createElement("h4")
+      header.innerText = info.author
+      var span = document.createElement("span")
+      span.innerText = info.date
+      header.appendChild(span)
+      talk.appendChild(header)
+
+      // Create the text
+      var text = document.createElement("p")
+      text.innerText = info.text
+      // text.setAttribute("prop-ref", `${path}.text`)
+      talk.appendChild(text)
+
+      // Create collapsible replies section
+      var replies = document.createElement("div")
+      replies.classList = "collapsible collapsed replies"
+      talk.appendChild(replies)
+
+      var repliesText = document.createElement("h5")
+      repliesText.innerText = `Replies (${info.talk.length}):`
+      repliesText.onclick = () => replies.classList.toggle("collapsed")
+      replies.appendChild(repliesText)
+
+      // Create the reply field + button
+      var reply = document.createElement("textarea")
+      reply.placeholder = "Add Reply..."
+      replies.appendChild(reply)
+      var replyBtn = document.createElement("button")
+      replyBtn.innerText = "Reply"
+      replyBtn.addEventListener("click", () => { 
+        info.talk.push({
+          text: reply.value,
+          author: "Cool Person (Placeholder)",
+          date: new Date().toLocaleString(),
+          talk: []
+        })
+
+        // Save and reload
+        saveObjects(function() {
+          window.location.reload();
+        })
+      })
+
+      replies.appendChild(replyBtn)
+
+      info.talk.forEach((e, i) => { genContent(replies, {...e, type: "talk"}, `${path}.talk[${i}]`, depth) })
 
       break
   }

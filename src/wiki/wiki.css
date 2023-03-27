@@ -50,6 +50,11 @@ body {
     filter: grayscale(0.5);
 }
 
+#wikiPage h1 span ~ a {
+    position: absolute;
+    right: 1.5em;
+}
+
 #wikiPage h1::after {
     content: "";
     display: block;
@@ -201,7 +206,7 @@ body {
     display: inline-block;
 }
 
-#wikiPage .collapsable {
+#wikiPage .collapsible {
     top: 1em;
     position: relative;
     margin-top: 1em;
@@ -212,7 +217,8 @@ body {
     overflow: auto;
 }
 
-#wikiPage .collapsable>h3:first-child {
+#wikiPage .collapsible>h3:first-child,
+#wikiPage .collapsible>h5:first-child {
     padding: 0.5em;
     margin: 0;
     position: relative;
@@ -220,7 +226,8 @@ body {
     background-color: #111;
 }
 
-#wikiPage .collapsable>h3:first-child::after {
+#wikiPage .collapsible>h3:first-child::after,
+#wikiPage .collapsible>h5:first-child::after {
     content: '\f077';
     font-family: FontAwesome;
     display: inline;
@@ -232,7 +239,7 @@ body {
     transition: 0.25s;
 }
 
-#wikiPage .collapsable ul {
+#wikiPage .collapsible ul {
     margin: 0em 1em;
     outline: none;
     max-width: none;
@@ -241,40 +248,41 @@ body {
     padding: 0.5em 0em;
 }
 
-#wikiPage .collapsable ul li {
+#wikiPage .collapsible ul li {
     padding: 0;
     display: inline;
 }
 
-#wikiPage .collapsable ul li::after {
+#wikiPage .collapsible ul li::after {
     display: inline;
 }
 
-#wikiPage .collapsable form {
+#wikiPage .collapsible form {
     display: inline-flex;
     width: calc(100% - 0em);
 }
 
-#wikiPage .collapsable form * {
+#wikiPage .collapsible form * {
     margin-left: 1.5em;
     margin-right: 1.5em;
 }
 
-#wikiPage .collapsable form h3 {
+#wikiPage .collapsible form h3 {
     margin: 0;
     margin-left: 1em;
     margin-right: 2em;
 }
 
-#wikiPage .collapsable form h3::after {
+#wikiPage .collapsible form h3::after {
     width: calc(100% + 1em);
 }
 
-#wikiPage .collapsable.collapsed>h3:first-child::after {
+#wikiPage .collapsible.collapsed>h3:first-child::after,
+#wikiPage .collapsible.collapsed>h5:first-child::after {
     transform: rotate(180deg);
 }
 
-#wikiPage .collapsable.collapsed *:not(:first-child) {
+#wikiPage .collapsible.collapsed *:not(:first-child) {
     display: none !important;
 }
 
@@ -322,7 +330,7 @@ body {
 
 #wikiPage:not(.editing) .infobox h4.hidden,
 #wikiPage:not(.editing) .infobox tr.hidden,
-#wikiPage:not(.editing) .collapsable.hidden {
+#wikiPage:not(.editing) .collapsible.hidden {
     display: none;
 }
 
@@ -451,6 +459,80 @@ body {
     height: 5px;
     background-color: var(--col-orange-hover);
     border-radius: 0.5em;
+}
+
+#wikiPage div.talk {
+    padding: 0.5em;
+    margin: 0.5em 0em;
+}
+
+#wikiPage div.talk h4 {
+    color: var(--col-orange);
+    font-weight: bold;
+}
+
+#wikiPage div.talk h4 span {
+    color: #999;
+    font-weight: normal;
+    font-size: 0.7em;
+    display: block;
+}
+
+#wikiPage .replies {
+    top: 0;
+}
+
+#wikiPage div.talk h5 {
+    margin-bottom: 0.5em;
+    margin-left: -1em;
+    margin-right: -1em;
+    padding-left: 1em;
+}
+
+#wikiPage div.replies > .talk:not(:last-child)::after,
+#wikiPage div.talkPage > .talk:not(:last-child)::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: #181818;
+    top: 1em;
+    margin: 0.5em 0em;
+    position: relative;
+}
+
+#wikiPage #talkPage textarea {
+    margin: 0.5em;
+    padding: 0.5em;
+    outline: 1px solid #181818;
+    background-color: #1c1c1c;
+    color: #999;
+    text-shadow: none;
+    cursor: text;
+    border: none;
+    transition: 0.25s;
+}
+
+#wikiPage #talkPage button {
+    margin: 0.5em;
+    padding: 0.25em;
+    border-radius: 0.25em;
+    outline: 1px solid #181818;
+    background-color: #1c1c1c;
+    color: #999;
+    border: none;
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+#wikiPage #talkPage textarea:focus {
+    background-color: #0c0c0c;
+    outline: 1px solid var(--col-orange-hover);
+}
+
+#wikiPage #talkPage button:hover {
+    color: #fff;
+    outline: 1px solid var(--col-orange-hover);
 }
 
 @media screen and (max-width: 600px) {
