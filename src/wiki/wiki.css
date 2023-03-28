@@ -489,8 +489,7 @@ body {
     padding-left: 1em;
 }
 
-#wikiPage div.replies > .talk:not(:last-child)::after,
-#wikiPage div.talkPage > .talk:not(:last-child)::after {
+#wikiPage div.replies > .talk:not(:last-child)::after {
     content: "";
     display: block;
     width: 100%;
@@ -501,6 +500,7 @@ body {
     position: relative;
 }
 
+#wikiPage #talkPage input,
 #wikiPage #talkPage textarea {
     margin: 0.5em;
     padding: 0.5em;
@@ -511,6 +511,7 @@ body {
     cursor: text;
     border: none;
     transition: 0.25s;
+    width: -webkit-fill-available;
 }
 
 #wikiPage #talkPage button {
@@ -523,6 +524,7 @@ body {
     border: none;
     transition: 0.25s;
     cursor: pointer;
+    width: -webkit-fill-available;   
 }
 
 #wikiPage #talkPage textarea:focus {
@@ -533,6 +535,10 @@ body {
 #wikiPage #talkPage button:hover {
     color: #fff;
     outline: 1px solid var(--col-orange-hover);
+}
+
+#wikiPage #talkPage h3 {
+    margin-top: 0.5em;
 }
 
 @media screen and (max-width: 600px) {

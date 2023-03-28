@@ -657,6 +657,41 @@ function displayWiki() {
       talkPage.classList.add("talkPage")
       wiki.appendChild(talkPage)
 
+      // Create the topic field + button
+      var topicDiv = document.createElement("div")
+      topicDiv.classList.add("replies")
+      talkPage.appendChild(topicDiv)
+
+      var topicHeader = document.createElement("h3")
+      topicHeader.innerText = "Add Topic/Message"
+      topicDiv.appendChild(topicHeader)
+      
+      var topicTitle = document.createElement("input")
+      topicTitle.placeholder = "Topic Title"
+      topicDiv.appendChild(topicTitle)
+
+      var topicText = document.createElement("textarea")
+      topicText.placeholder = "Message Content"
+      topicDiv.appendChild(topicText)
+
+      var addBtn = document.createElement("button")
+      addBtn.innerText = "Add Topic"
+      addBtn.addEventListener("click", () => { 
+        page.talk.push({
+          title: topicTitle.value,
+          text: topicText.value,
+          author: "Cool Person (Placeholder)",
+          date: new Date().toLocaleString(),
+          talk: []
+        })
+
+        // Save and reload
+        saveObjects(function() {
+          window.location.reload();
+        })
+      })
+      topicDiv.appendChild(addBtn)
+
       // Add the content
       page.talk.forEach((t, i) => { genContent(talkPage, {...t, type: "talk"}, `talk[${i}]`) })
 
@@ -1907,6 +1942,13 @@ function genContent(parent, info, path, depth = 2) {
       talk.classList.add("talk")
       parent.appendChild(talk)
 
+      // Create topic title if on it exists
+      if (info.title) {
+        var topic = document.createElement("h3")
+        textSet(topic, info.title)
+        talk.appendChild(topic)
+      }
+
       // Create the header + span
       var header = document.createElement("h4")
       header.innerText = info.author
@@ -1917,7 +1959,7 @@ function genContent(parent, info, path, depth = 2) {
 
       // Create the text
       var text = document.createElement("p")
-      text.innerText = info.text
+      textSet(text, info.text)
       // text.setAttribute("prop-ref", `${path}.text`)
       talk.appendChild(text)
 
