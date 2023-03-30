@@ -103,7 +103,7 @@ function displayWiki() {
 
   // Replace the 'page' in the url with the correctly cased version (unless a category or special page)
   if (pageId != null && !pageId.startsWith("Category:") && !pageId.startsWith("Special:")) {
-    url.searchParams.set("page", (objects.find(e => e.title && (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())) || {title: pageId}).title.replaceAll(" ", "_"))
+    url.searchParams.set("page", (objects.find(e => (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || (e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))) || {title: pageId}).title.replaceAll(" ", "_"))
     console.log(url)
     history.replaceState(null, null, url)
   }
@@ -900,12 +900,12 @@ function displayWiki() {
 
           // Check if it has a main article
           if (sub.mainArticle != undefined) {
-            console.log(objects.find(e => e.id == sub.mainArticle).title)
+            var article = objects.find(e => e.title && e.title.toLowerCase() == sub.mainArticle.toLowerCase() || e.redirects.find(r => r.toLowerCase() == sub.mainArticle.toLowerCase()))
             // Create the main article link
             var mainArticleLink = document.createElement("a")
-            mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title.replaceAll(" ", "_")}`
-            mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
-            mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
+            mainArticleLink.href = `?id=${window["id"]}&page=${article.title.replaceAll(" ", "_")}`
+            mainArticleLink.innerText = article.title
+            mainArticleLink.setAttribute("link-desc", article.description || "No description")
 
             // Create the main article text
             var mainArticleText = document.createElement("span")
@@ -1029,11 +1029,12 @@ function displayWiki() {
 
         // Check if it has a main article
         if (sub.mainArticle != undefined) {
+          var article = objects.find(e => e.title && e.title.toLowerCase() == sub.mainArticle.toLowerCase() || e.redirects.find(r => r.toLowerCase() == sub.mainArticle.toLowerCase()))
           // Create the main article link
           var mainArticleLink = document.createElement("a")
-          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title.replaceAll(" ", "_")}`
-          mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
-          mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
+          mainArticleLink.href = `?id=${window["id"]}&page=${article.title.replaceAll(" ", "_")}`
+          mainArticleLink.innerText = article.title
+          mainArticleLink.setAttribute("link-desc", article.description || "No description")
           
           // Create the main article text
           var mainArticleText = document.createElement("span")
@@ -1187,14 +1188,8 @@ function displayWiki() {
         // Get the template
         var template = document.getElementById("templates").value
 
-        // Get the first available ID
-        var id = 0
-        while (objects.some(obj => obj.id == id)) {
-            id++
-        }
-
-        // Add 1 again if the id already exists
-        if (objects.some(obj => obj.id == id)) id++
+        // Get a new ID
+        var id = genID()
 
         // Copy the template (if selected)
         var temp = (template == "none") ? {} : objects.find(obj => obj.id == template)
@@ -1202,15 +1197,15 @@ function displayWiki() {
         // Create the object
         var obj = {
           "id": id,
+          "class": "Info",
           "title": title,
           "description": "Short description...",
-          "class": "Info",
           "header": temp.header,
           "content": temp.content,
           "talk": [],
-          "redirects": [],
           "tags": [],
-          "categories": []
+          "categories": [],
+          "redirects": []
         }
 
         console.log(obj)
