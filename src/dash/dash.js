@@ -78,3 +78,19 @@ function start() {
     })
   })
 }
+
+// function contextMenu(e) {
+//   if (window["embedded"]) return
+//   e.preventDefault()
+
+//   // For clicking on the body/html
+//   if (["BODY", "HTML"].includes(e.target.tagName)) {
+//       var attr = [
+//         {
+//           text: "New Project",
+//           onclick: () => window.location.href = "../map/map.html"
+//         }
+//       ]
+//       return attr
+//   }
+// }
