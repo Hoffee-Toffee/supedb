@@ -186,3 +186,7 @@ function notify(message) {
         notice.classList.add("show")
     }, 1)
 }
+
+function genID() {
+    return Date.now().toString(36) + Math.floor(Math.random() * 88889 + 11111).toString(36);
+}

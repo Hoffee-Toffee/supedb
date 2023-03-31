@@ -182,14 +182,8 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
         y = (y <= 0.25) ? 0 : Math.round(y / 5) * 5
     }
 
-    // Get the first ID that isn't already in use
-    var id = 0
-    while (objects.some(obj => obj.id == id)) {
-        id++
-    }
-
-    // Add 1 again if the id already exists
-    if (objects.some(obj => obj.id == id)) id++
+    // Get a new id
+    var id = genID();
 
     switch (type) {
         case "Head":
@@ -204,9 +198,12 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                         x,
                         y
                     ],
+                    "header": [],
+                    "content": [],
+                    "talk": [],
                     "categories": [],
                     "tags": [],
-                    "content": []
+                    "redirects": []
                 }
                 objects.push(obj)
             }
@@ -320,9 +317,12 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                         x + 5,
                         y + 5
                     ],
+                    "header": [],
+                    "content": [],
+                    "talk": [],
                     "categories": [],
                     "tags": [],
-                    "content": []
+                    "redirects": []
                 }
                 objects.push(obj)
             }
@@ -403,9 +403,12 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                     "title": "New Era",
                     "description": "Description of this era",
                     "position": x,
+                    "header": [],
+                    "content": [],
+                    "talk": [],
                     "categories": [],
                     "tags": [],
-                    "content": []
+                    "redirects": []
                 }
                 objects.push(obj)
             }
@@ -1008,15 +1011,6 @@ function linkPoints(button, obj, points) {
     return mid
 }
 
-function getNew() {
-    var id = 0
-    while (objects.some(obj => obj.id == id)) {
-        id++
-    }
-
-    return id
-}
-
 function deleteObj(toDel) {
     var toRemove = objects.filter(e => e.class == "Link" && (e.childId == toDel || e.parentId == toDel) || e.id == toDel)
     toRemove.forEach(obj => {
@@ -1188,7 +1182,7 @@ if (!window["embedded"]) {
             if ( event.target.id == "linkBottom" ) coords = [0.5, 1]
     
             var obj = {
-                "id": getNew(),
+                "id": genID(),
                 "class": "Link",
                 "line": [
                     [

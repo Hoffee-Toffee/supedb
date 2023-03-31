@@ -103,7 +103,7 @@ function displayWiki() {
 
   // Replace the 'page' in the url with the correctly cased version (unless a category or special page)
   if (pageId != null && !pageId.startsWith("Category:") && !pageId.startsWith("Special:")) {
-    url.searchParams.set("page", (objects.find(e => e.title && (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())) || {title: pageId}).title.replaceAll(" ", "_"))
+    url.searchParams.set("page", (objects.find(e => (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || (e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))) || {title: pageId}).title.replaceAll(" ", "_"))
     console.log(url)
     history.replaceState(null, null, url)
   }
@@ -657,6 +657,42 @@ function displayWiki() {
       talkPage.classList.add("talkPage")
       wiki.appendChild(talkPage)
 
+      // Create the topic field + button
+      var topicDiv = document.createElement("div")
+      topicDiv.classList.add("replies")
+      talkPage.appendChild(topicDiv)
+
+      var topicHeader = document.createElement("h3")
+      topicHeader.innerText = "Add Topic/Message"
+      topicDiv.appendChild(topicHeader)
+      
+      var topicTitle = document.createElement("input")
+      topicTitle.placeholder = "Topic Title"
+      topicDiv.appendChild(topicTitle)
+
+      var topicText = document.createElement("textarea")
+      topicText.placeholder = "Message Content"
+      topicDiv.appendChild(topicText)
+
+      var addBtn = document.createElement("button")
+      addBtn.innerText = "Add Topic"
+      addBtn.addEventListener("click", () => { 
+        page.talk.push({
+          id: genID(),
+          title: topicTitle.value,
+          text: topicText.value,
+          author: "Cool Person (Placeholder)",
+          date: new Date().toLocaleString(),
+          talk: []
+        })
+
+        // Save and reload
+        saveObjects(function() {
+          window.location.reload();
+        })
+      })
+      topicDiv.appendChild(addBtn)
+
       // Add the content
       page.talk.forEach((t, i) => { genContent(talkPage, {...t, type: "talk"}, `talk[${i}]`) })
 
@@ -865,12 +901,12 @@ function displayWiki() {
 
           // Check if it has a main article
           if (sub.mainArticle != undefined) {
-            console.log(objects.find(e => e.id == sub.mainArticle).title)
+            var article = objects.find(e => e.title && e.title.toLowerCase() == sub.mainArticle.toLowerCase() || e.redirects.find(r => r.toLowerCase() == sub.mainArticle.toLowerCase()))
             // Create the main article link
             var mainArticleLink = document.createElement("a")
-            mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title.replaceAll(" ", "_")}`
-            mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
-            mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
+            mainArticleLink.href = `?id=${window["id"]}&page=${article.title.replaceAll(" ", "_")}`
+            mainArticleLink.innerText = article.title
+            mainArticleLink.setAttribute("link-desc", article.description || "No description")
 
             // Create the main article text
             var mainArticleText = document.createElement("span")
@@ -994,11 +1030,12 @@ function displayWiki() {
 
         // Check if it has a main article
         if (sub.mainArticle != undefined) {
+          var article = objects.find(e => e.title && e.title.toLowerCase() == sub.mainArticle.toLowerCase() || e.redirects.find(r => r.toLowerCase() == sub.mainArticle.toLowerCase()))
           // Create the main article link
           var mainArticleLink = document.createElement("a")
-          mainArticleLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == sub.mainArticle).title.replaceAll(" ", "_")}`
-          mainArticleLink.innerText = objects.find(e => e.id == sub.mainArticle).title
-          mainArticleLink.setAttribute("link-desc", objects.find(e => e.id == sub.mainArticle).description || "No description")
+          mainArticleLink.href = `?id=${window["id"]}&page=${article.title.replaceAll(" ", "_")}`
+          mainArticleLink.innerText = article.title
+          mainArticleLink.setAttribute("link-desc", article.description || "No description")
           
           // Create the main article text
           var mainArticleText = document.createElement("span")
@@ -1152,30 +1189,21 @@ function displayWiki() {
         // Get the template
         var template = document.getElementById("templates").value
 
-        // Get the first available ID
-        var id = 0
-        while (objects.some(obj => obj.id == id)) {
-            id++
-        }
-
-        // Add 1 again if the id already exists
-        if (objects.some(obj => obj.id == id)) id++
-
         // Copy the template (if selected)
         var temp = (template == "none") ? {} : objects.find(obj => obj.id == template)
 
         // Create the object
         var obj = {
-          "id": id,
+          "id": genID(),
+          "class": "Info",
           "title": title,
           "description": "Short description...",
-          "class": "Info",
           "header": temp.header,
           "content": temp.content,
           "talk": [],
-          "redirects": [],
           "tags": [],
-          "categories": []
+          "categories": [],
+          "redirects": []
         }
 
         console.log(obj)
@@ -1827,13 +1855,13 @@ document.addEventListener("mouseover", e => {
     if (tooltip.getBoundingClientRect().width > window.innerWidth) {
       tooltip.style.left = window.innerWidth / 2 - tooltip.getBoundingClientRect().width / 2 + "px"
     }
-    // If within 0.5em (8px) of the left side of the screen, move the tooltip to the right by that amount
-    else if (leftOffset < 8) {
-      tooltip.style.left = left + Math.abs(leftOffset - 8) + "px"
+    // If within 1em (16px) of the left side of the screen, move the tooltip to the right by that amount
+    else if (leftOffset < 16) {
+      tooltip.style.left = left + Math.abs(leftOffset - 16) + "px"
     }
-    // If within 0.5em (8px) of the right side of the screen, move the tooltip to the left by that amount
+    // If within 1em (16px) of the right side of the screen, move the tooltip to the left by that amount
     else if (rightOffset < 8) {
-      tooltip.style.left = left - Math.abs(rightOffset - 8) + "px"
+      tooltip.style.left = left - Math.abs(rightOffset - 16) + "px"
     }
 
     // If the bottom of the tooltip is 8px above the bottom of the screen or lower, move the tooltip to above the link, not below
@@ -1907,6 +1935,13 @@ function genContent(parent, info, path, depth = 2) {
       talk.classList.add("talk")
       parent.appendChild(talk)
 
+      // Create topic title if on it exists
+      if (info.title) {
+        var topic = document.createElement("h3")
+        textSet(topic, info.title)
+        talk.appendChild(topic)
+      }
+
       // Create the header + span
       var header = document.createElement("h4")
       header.innerText = info.author
@@ -1917,7 +1952,7 @@ function genContent(parent, info, path, depth = 2) {
 
       // Create the text
       var text = document.createElement("p")
-      text.innerText = info.text
+      textSet(text, info.text)
       // text.setAttribute("prop-ref", `${path}.text`)
       talk.appendChild(text)
 
@@ -1939,6 +1974,7 @@ function genContent(parent, info, path, depth = 2) {
       replyBtn.innerText = "Reply"
       replyBtn.addEventListener("click", () => { 
         info.talk.push({
+          id: genID(),
           text: reply.value,
           author: "Cool Person (Placeholder)",
           date: new Date().toLocaleString(),
