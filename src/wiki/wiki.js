@@ -136,20 +136,6 @@ function displayWiki() {
   titleText.innerText = "\u00A0-\u00A0"
   title.appendChild(titleText)
 
-  // Add a button to either 'talk' or 'wiki' depending on which you are on
-  var titleMenuButton = document.createElement("a")
-  if (url.searchParams.get("talk") != undefined) {
-    titleMenuButton.innerText = "Wiki"
-    titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}`
-    titleMenuButton.setAttribute("link-desc", "Go to the wiki page for this topic")
-  }
-  else {
-    titleMenuButton.innerText = "Talk"
-    titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}&talk`
-    titleMenuButton.setAttribute("link-desc", "Go to the talk page for this topic")
-  }
-  title.appendChild(titleMenuButton)
-
   // If none is provided, then show links to all heads and all era pages
   if (pageId == null) {
     // Remove the edit button from the page
@@ -634,6 +620,20 @@ function displayWiki() {
     }
   }
   else {
+    // Add a button to either 'talk' or 'wiki' depending on which you are on
+    var titleMenuButton = document.createElement("a")
+    if (url.searchParams.get("talk") != undefined) {
+      titleMenuButton.innerText = "Wiki"
+      titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}`
+      titleMenuButton.setAttribute("link-desc", "Go to the wiki page for this topic")
+    }
+    else {
+      titleMenuButton.innerText = "Talk"
+      titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}&talk`
+      titleMenuButton.setAttribute("link-desc", "Go to the talk page for this topic")
+    }
+    title.appendChild(titleMenuButton)
+    
     // If a page ID is provided, then get that object
     var page = objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())))
 
