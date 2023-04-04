@@ -697,7 +697,10 @@ function displayWiki() {
       page.talk.forEach((t, i) => { genContent(talkPage, {...t, type: "talk"}, `talk[${i}]`) })
 
       // Set the title of the tab
-      document.getElementsByTagName("title")[0].innerText = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
+      var titleVar = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
+      document.getElementsByTagName("title")[0].innerText = titleVar
+      document.querySelector('meta[property="og:title"]').setAttribute("content", titleVar)
+      document.querySelector('meta[property="og:description"]').setAttribute("content", `Talk page for ${pageId} on ${window["mapSettings"].title}`)
 
       return
     }   
@@ -1529,7 +1532,10 @@ function displayWiki() {
   if (document.querySelector(".toc") && !document.querySelector(".toc > li")) document.querySelector(".toc").remove()
 
   // Set the title of the tab
-  document.getElementsByTagName("title")[0].innerText = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
+  var titleVar = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
+  document.getElementsByTagName("title")[0].innerText = titleVar
+  document.querySelector('meta[property="og:title"]').setAttribute("content", titleVar)
+  document.querySelector('meta[property="og:description"]').setAttribute("content", `Wiki page for ${pageId} on ${window["mapSettings"].title}`)
 
   // If page syncs on edit then re-enter edit mode, or if edit is in the url
   if (window["editing"]) {
