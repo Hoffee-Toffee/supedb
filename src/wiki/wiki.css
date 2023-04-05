@@ -351,6 +351,43 @@ body {
     width: 66%;
 }
 
+#wikiPage .infobox td.new {
+    display: flex;
+    padding: 0;
+    width: 1em;
+    position: relative;
+    flex-direction: column;
+    margin: calc(-0.5em - 0.5px);
+    margin-left: -0.3em;
+    margin-right: -0.3em;
+    top: 1px;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+#wikiPage .infobox td.new * {
+    background: none;
+    width: 1em;
+    height: 1em;
+    padding: 0;
+    border: none;
+    color: transparent;
+}
+
+#wikiPage .infobox tr:hover td.new {
+    pointer-events: auto;
+}
+
+#wikiPage .infobox tr:hover td.new * {
+    color: var(--col-red-shadow);
+    pointer-events: auto;
+}
+
+#wikiPage .infobox tr td.new *:hover {
+    color: var(--col-red-hover);
+    cursor: pointer;
+}
+
 #wikiPage.editing [contenteditable="true"] {
     background-color: #1c1c1c;
     transition: 0.25s;

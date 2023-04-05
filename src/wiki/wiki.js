@@ -1641,37 +1641,37 @@ function toggleEdit(alert = true) {
       e.contentEditable = true
 
 
-      if (!["title", "description"].includes(e.getAttribute("prop-ref")) && !e.getAttribute("prop-ref").includes("banner") && false) {
-        // Try to put an (new) element above and below the element (don't add if one already exists there)
-        if (e.previousElementSibling == null || !e.previousElementSibling.classList.contains("new")) {
-          var newElement = document.createElement("span")
-          newElement.classList = "new"
-          newElement.onclick = () => {
-            // Placeholder
-          }
-          if (e.parentNode.tagName != "TR") return // e.parentNode.insertBefore(newElement, e)
-          else if (e.parentNode.previousElementSibling == null || !e.parentNode.previousElementSibling.classList.contains("new")) {
-            var tr = document.createElement("tr")
-            tr.classList = "new"
-            tr.appendChild(newElement)
-            e.parentNode.parentNode.insertBefore(tr, e.parentNode)
-          }
-        }
+      if (!["title", "description"].includes(e.getAttribute("prop-ref")) && !e.getAttribute("prop-ref").includes("banner") && e.getAttribute("prop-ref").endsWith("key") && false ) {
+        // Make the edit menu (only seen in edit mode)
+        var editMenu = document.createElement("td")
+        editMenu.classList.add("new")
+        e.parentNode.insertBefore(editMenu, e.nextSibling)
 
-        if (e.nextElementSibling == null || !e.nextElementSibling.classList.contains("new")) {
-          var newElement = document.createElement("span")
-          newElement.classList = "new"
-          newElement.onclick = () => {
-            // Placeholder
-          }
-          if (e.parentNode.tagName != "TR") return // e.parentNode.insertBefore(newElement, e.nextElementSibling)
-          else if (e.parentNode.nextElementSibling == null || !e.parentNode.nextElementSibling.classList.contains("new")) {
-            var tr = document.createElement("tr")
-            tr.classList = "new"
-            tr.appendChild(newElement)
-            e.parentNode.parentNode.insertBefore(tr, e.parentNode.nextElementSibling)
-          }
-        }
+        // Give it the options for 'add above', 'move up', 'delete', 'move down', and 'add below'
+        var addAbove = document.createElement("button")
+        addAbove.classList = "fa fa-plus"
+        addAbove.title = "Add Above"
+        editMenu.appendChild(addAbove)
+
+        var moveUp = document.createElement("button")
+        moveUp.classList = "fa fa-arrow-up"
+        moveUp.title = "Move Up"
+        editMenu.appendChild(moveUp)
+
+        var deleteBtn = document.createElement("button")
+        deleteBtn.classList = "fa fa-trash"
+        deleteBtn.title = "Delete"
+        editMenu.appendChild(deleteBtn)
+
+        var moveDown = document.createElement("button")
+        moveDown.classList = "fa fa-arrow-down"
+        moveDown.title = "Move Down"
+        editMenu.appendChild(moveDown)
+
+        var addBelow = document.createElement("button")
+        addBelow.classList = "fa fa-plus"
+        addBelow.title = "Add Below"
+        editMenu.appendChild(addBelow)
       }
 
       e.addEventListener("focus", () => {
