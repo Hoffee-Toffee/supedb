@@ -628,7 +628,7 @@ function displayWiki() {
       titleMenuButton.setAttribute("link-desc", "Go to the wiki page for this topic")
     }
     else {
-      titleMenuButton.innerText = "Talk"
+      titleMenuButton.innerText = `Talk (${objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))).talk.length})`
       titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}&talk`
       titleMenuButton.setAttribute("link-desc", "Go to the talk page for this topic")
     }
