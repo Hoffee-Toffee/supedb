@@ -717,6 +717,29 @@ function displayWiki() {
     var topSection = document.createElement("div")
     wiki.appendChild(topSection)
 
+    // Create redirect notice if needed (get the redirect page title)
+    var from = objects.find(e => e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))
+
+    // If there is a redirect, then create the notice
+    if (from) {
+      // Get the redirect title
+      var redirectTitle = from.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())
+
+      // Create the redirect link
+      var redirectLink = document.createElement("a")
+      redirectLink.href = `?id=${window["id"]}&page=${redirectTitle}`
+      redirectLink.innerText = redirectTitle
+
+      // Create the redirect text
+      var redirectText = document.createElement("span")
+      redirectText.classList.add("note")
+      redirectText.innerText = "Redirected from: "
+      
+      // Add the main article link to the text and then to the section
+      redirectText.appendChild(redirectLink)
+      topSection.appendChild(redirectText)
+    }
+
     if (page.header && page.header[0] && page.header[0].type == "infobox") {
       var ib = page.header[0]
 

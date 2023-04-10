@@ -1,6 +1,6 @@
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDR6HPISfvxLDJ4X0udDg1AyCQn8hHLJW0",
+    apiKey: "AIzaSyCRrxXRbbyCbDh06oFKoDwZgd4Ucd0nXyk",
     authDomain: "supe-db.firebaseapp.com",
     projectId: "supe-db",
     storageBucket: "supe-db.appspot.com",
