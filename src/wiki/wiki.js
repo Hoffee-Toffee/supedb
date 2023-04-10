@@ -648,7 +648,7 @@ function displayWiki() {
 
       // Create the subtitle
       var subtitle = document.createElement("h2")
-      subtitle.innerText = `${pageId} - Talk Page`
+      subtitle.innerText = `${page.title} - Talk Page`
       wiki.appendChild(subtitle)
 
       // Create the talk page
@@ -681,7 +681,7 @@ function displayWiki() {
           id: genID(),
           title: topicTitle.value,
           text: topicText.value,
-          author: "Cool Person (Placeholder)",
+          author: sessionStorage.getItem("name"),
           date: new Date().toLocaleString(),
           talk: []
         })
@@ -1982,7 +1982,7 @@ function genContent(parent, info, path, depth = 2) {
         info.talk.push({
           id: genID(),
           text: reply.value,
-          author: "Cool Person (Placeholder)",
+          author: sessionStorage.getItem("name"),
           date: new Date().toLocaleString(),
           talk: []
         })

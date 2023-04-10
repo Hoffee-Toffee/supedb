@@ -1,6 +1,6 @@
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCRrxXRbbyCbDh06oFKoDwZgd4Ucd0nXyk",
+    apiKey: "AIzaSyDR6HPISfvxLDJ4X0udDg1AyCQn8hHLJW0",
     authDomain: "supe-db.firebaseapp.com",
     projectId: "supe-db",
     storageBucket: "supe-db.appspot.com",
@@ -14,8 +14,18 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Run 'start' function when the auth state loads/changes
-auth.onAuthStateChanged(start);
+// Run 'start' function after getting user info, after the auth state changes
+auth.onAuthStateChanged(user => {
+    if (user) {
+        // Get the user's info
+        db.collection("users").doc(user.uid).get().then(doc => {
+            sessionStorage.setItem("name", doc.data().name);
+            start();
+        });
+    } else {
+        start();
+    }
+});
 
 // Make a context menu event listener
 document.oncontextmenu = function (e) {
