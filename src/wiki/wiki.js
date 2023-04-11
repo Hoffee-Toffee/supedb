@@ -745,6 +745,7 @@ function displayWiki() {
 
       // Make the infobox table
       var infobox = document.createElement("table")
+      infobox.id = ib.id
       infobox.classList.add("infobox")
       topSection.appendChild(infobox)
 
@@ -763,6 +764,19 @@ function displayWiki() {
       captionSubtitle.setAttribute("prop-ref", "header[0].banner.subtitle")
       caption.appendChild(captionSubtitle)
       textSet(captionSubtitle, ib.banner.subtitle)
+
+      // Make the infobox image (fetching the image with file name '{infobox id}' from storage) (it may not exist)
+      var image = document.createElement("img")
+      image.setAttribute("prop-ref", "header[0].banner.image")
+      // on resolve, set the image source to the url
+      // on reject, do nothing
+      image.src = ""
+
+      storage.ref().child(ib.id).getDownloadURL().then((url) => {
+        image.src = url
+      }).catch(() => {})
+
+      caption.appendChild(image)
 
       // Create the table body
       var tableBody = document.createElement("tbody")
@@ -1696,11 +1710,57 @@ function toggleEdit(alert = true) {
         addBelow.title = "Add Below"
         editMenu.appendChild(addBelow)
       }
+      else if (!["title", "description"].includes(e.getAttribute("prop-ref")) && e.getAttribute("prop-ref").endsWith("banner.image")) {
+        // Add a image upload option within the image, so that the user can upload a new image
+        var label = document.createElement("label")
+        label.classList = "new"
+        label.innerText = "Upload Image"
+        label.htmlFor = "upload"
+        e.parentNode.insertBefore(label, e)
+
+        var upload = document.createElement("input")
+        upload.id = "upload"
+        upload.type = "file"
+        upload.classList = "new"
+        upload.accept = "image/*"
+        upload.onchange = function() {
+          notify("Uploading image...")
+          setTimeout(() => {
+            notify("Do not close this tab until the image has finished uploading.")
+          }, 2500)
+
+
+          // Get the file
+          var file = this.files[0]
+
+          // Turn it into a base64 string, replacing the old image with the new one
+          var reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = function() {
+            e.src = reader.result
+
+            // Save the new image as '{infobox id}.{file extension}' in the firestore storage
+            var fileName = e.parentNode.parentNode.getAttribute("id")
+
+            storage.ref().child(fileName).putString(reader.result, 'data_url').then(function(snapshot) {
+              // Get the download URL
+              snapshot.ref.getDownloadURL().then(function(url) {
+                notify("Image upload complete!")
+              });
+            });
+          }
+        }
+
+        e.parentNode.insertBefore(upload, e)
+      }
 
       e.addEventListener("focus", () => {
+        if (e.getAttribute("prop-ref").endsWith("banner.image")) return
         e.innerText = ["tags", "categories"].includes(e.getAttribute("prop-ref")) ? page[e.getAttribute("prop-ref")].map(e => `[${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref"))
       })
       e.addEventListener("blur", () => {
+        if (e.getAttribute("prop-ref").endsWith("banner.image")) return
+
         var set = e.innerText
 
         traverseObj(page, e.getAttribute("prop-ref"), set)

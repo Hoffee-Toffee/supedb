@@ -13,6 +13,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
+const storage = firebase.storage();
 
 // Run 'start' function after getting user info, after the auth state changes
 auth.onAuthStateChanged(user => {

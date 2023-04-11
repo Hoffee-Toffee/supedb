@@ -293,7 +293,7 @@ body {
 
 #wikiPage .infobox {
     background-color: #0c0c0c;
-    outline: 1px solid #181818;
+    outline: 1px solid var(--col-red-orange-hover);
     border-radius: 0.5em;
     padding: 0.5em;
     border-collapse: collapse;
@@ -302,6 +302,7 @@ body {
     min-width: 20vw;
     margin: 1em 0em 0em 1em;
     float: right;
+    overflow: hidden;
 }
 
 #wikiPage .infobox * {
@@ -317,6 +318,18 @@ body {
 #wikiPage .infobox caption h3::after {
     width: 100%;
     background-color: #222;
+}
+
+#wikiPage .infobox img:not([src=""]) {
+    max-width: calc(100% - 3em);
+    height: auto;
+    max-height: 300px;
+    border-radius: 0.5em;
+    margin: 0;
+    margin-top: 1em;
+    background-color: #222;
+    padding: 0.5em;
+    outline: solid 1px var(--col-orange-hover);
 }
 
 #wikiPage .infobox tr {
@@ -388,7 +401,7 @@ body {
     cursor: pointer;
 }
 
-#wikiPage.editing [contenteditable="true"] {
+#wikiPage.editing [contenteditable="true"]:not(img) {
     background-color: #1c1c1c;
     transition: 0.25s;
     outline: 1px solid #181818;
@@ -401,13 +414,35 @@ body {
     pointer-events: none;
 }
 
-#wikiPage.editing [contenteditable="true"]:focus {
+#wikiPage.editing [contenteditable="true"]:not(img):focus {
     background-color: #0c0c0c;
     outline: 1px solid var(--col-orange-hover);
 }
 
 #wikiPage.editing h3[contenteditable="true"] {
     margin-left: 0em;
+}
+
+#wikiPage.editing input[type="file"] {
+    display: none;
+}
+
+#wikiPage.editing label.new {
+    padding: 0.5em;
+    border-radius: 0.25em;
+    border: 1px solid #181818;
+    color: #999;
+    transition: 0.25s;
+    cursor: pointer;
+    display: block;
+    margin-top: 0.5em;
+    width: max-content;
+}
+
+#wikiPage.editing label.new:hover {
+    color: #fff;
+    border: 1px solid var(--col-orange-hover);
+    background-color: #1c1c1c;
 }
 
 #wikiPage form {

@@ -1,15 +1,14 @@
 #project-menu {
-    color: white;
+    color: var(--col-txt);
     margin-top: 2em;
 }
 
 #project-menu .project {
     text-decoration: none;
-    color: white;
+    color: var(--col-txt);
     display: block;
     transition: 0.25s;
     padding: 1em;
-    background-color: var(--col-dark-red);
     margin: 0.5em;
     border-radius: 0.25em;
     border: 0.1em solid var(--col-red-hover);
@@ -25,16 +24,10 @@
 }
 
 #project-menu .project:hover {
-    color: black;
     transition: 0.25s;
-    background-color: var(--col-red-orange);
+    background-color: var(--col-red-hover);
     margin-left: 0em;
     margin-right: 0em;
-}
-
-#project-menu .project:hover .description {
-    transition: 0.25s;
-    color: var(--col-brown-red);
 }
 
 #cover {
@@ -43,12 +36,11 @@
     left: 0;
     right:0;
     bottom:0;
-    background-color: black;
+    background-color: var(--col-bg);
     z-index: 0;
 }
 
 #empty-message {
-    background-color: var(--col-black-red);
     text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
     border-radius: 0.5em;
     border: 0.1em solid var(--col-red-hover);

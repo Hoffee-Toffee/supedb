@@ -1,4 +1,4 @@
-:root {
+:root { /* 'Minutes' theme - Based on the TVA from Marvel's Loki series - Red, Orange */
     --col-dark-brown: #221100aa;
     --col-brown: #ff884408;
 
@@ -21,6 +21,9 @@
     --col-black-orange: #330;
     --col-brown-orange: #440;
     --col-dark-orange: #550;
+
+    --col-bg: #080808;
+    --col-txt: #ffffff;
 }
 
 *::-webkit-scrollbar {
@@ -50,7 +53,7 @@ body {
     margin: 1em 0em 0em 1em;
     height: calc(100vh - 3em);
     width:  calc(100vw - 2em);
-    background-color: #080808;
+    background-color: var(--col-bg);
     font-family: arial;
 }
 
@@ -67,7 +70,7 @@ body {
     right: 1em;
     bottom: calc(100% - 1em);
     color: transparent;
-    background: white;
+    background: var(--col-txt);
     border-radius: 0em 0em 0.25em 0.25em;
     outline: 0.15em solid var(--col-orange);
     width: 1.5em;
@@ -172,7 +175,7 @@ body {
     visibility: hidden;
     pointer-events: visible;
     z-index: 10;
-    background-color: black;
+    background-color: var(--col-bg);
     position: fixed;
     color: var(--col-orange);
     text-shadow: 0 0 0.5em var(--col-orange-shadow);
@@ -195,8 +198,8 @@ textarea {
     margin-top: 0.5em;
     border: solid var(--col-red-orange) 0.1em;
     border-radius: 0.5em;
-    color: white;
-    text-shadow: 0 0 0.2em white;
+    color: var(--col-txt);
+    text-shadow: 0 0 0.2em var(--col-txt);
     background-color: var(--col-dark-red);
     cursor: pointer;
     padding: 0.25em;
@@ -213,7 +216,7 @@ textarea {
 #popup textarea {
     margin-top: 0.75em;
     border: solid var(--col-red-orange-shadow) 0.1em;
-    background-color: black;
+    background-color: var(--col-bg);
     border-radius: 0.1em;
     cursor: text;
     font-size: 0.75em;
@@ -340,7 +343,7 @@ textarea {
 
 .notice p {
     margin: 0;
-    background-color: black;
+    background-color: var(--col-bg);
     border-radius: 0.5em;
     padding: 0.5em;
     border: solid var(--col-red-shadow) 0.1em;

@@ -1,6 +1,6 @@
 #helpScreen {
-    color: white;
-    background-color: #000000BB;
+    color: var(--col-txt);
+    background-color: var(--col-bg);
     position: fixed;
     top: 0;
     left: 0;
@@ -24,7 +24,7 @@
     height: calc(100% - 2em);
     max-width: 1200px;
     max-height: 800px;
-    outline: 0.1em solid #fff;
+    outline: 0.1em solid var(--col-txt);
     pointer-events: auto;
     border-radius: 0.5em;
     overflow: hidden;
@@ -105,7 +105,7 @@ html.help* {
     width: 15em;
     height: calc(100% - 7.75em);
     z-index: 1;
-    background-color: #000000;
+    background-color: var(--col-bg);
     transform: translateX(-15em);
     transition: 0.25s ease-in;
 }
@@ -129,7 +129,7 @@ html.help* {
 }
 
 #helpBox #toc:hover::after {
-    background-color: #000;
+    background-color: var(--col-bg);
     border-right: 0.1em solid #ffffff33;
 }
 
