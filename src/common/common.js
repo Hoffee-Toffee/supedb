@@ -11,16 +11,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
 const auth = firebase.auth();
 
 // Run 'start' function after getting user info, after the auth state changes
-auth.onAuthStateChanged(user => {
-    if (location.pathname.endsWith("wiki.html")) {
-        const storage = firebase.storage();
-        console.log(storage)
-    }
-    
+auth.onAuthStateChanged(user => {    
     if (user) {
         // Get the user's info
         db.collection("users").doc(user.uid).get().then(doc => {

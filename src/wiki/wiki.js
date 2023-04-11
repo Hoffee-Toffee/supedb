@@ -3,7 +3,6 @@ window["permissions"] = []
 window["editing"] = false
 
 var objects = []
-const storage = firebase.storage();
 
 function start() {
   // Check if the user isn't logged in
@@ -741,6 +740,8 @@ function displayWiki() {
       redirectText.appendChild(redirectLink)
       topSection.appendChild(redirectText)
     }
+
+    const storage = firebase.storage();
 
     if (page.header && page.header[0] && page.header[0].type == "infobox") {
       var ib = page.header[0]
@@ -1657,6 +1658,8 @@ function saveObjects(callback = null) {
 }
 
 function toggleEdit(alert = true) {
+  const storage = firebase.storage();
+  
   // Toggle the edit mode
   window["editing"] = !window["editing"]
 
