@@ -3,10 +3,9 @@ window["permissions"] = []
 window["editing"] = false
 
 var objects = []
+const storage = firebase.storage();
 
 function start() {
-  const storage = firebase.storage();
-
   // Check if the user isn't logged in
   if (!auth.currentUser) {
       // Redirect to the login page with redirect params
