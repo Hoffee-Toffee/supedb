@@ -317,8 +317,6 @@ function displayWiki() {
         var categoryLink = document.createElement("a")
         categoryLink.href = `?id=${window["id"]}&page=Category:${category}`
         categoryLink.innerText = category
-        categoryLink.setAttribute("link-desc", (objects.find(e => e.toLowerCase() == category.toLowerCase()) || {}).description || "No description")
-
         categoryItem.appendChild(categoryLink)
       })
 
@@ -620,19 +618,22 @@ function displayWiki() {
     }
   }
   else {
-    // Add a button to either 'talk' or 'wiki' depending on which you are on
-    var titleMenuButton = document.createElement("a")
-    if (url.searchParams.get("talk") != undefined) {
-      titleMenuButton.innerText = "Wiki"
-      titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}`
-      titleMenuButton.setAttribute("link-desc", "Go to the wiki page for this topic")
+    // Add a button to either 'talk' or 'wiki' depending on which you are on (if needed)
+    try {
+      var titleMenuButton = document.createElement("a")
+      if (url.searchParams.get("talk") != undefined) {
+        titleMenuButton.innerText = "Wiki"
+        titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}`
+        titleMenuButton.setAttribute("link-desc", "Go to the wiki page for this topic")
+      }
+      else {
+        titleMenuButton.innerText = `Talk (${objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))).talk.length})`
+        titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}&talk`
+        titleMenuButton.setAttribute("link-desc", "Go to the talk page for this topic")
+      }
+      title.appendChild(titleMenuButton)
     }
-    else {
-      titleMenuButton.innerText = `Talk (${objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))).talk.length})`
-      titleMenuButton.href = `wiki.html?id=${window["id"]}&page=${pageId.replaceAll(" ", "_")}&talk`
-      titleMenuButton.setAttribute("link-desc", "Go to the talk page for this topic")
-    }
-    title.appendChild(titleMenuButton)
+    catch (e) {}
     
     // If a page ID is provided, then get that object
     var page = objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())))
