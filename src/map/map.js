@@ -1481,8 +1481,8 @@ if (!window["embedded"]) {
                 // Run get a set of nodes in the direction of the arrow key
                 var nodes = []
     
-                // First check runs for sub, head, and info nodes
-                var objs = objects.filter(obj => ["Sub", "Head", "Info"].includes(obj.class))
+                // First check runs for sub and head nodes
+                var objs = objects.filter(obj => ["Sub", "Head"].includes(obj.class))
     
                 if (event.key == "ArrowUp") nodes = objs.filter(obj => obj.position[1] <= position[1])
                 else if (event.key == "ArrowDown") nodes = objs.filter(obj => obj.position[1] >= position[1])
