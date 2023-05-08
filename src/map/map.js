@@ -541,6 +541,19 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
                     // Return if the context menu is already open
                     if (document.getElementById("context-menu") || window["embedded"]) return
 
+                    // Get new points in case of movement
+                    var points = []
+
+                    obj.line.forEach(el => {
+                        var xref = document.getElementById(objects.find(e => e.id == el[0]).id);
+                        var yref = document.getElementById(objects.find(e => e.id == el[2]).id);
+                    
+                        var x = xref.offsetLeft + (xref.offsetWidth * (el[1] - 0.5));
+                        var y = yref.offsetTop + (yref.offsetHeight * el[3]);
+                    
+                        points.push([x, y]);
+                    });
+
                     // Get the position of the button
                     var mid = linkPoints(button, obj, points)
 
@@ -988,6 +1001,7 @@ function contextMenu(e) {
 }
 
 function linkPoints(button, obj, points) {
+    console.log("LINKING POINTS")
     // If the line has only two points, the midpoint is the average of the two points
     if (points.length == 2) {
         var midX = (parseInt(points[0][0]) + parseInt(points[1][0])) / 2
