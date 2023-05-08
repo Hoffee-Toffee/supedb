@@ -1186,13 +1186,13 @@ if (!window["embedded"]) {
                 "class": "Link",
                 "line": [
                     [
-                        parseInt(event.target.parentElement.id),
+                        event.target.parentElement.id,
                         coords[0],
-                        parseInt(event.target.parentElement.id),
+                        event.target.parentElement.id,
                         coords[1]
                     ]
                 ],
-                "parentId": parseInt(event.target.parentElement.id),
+                "parentId": event.target.parentElement.id,
                 "childId": "mouse",
                 "type": "c"
             }
