@@ -1210,14 +1210,14 @@ if (!window["embedded"]) {
     
             var obj = objects.find(obj => obj.childId === "mouse")
     
-            obj.childId = parseInt(event.target.parentElement.id)
+            obj.childId = event.target.parentElement.id
     
             if ( ["linkLeft", "linkRight"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[1] !== objects.find(e => e.id == obj.childId).position[1] ) {
                 obj.line.push(
                     [
                         obj.line[0][0],
                         obj.line[0][1],
-                        parseInt(event.target.parentElement.id),
+                        event.target.parentElement.id,
                         coords[1]
                     ]
                 )
@@ -1226,7 +1226,7 @@ if (!window["embedded"]) {
             else if ( ["linkTop", "linkBottom"].includes(event.target.id) && objects.find(e => e.id == obj.parentId).position[0] !== objects.find(e => e.id == obj.childId).position[0] ) {
                 obj.line.push(
                     [
-                        parseInt(event.target.parentElement.id),
+                        event.target.parentElement.id,
                         coords[0],
                         obj.line[0][2],
                         obj.line[0][3]
@@ -1236,9 +1236,9 @@ if (!window["embedded"]) {
     
             obj.line.push(
                 [
-                    parseInt(event.target.parentElement.id),
+                    event.target.parentElement.id,
                     coords[0],
-                    parseInt(event.target.parentElement.id),
+                    event.target.parentElement.id,
                     coords[1]
                 ]
             )
