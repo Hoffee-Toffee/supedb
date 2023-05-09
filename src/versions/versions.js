@@ -412,6 +412,12 @@ function trigger(id) {
 }
 
 function settingsMenu() {
+  if (window["onMainMenu"]) {
+    document.getElementById("popup").style = "";
+    window["onMainMenu"] = false;
+    return;
+  }
+
   window["onMainMenu"] = true
   if (typeof window["projectSettings"] === 'undefined') {
       window["projectSettings"] = {
@@ -424,7 +430,11 @@ function settingsMenu() {
   document.getElementById("newTitle").value = window["projectSettings"].title
   document.getElementById("newDesc").value = window["projectSettings"].description
 
-  // Populate permissions table
+  // Remove all rows but the first and last, then populate permissions table
+  Array.from(document.getElementById("newPerm").children[0].children).slice(1, -1).forEach((row) => {
+      row.remove()
+  })
+
   db.collection("permissions").where("type", "==", "P").where("entity", "==", window["projectSettings"].id).get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
           let data = doc.data()
