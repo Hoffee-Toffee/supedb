@@ -33,7 +33,8 @@ function start() {
     window["projectSettings"] = {
       id: doc.id,
       title: doc.data().title,
-      description: doc.data().description
+      description: doc.data().description,
+      sources: JSON.parse(doc.data().sources)
     }
   })
 
@@ -423,15 +424,21 @@ function settingsMenu() {
       window["projectSettings"] = {
           id: null,
           title: "Map Title",
-          description: "Map Description"
+          description: "Map Description",
+          sources: {
+            "WP": "https://en.wikipedia.org/wiki/"
+          }
       }
   }
 
   document.getElementById("newTitle").value = window["projectSettings"].title
   document.getElementById("newDesc").value = window["projectSettings"].description
 
-  // Remove all rows but the first and last, then populate permissions table
-  Array.from(document.getElementById("newPerm").children[0].children).slice(1, -1).forEach((row) => {
+  // Remove all rows but the first and last, then populate the table
+  // Do this for both the permissions and links tables
+
+  var toRemove = Array.from(document.getElementById("newPerm").children[0].children).slice(1, -1)
+  toRemove.concat(Array.from(document.getElementById("newLink").children[0].children).slice(1, -1)).forEach((row) => {
       row.remove()
   })
 
@@ -470,17 +477,35 @@ function settingsMenu() {
       })
   })
 
+  Object.entries(window["projectSettings"].sources).forEach(([abbreviation, source]) => {
+      let row = document.createElement("tr")
+      let abbr = document.createElement("td")
+      let link = document.createElement("td")
+      let options = document.createElement("td")
+      let linkText = document.createElement("input")
+      let abbrText = document.createElement("input")
+      let remove = document.createElement("button")
+
+      abbrText.value = abbreviation
+      abbrText.type = "text"
+      abbr.appendChild(abbrText)
+      linkText.value = source
+      linkText.type = "text"
+      link.appendChild(linkText)
+      remove.innerHTML = "Remove"
+      remove.onclick = function () {
+          row.remove()
+          window["projectSettings"].sources.delete(abbreviation)
+      }
+      options.appendChild(remove)
+      row.appendChild(abbr)
+      row.appendChild(link)
+      row.appendChild(options)
+      document.getElementById("newLink").lastElementChild.insertBefore(row, document.getElementById("newLink").lastElementChild.lastElementChild)
+  })
+
 
   document.getElementById("popup").style = "visibility: visible"
-
-  Array.from(document.getElementById("popup").children).forEach(element => {
-      if (!element.classList.length || element.classList.contains("editMenu")) {
-          element.style.display = "block"
-      }
-      else {
-          element.style.display = "none"
-      }
-  })
 
   // Code for save button
 

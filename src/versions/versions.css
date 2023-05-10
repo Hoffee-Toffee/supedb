@@ -30,6 +30,21 @@
     }
 }
 
+#popup td input[type="text"],
+#popup td input[type="email"] {
+    width: calc(100% - 3em);
+    text-align: center;
+}
+
+#newLink td:nth-child(1) input[type="text"] {
+    width: 3.5em;
+    text-transform: uppercase;
+}
+
+#newLink th:nth-child(2) {
+    width: 100%;
+}
+
 #list {
     width: 100vw;
     height: calc(100vh / 2);

@@ -39,7 +39,7 @@
 
             <!-- Description -->
             <label for="newDesc" class="editMenu">Description:</label>
-            <textarea id="newDesc" class="editMenu" cols="30" rows="10" style="resize: none;"></textarea>
+            <textarea id="newDesc" class="editMenu" cols="30" rows="10" style="resize: none;display: table;"></textarea>
 
             <!-- Permissions -->
             <label for="newPerm" class="editMenu">Permissions:</label>
@@ -66,6 +66,27 @@
                     </td>
                     <td>
                         <button class="invite">Invite</button>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Link Sources -->
+            <label for="newLink" class="editMenu">Link Sources:</label>
+            <table id="newLink" class="editMenu">
+                <tr>
+                    <th>Abbr.</th>
+                    <th>Source</th>
+                    <th>Options</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" name="abbr" id="abbr">
+                    </td>
+                    <td>
+                        <input type="text" name="source" id="source">
+                    </td>
+                    <td>
+                        <button class="add">Add</button>
                     </td>
                 </tr>
             </table>

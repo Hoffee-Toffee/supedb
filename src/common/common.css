@@ -187,6 +187,8 @@ body {
     left: 0;
     right: 0;
     height: min-content;
+    max-height: 25em;
+    overflow-y: scroll;
     width: 25em;
     margin: auto;
     display: flex;
@@ -230,6 +232,7 @@ textarea {
     color: var(--col-orange);
     border-radius: 0.5em;
     border-width: 0.1em;
+    border-style: solid;
 }
 
 #popup select {
