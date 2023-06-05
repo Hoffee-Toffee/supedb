@@ -153,6 +153,12 @@ document.addEventListener("keydown", e => {
     }
 });
 
+// Load the favicon
+var favicon = document.createElement("link");
+favicon.rel = "icon"
+favicon.href = "../common/favicon.ico"
+document.head.appendChild(favicon);
+
 function redir() {
     // Return the last two parts of the url plus the query string
     return  "../" + window.location.pathname.split("/").slice(-2).join("/") + window.location.search;

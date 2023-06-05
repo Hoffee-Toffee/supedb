@@ -1251,6 +1251,11 @@ function displayWiki() {
 
         console.log(obj)
 
+        // If any infoboxes exist, reset their ids
+        if (obj.header && obj.header[0] && obj.header[0].type == "infobox") {
+          obj.header[0].id = genID()
+        }
+
         // Add the object to the list
         objects.push(obj)        
 
