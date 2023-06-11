@@ -331,6 +331,60 @@ body {
     padding: 0.5em;
     outline: solid 1px var(--col-orange-hover);
     display: block;
+    cursor: pointer;
+}
+
+#wikiPage #imageFull {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000000aa;
+    backdrop-filter: blur(5px);
+}
+
+#wikiPage #imageFull div {
+    position: absolute;
+    background-color: #222;
+    width: calc(100vw - 10em);
+    height: calc(100vh - 4em);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 0.5em;
+    outline: solid 1px var(--col-orange-hover);
+    cursor: pointer;
+}
+
+#wikiPage #imageFull div img {
+    max-width: calc(100% - 1em);
+    max-height: calc(100% - 1em);
+    margin: 0;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Cross */
+#wikiPage #imageFull span {
+    position: absolute;
+    top: 1em;
+    left: 1.5em;
+    font-size: 2em;
+    color: transparent;
+    cursor: pointer;
+    transition: 0.1s;
+    color: var(--col-red);
+    text-shadow: 0 0 0.5em var(--col-red-orange);
+}
+
+#wikiPage #imageFull span:after {
+    content: '\f00d';
+    font-family: FontAwesome;
+    display: inline;
 }
 
 #wikiPage .infobox tr {
@@ -487,7 +541,7 @@ body {
     z-index: 10;
     position: absolute;
     background: #111;
-    color: white;
+    color: var(--col-txt);
     border-radius: 0.5em;
     padding: 0.5em;
     margin-top: 1em;
@@ -613,6 +667,7 @@ body {
 #wikiPage #talkPage h3 {
     margin-top: 0.5em;
 }
+
 
 @media screen and (max-width: 600px) {
     #wikiPage .infobox {

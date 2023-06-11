@@ -777,6 +777,37 @@ function displayWiki() {
 
       storage.ref().child(ib.id).getDownloadURL().then((url) => {
         image.src = url
+        // Show the image in full if clicked
+        image.addEventListener("click", () => {
+          // If any images are showing, then hide them
+          var el = document.getElementById("imageFull")
+          if (el) el.remove();
+          
+          // Create the image, container, and buttons
+          var imageContainer = document.createElement("div")
+          var imageBackdrop = document.createElement("div")
+          var imageFull = document.createElement("img")
+          var imageClose = document.createElement("span")
+
+          // Coming soon
+          var imagePrev = document.createElement("span")
+          var imageNext = document.createElement("span")
+
+          imageContainer.id = "imageFull"
+          imageFull.src = url
+
+          // If the cross is clicked, then remove the image
+          imageClose.addEventListener("click", () => { imageContainer.remove() })
+
+          // If the backdrop is clicked, then open the image in a new tab
+          imageBackdrop.addEventListener("click", () => { window.open(url) })
+
+          // Add everything to the page
+          imageBackdrop.appendChild(imageFull)
+          imageContainer.appendChild(imageBackdrop)
+          imageContainer.appendChild(imageClose)
+          document.getElementById("wikiPage").appendChild(imageContainer)
+        })
       }).catch(() => {})
 
       caption.appendChild(image)
