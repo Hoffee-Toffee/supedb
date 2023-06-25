@@ -1944,6 +1944,7 @@ function textSet(element, text) {
 }
 
 window.onload = () => {
+  loadTheme()
   var url = new URL(window.location.href)
   if (url.searchParams.get("edit") != null) {
     window["editing"] = false

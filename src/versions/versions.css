@@ -2,23 +2,25 @@
     width: calc(100% + 2em);
     height: calc(100% + 3em);
     margin: -1em;
-    background: 
+    background:
         repeating-linear-gradient(
             to right,
             transparent 0px,
             transparent 20px,
-            var(--col-brown) 20px,
-            var(--col-brown) 22px
+            var(--col-orange-hover) 20px,
+            var(--col-orange-hover) 22px
         ),
         linear-gradient(
             to bottom,
             black 0%,
-            var(--col-dark-brown) 25%,
+            var(--col-orange-hover) 25%,
             black 50%,
             black 100%
-        );
+        ),
+        #00000080;
     background-repeat: repeat-x;
-    animation: bg-shift 5s alternate infinite ease-in-out;
+    background-blend-mode: multiply;
+    animation: bg-shift 10s alternate infinite ease-in-out;
 }
 
 @keyframes bg-shift {
@@ -52,11 +54,8 @@
     bottom: 0;
     left: 0;
     background-color: var(--col-black-red);
-    outline: 0.2em solid var(--col-blood-red);
-    border-top: 0.2em solid var(--col-blood-red);
     overflow-y: scroll;
     font-family: "Courier New", Courier, monospace;
-    box-shadow: 0 0 0.5em var(--col-blood-red);
     opacity: 0;
 }
 
@@ -77,11 +76,6 @@
     max-height: 50vh;
     border-collapse: collapse;
     margin: 1em;
-}
-
-#list table tr {
-    border: 0.2em solid var(--col-blood-red);
-    box-shadow: 0 0 0.5em var(--col-blood-red);
 }
 
 #list table tr:not(:first-child):hover {

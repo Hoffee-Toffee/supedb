@@ -1,0 +1,20 @@
+:root { /* 'Rebirth' theme - Based on the horror aspects of Dead Space and Saw - Red, Lime, Brown - Dark Theme */
+
+    /* Red */
+    --col-red: #f00;
+    --col-red-shadow: #ff000088;
+    --col-red-hover: #ff220033;
+
+    /* Lime */
+    --col-red-orange: #063;
+    --col-red-orange-shadow: #006600aa;
+    --col-red-orange-hover: #00880033;
+
+    /* Light Brown */
+    --col-orange: #A60;
+    --col-orange-shadow: #AA6600aa;
+    --col-orange-hover: #AA880033;
+
+    --col-bg: #080808;
+    --col-txt: #ffffff;
+}

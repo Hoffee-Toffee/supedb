@@ -1,0 +1,44 @@
+html {
+    pointer-events: none;
+}
+
+#title {
+    /* Color should be the opposite of the background */
+    color: grey;
+}
+
+div#sections {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-left: 1.5em;
+}
+
+div#sections div {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-right: 1.5em;
+}
+
+div#main {
+    background-color: var(--col-orange);
+    border: solid var(--col-bg) 2px;
+    outline: solid var(--col-orange-shadow) 0.5em;
+}
+
+div#sec {
+    background-color: var(--col-red-orange);
+    border: solid var(--col-bg) 2px;
+    outline: solid var(--col-red-orange-shadow) 0.5em;
+}
+
+div#ter {
+    background-color: var(--col-red);
+    border: solid var(--col-bg) 2px;
+    outline: solid var(--col-red-shadow) 0.5em;
+}

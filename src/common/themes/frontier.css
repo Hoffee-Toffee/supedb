@@ -1,0 +1,67 @@
+/* | TEXT SHADES (TXT)                                                                                  |
+| var(--col-txt)                 | common.css, login.css, help.css, dash.css, map.css, wiki.css      |
+| #FFFFFFAA                      | login.css, map.css                                                |
+| #FFFFFF80                      | wiki.css                                                          |      *
+| #FFFFFF33                      | help.css                                                          |      |
+| #E8E8E8                        | wiki.css                                                          |      |
+| lightgrey                      | map.css                                                           |      |
+| #DDD                           | wiki.css                                                          |      |
+| #CCCCCCCC                      | map.css                                                           |      *
+| GREY SHADES (GS)                                                                                   |
+| #BBB                           | wiki.css                                                          |
+| #999                           | wiki.css                                                          |
+| #888                           | wiki.css                                                          |      *
+| #88888888                      | map.css                                                           |      *
+| #808080/grey                   | login.css, map.css                                                |      *
+| #555                           | common.css, wiki.css                                              |      *
+| BACKGROUND SHADES (BG)                                                                             |
+| #333                           | common.css, wiki.css                                              |
+| #222                           | common.css, wiki.css                                              |
+| #1C1C1C                        | wiki.css                                                          |
+| #181818                        | help.css, wiki.css                                                |
+| #111                           | help.css, wiki.css                                                |
+| #0C0C0C                        | wiki.css                                                          |      *
+| #000/black                     | common.css, login.css, map.css, versions.css                      |      *
+| var(--col-bg)                  | common.css, help.css, dash.css                                    |      *
+| #000000AA                      | map.css                                                           |      *
+| #00000080                      | help.css                                                          |      *
+| #00000008                      | help.css                                                          |
+| MAIN SHADES (MAIN)             |
+| var(--col-orange)              |
+| var(--col-orange-shadow)       |
+| var(--col-orange-hover)        |
+| SECONDARY SHADES (SEC)         |
+| var(--col-red-orange)          |
+| var(--col-red-orange-shadow)   |
+| var(--col-red-orange-hover)    |
+| TERTIARY SHADES (TER)          |
+| var(--col-red)                 |      
+| var(--col-red-shadow)          |
+| var(--col-red-hover)           |
+| DECORATION SHADES (DEC)        |                                                                   |
+| var(--col-dark-red)            | common.css, versions.css                                          |
+| var(--col-brown-red)           | versions.css                                                      |
+| var(--col-black-red)           | versions.css                                                      |
+| var(--col-dark-brown)          | login.css, versions.css                                           |
+| var(--col-brown)               | versions.css                                                      | */
+
+:root { /* 'Frontier' theme - Based on the colors of the star trek logo - Red, Yellow, Blue - Light Theme */
+
+    /* Red */
+    --col-red: #A20;
+    --col-red-shadow: #AA002288;
+    --col-red-hover: #AA220033;
+
+    /* Yellow */
+    --col-red-orange: #FC0;
+    --col-red-orange-shadow: #FFCC00AA;
+    --col-red-orange-hover: #FFEE0033;
+
+    /* Blue */
+    --col-orange: #06F;
+    --col-orange-shadow: #0066FFCC;
+    --col-orange-hover: #0088FF33;
+
+    --col-bg: #fafafa;
+    --col-txt: #000000;
+}

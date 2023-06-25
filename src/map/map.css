@@ -8,12 +8,12 @@ input {
 }
 
 .sub input {
-    color: white;
+    color: var(--col-txt);
 }
 
 .addLink {
     padding: 1em;
-    background-color: white;
+    background-color: var(--col-txt);
     position: absolute;
     border-radius: 2em;
     box-shadow: 0 0 0.5em 0.1em grey;
@@ -190,7 +190,7 @@ input {
 
 .era .title {
     white-space: nowrap;
-    background-color: white;
+    background-color: var(--col-txt);
     position: sticky;
     left: 100%;
     font-size: small;
@@ -207,7 +207,7 @@ input {
 
 .head {
     color: black;
-    background-color: white;
+    background-color: var(--col-txt);
     border-radius: 0.1em;
 }
 
@@ -221,7 +221,7 @@ input {
 
 .era {
     width: 2em;
-    background-color: white;
+    background-color: var(--col-txt);
     height: 100vh;
     position: absolute;
     top: 0;
@@ -237,60 +237,14 @@ svg {
     pointer-events: none;
 }
 
-#popup {
-    visibility: hidden;
-    pointer-events: visible;
-    z-index: 10;
-    background-color: black;
-    position: fixed;
-    color: white;
-    border: solid;
-    padding: 1em;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: min-content;
-    width: 15em;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-#popup input:not([type="checkbox"]),
-textarea {
-    margin-top: 0.5em;
-    border: solid slategrey 0.15em;
-    border-radius: 0.5em;
-    color: white;
-    cursor: pointer;
-    padding: 0.25em;
-}
-
 #popup input[type="checkbox"] {
     align-self: flex-start;
     margin: 0.25em 0 1em 0;
 }
 
-#popup input[type="text"],
-#popup input[type="password"],
-#popup textarea {
-    margin-top: 0.75em;
-    border: solid slategrey 0.1em;
-    background-color: black;
-    border-radius: 0.1em;
-    cursor: text;
-    font-size: 0.75em;
-    margin-bottom: 1em;
-}
-
 #isEncrypted:not(:checked) ~ *:not([type="submit"]) {
     opacity: 0.25;
     pointer-events: none;
-}
-
-#popup input[type="submit"] {
-    border: solid slateblue 0.15em;
 }
 
 #popup input[type="button"],
@@ -301,11 +255,11 @@ textarea {
 #popup input[type="button"]:hover,
 #popup input[type="submit"]:hover {
     transition: 0.2s;
-    border-color: red;
+    border-color: var(--col-red);
 }
 
 #keyLabel.error::after {
-    color: red;
+    color: var(--col-red);
     content: " (Invalid)";
     font-size: small;
 }

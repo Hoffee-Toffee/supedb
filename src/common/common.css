@@ -1,31 +1,3 @@
-:root { /* 'Minutes' theme - Based on the TVA from Marvel's Loki series - Red, Orange */
-    --col-dark-brown: #221100aa;
-    --col-brown: #ff884408;
-
-    --col-black-red: #100;
-    --col-brown-red: #200;
-    --col-dark-red: #300;
-
-    --col-red: #f00;
-    --col-red-shadow: #ff000088;
-    --col-red-hover: #ff220033;
-
-    --col-red-orange: #e30;
-    --col-red-orange-shadow: #ee3300aa;
-    --col-red-orange-hover: #ee550033;
-
-    --col-orange: #f60;
-    --col-orange-shadow: #ff6600cc;
-    --col-orange-hover: #ff884433;
-
-    --col-black-orange: #330;
-    --col-brown-orange: #440;
-    --col-dark-orange: #550;
-
-    --col-bg: #080808;
-    --col-txt: #ffffff;
-}
-
 *::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -55,6 +27,7 @@ body {
     width:  calc(100vw - 2em);
     background-color: var(--col-bg);
     font-family: arial;
+    color: var(--col-txt);
 }
 
 .help body::-webkit-scrollbar {
@@ -134,7 +107,7 @@ body {
     z-index: 10;
     position: absolute;
     background: #333;
-    color: white;
+    color: var(--col-txt);
     border-radius: 0.5em;
     padding: 0.5em 0;
     margin: 0px;

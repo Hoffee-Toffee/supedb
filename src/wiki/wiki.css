@@ -145,7 +145,7 @@ body {
     width: calc(100% - 3.5em);
     max-width: calc(100vw - 6em);
     border-radius: 0.5em;
-    outline: 1px solid #181818;
+    outline: 1px solid var(--col-orange-hover);
 }
 
 #wikiPage ol.toc::before {
@@ -211,10 +211,11 @@ body {
     position: relative;
     margin-top: 1em;
     background-color: #0c0c0c;
-    outline: #222 0.1em solid;
+    outline: 1px solid var(--col-orange-hover);
     transition: 0.25s;
     display: grid;
     overflow: auto;
+    border-radius: 0.5em;
 }
 
 #wikiPage .collapsible>h3:first-child,

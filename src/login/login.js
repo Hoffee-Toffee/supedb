@@ -73,6 +73,7 @@ function forgot_password() {
 }
 
 window.onload = function() {
+    loadTheme();
     // Check cookie for whether the user has an account
     if (document.cookie.includes('account')) {
         // Show login page

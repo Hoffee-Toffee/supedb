@@ -1,0 +1,22 @@
+<html>
+    <!-- Theme has 5 sections: main, sec, ter, txt, and bg -->
+    <!-- When hovered, 2 additional shades for each of the 5 sections will show up -->
+
+    <link rel="stylesheet" href="theme.css">
+    
+    <h2 id="title"></h2>
+    <div id="sections">
+        <div id="main"></div>
+        <div id="sec"></div>
+        <div id="ter"></div>
+    </div>
+
+    <script>
+        // Get the theme name from the URL
+        var theme = window.location.hash.substring(1);
+
+        // Link the theme file and update the title
+        document.write('<link rel="stylesheet" href="' + theme + '.css">');
+        document.getElementById("title").innerHTML = theme.charAt(0).toUpperCase() + theme.slice(1);
+    </script>
+</html>

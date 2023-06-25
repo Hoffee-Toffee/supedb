@@ -229,12 +229,10 @@ function genLine() {
 
     // Make red if hovered and orange if not
     if (window["index"] == i + 1) {
-      ctx.strokeStyle = "#ff2f3f";
-      ctx.shadowColor = "#ff2f3faa";
+      ctx.strokeStyle = cssVar("--col-red");
 
     } else {
-      ctx.strokeStyle = "#ff7f3f";
-      ctx.shadowColor = "#ff7f3faa";
+      ctx.strokeStyle = cssVar("--col-orange");
     }
 
     // Make an array for the off-shoot coordinates
@@ -276,13 +274,11 @@ function genLine() {
   // Draw a blue line going through all of the points in the array
   ctx.beginPath();
 
-  // Set the color to blue if hovered and white if not
+  // Set the color to red-orange if hovered and the text color if not
   if (window["index"] == 0) {
-    ctx.strokeStyle = "#6fffff";
-    ctx.shadowColor = "#6fffffaa";
+    ctx.strokeStyle = cssVar("--col-red-orange");
   } else {
-    ctx.strokeStyle = "#dfffff";
-    ctx.shadowColor = "#dfffffaa";
+    ctx.strokeStyle = cssVar("--col-txt");
   }
 
   // Loop through the array
@@ -391,7 +387,7 @@ function check(event, e = true) {
       row.style = "";
     }
     else {
-      row.style.backgroundColor = "#ff884433";
+      row.style.backgroundColor = cssVar("--col-orange-hover");
       // Scroll the list so this row is in the middle
       row.scrollIntoView({ block: "center" });
     }
@@ -540,4 +536,13 @@ function settingsMenu() {
       document.getElementById("popup").style = "visibility: hidden"
       window["onMainMenu"] = false
   }
+}
+
+// Get var from css
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name);
+}
+
+window.onload = function() {
+  loadTheme();
 }

@@ -21,12 +21,33 @@ auth.onAuthStateChanged(user => {
         // Get the user's info
         db.collection("users").doc(user.uid).get().then(doc => {
             sessionStorage.setItem("name", doc.data().name);
+
             start();
         });
     } else {
         start();
     }
 });
+
+function loadTheme() {
+    var themeLink = document.getElementById("themeLink");
+    if (themeLink) themeLink.remove();
+
+    try {
+        var theme = document.cookie.split("theme=")[1].split(";")[0];
+        // Give error if equal to 'undefined'
+        if (theme == "undefined") throw "Theme is undefined";
+    }
+    catch {
+        var theme = "minutes";
+    }
+    
+    themeLink = document.createElement("link");
+    themeLink.rel = "stylesheet";
+    themeLink.href = `../common/themes/${theme}.css`;
+    themeLink.id = "themeLink";
+    document.head.appendChild(themeLink);
+}
 
 // Make a context menu event listener
 document.oncontextmenu = function (e) {

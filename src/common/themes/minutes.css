@@ -1,0 +1,19 @@
+:root { /* 'Minutes' theme - Based on the TVA from Marvel's Loki series - Red, Orange - Dark Theme */
+    /* Red */
+    --col-red: #f00;
+    --col-red-shadow: #ff000088;
+    --col-red-hover: #ff220033;
+    
+    /* Red-Orange */
+    --col-red-orange: #e30;
+    --col-red-orange-shadow: #ee3300aa;
+    --col-red-orange-hover: #ee550033;
+
+    /* Orange */
+    --col-orange: #f60;
+    --col-orange-shadow: #ff6600cc;
+    --col-orange-hover: #ff884433;
+
+    --col-bg: #080808;
+    --col-txt: #ffffff;
+}

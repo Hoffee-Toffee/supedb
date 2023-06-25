@@ -1,0 +1,19 @@
+:root { /* 'Nano' theme - Based on the Borg and the Matrix - Dark Green, Silver Green, Lime - Dark Theme */
+    /* Dark Green */
+    --col-red: #050;
+    --col-red-shadow: #00550088;
+    --col-red-hover: #00550033;
+
+    /* Silver Green */
+    --col-red-orange: #afa;
+    --col-red-orange-shadow: #aaffaa88;
+    --col-red-orange-hover: #aaffaa33;
+
+    /* Lime */
+    --col-orange: #0c3;
+    --col-orange-shadow: #00cc0088;
+    --col-orange-hover: #00cc0033;
+
+    --col-bg: #080808;
+    --col-txt: #ffffff;
+}

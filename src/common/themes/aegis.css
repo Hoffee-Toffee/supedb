@@ -1,0 +1,20 @@
+:root { /* 'Aegis' theme - Based on the UI's of Dead Space and Iron Man - Blue, Teal, Green - Dark Theme */
+
+    /* Holo-orange */
+    --col-red: #f42;
+    --col-red-shadow: #ff332288;
+    --col-red-hover: #ff554433;
+
+    /* Green */
+    --col-red-orange: #073;
+    --col-red-orange-shadow: #006633cc;
+    --col-red-orange-hover: #00883333;
+
+    /* Blue */
+    --col-orange: #068;
+    --col-orange-shadow: #0066ffcc;
+    --col-orange-hover: #0088ff33;
+
+    --col-bg: #080808;
+    --col-txt: #ffffff;
+}

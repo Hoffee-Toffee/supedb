@@ -1058,6 +1058,7 @@ function changeHead(id) {
 
 if (!window["embedded"]) {
     window.onload = function() {
+        loadTheme()
         // If 'online' or 'notifications' is clicked, run these
         document.getElementById("online").onchange = function() {
             modeToggled(false);

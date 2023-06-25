@@ -149,7 +149,7 @@ html.help* {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    background-color: #111111;
+    background-color: #111;
     height: 100%;
 }
 
@@ -173,7 +173,7 @@ html.help* {
     padding-left: 1.5em;
     margin-left: -0.5em;
     filter: brightness(0.75);
-    background-color: #222222;
+    background-color: #222;
     font-size: 0.8em;
 }
 

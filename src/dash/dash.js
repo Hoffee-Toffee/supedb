@@ -79,6 +79,10 @@ function start() {
   })
 }
 
+window.onload = function () {
+  loadTheme();
+}
+
 // function contextMenu(e) {
 //   if (window["embedded"]) return
 //   e.preventDefault()
@@ -94,3 +98,25 @@ function start() {
 //       return attr
 //   }
 // }
+
+function settingsMenu() {
+  // If the popup is already open, close it.
+  if (document.getElementById("popup").style.visibility == "visible") {
+      document.getElementById("popup").style.visibility = "hidden";
+      return;
+  }
+
+  // Set the popup to be visible.
+  document.getElementById("popup").style.visibility = "visible";
+
+  // Select the current theme.
+  var theme = document.cookie.split("theme=")[1].split(";")[0];
+  document.getElementById(theme).checked = true;
+
+  // Add event listeners to run on change.
+  document.getElementById("theme").addEventListener("change", function () {
+      var theme = document.querySelector('input[name="theme"]:checked').value;
+      document.cookie = `theme=${theme};`;
+      loadTheme();
+  });
+}
