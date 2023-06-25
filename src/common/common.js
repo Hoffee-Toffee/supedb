@@ -40,6 +40,7 @@ function loadTheme() {
     }
     catch {
         var theme = "minutes";
+        document.cookie = "theme=minutes;";
     }
     
     themeLink = document.createElement("link");
