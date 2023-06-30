@@ -116,7 +116,10 @@ function settingsMenu() {
   // Add event listeners to run on change.
   document.getElementById("theme").addEventListener("change", function () {
       var theme = document.querySelector('input[name="theme"]:checked').value;
-      document.cookie = `theme=${theme};`;
+      var d = new Date();
+      d.setTime(d.getTime() + (365*24*60*60*1000));
+      var expires = "expires="+ d.toUTCString();
+      document.cookie = `theme=${theme}; path=/; ${expires}`;
       loadTheme();
   });
 }
