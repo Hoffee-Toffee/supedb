@@ -45,8 +45,13 @@ function display(all = true, objs = objects, embedEl = null) {
 
         objects = objs
 
+        // Add in order of Heads and Eras, then Subs, and finally Links
+        headEras = objs.filter(obj => obj.class === "Head" || obj.class === "Era")
+        subs = objs.filter(obj => obj.class === "Sub")
+        links = objs.filter(obj => obj.class === "Link")
         // Add the objects (and their contained links if embedded)
-        objs.forEach(obj => {
+        headEras.concat(subs).concat(links).forEach(obj => {
+            console.log(`Adding element ${obj.id} of class ${obj.class}`)
             // Exit if an non-contained link (toggle will exist and be set to true)
             if (obj.class === "Link" && obj.toggle) return
             newObj(obj.class, obj, null, null, window["embedded"] ? embedEl : undefined)
