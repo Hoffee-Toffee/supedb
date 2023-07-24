@@ -1264,9 +1264,9 @@ function displayWiki() {
         var template = document.getElementById("templates").value
 
         // Copy the template (if selected)
-        var temp = (template == "none") ? {} : objects.find(obj => obj.id == template)
+        var temp = (template == "none") ? {} : JSON.parse(JSON.stringify(objects.find(e => e.id == template)))
 
-        // Create the object
+        // Create the object, with a new ID and carrying over a copy of the template's header and content (not a reference)
         var obj = {
           "id": genID(),
           "class": "Info",
@@ -1280,11 +1280,13 @@ function displayWiki() {
           "redirects": []
         }
 
-        console.log(obj)
-
-        // If any infoboxes exist, reset their ids
-        if (obj.header && obj.header[0] && obj.header[0].type == "infobox") {
-          obj.header[0].id = genID()
+        // If any infoboxes exist in the header, regenerate their IDs
+        if (obj.header) {
+          obj.header.forEach((e, i) => {
+            if (e.type == "infobox") {
+              e.id = genID()
+            }
+          })
         }
 
         // Add the object to the list
@@ -1385,7 +1387,7 @@ function displayWiki() {
       // Toggle 'collapsed' class on click
       rawHeader.addEventListener("click", () => raw.classList.toggle("collapsed"))
 
-      // Check if it needs to show thw raw content or allow you to populate it from the content of a template
+      // Check if it needs to show the raw content or allow you to populate it from the content of a template
       if ((page.content && page.content.length > 0) || (page.header && page.header.length > 0)) {
         rawHeader.innerText = "View Raw Content"
 
@@ -1451,9 +1453,18 @@ function displayWiki() {
           var tempHead = objects.find(obj => obj.id == temps.value).header
           var tempContent = objects.find(obj => obj.id == temps.value).content
 
-          // Set the contents of the page to the template
-          page.header = tempHead
-          page.content = tempContent
+          // Set the contents of the page to the template, removing the reference
+          page.header = JSON.parse(JSON.stringify(tempHead))
+          page.content = JSON.parse(JSON.stringify(tempContent))
+
+          // If any infoboxes exist in the header, regenerate their IDs
+          if (page.header) {
+            page.header.forEach((e, i) => {
+              if (e.type == "infobox") {
+                e.id = genID()
+              }
+            })
+          }
 
           // Save the list of objects (with callback to reload the page with edit mode on)
           saveObjects(function () {
