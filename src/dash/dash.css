@@ -63,7 +63,10 @@
 
 #popup fieldset {
     padding: 0;
-    border-color: var(--col-txt);
-    border-bottom: none;
+    border: var(--col-txt) 0.1em solid;
     margin-top: 0.5em;
+}
+
+#popup fieldset :last-child {
+    border: none;
 }

@@ -67,11 +67,10 @@ function start() {
         // Create a table row for the timeline
         var row = document.createElement("tr")
 
-        // Give the row four cells for the ID, title, options, and type
-        var id = document.createElement("td")
-        id.innerHTML = doc.id
-        row.appendChild(id)
+        // Store the id in a data attribute
+        row.setAttribute("data-id", doc.id)
 
+        // Give the row three cells for the title, options, and type
         var title = document.createElement("td")
         title.innerHTML = doc.data().title
         row.appendChild(title)
@@ -82,11 +81,10 @@ function start() {
         wiki.addEventListener("click", () => window.location.href = "../wiki/wiki.html?id=" + doc.id)
         options.appendChild(wiki)
 
-        var del = document.createElement("button")
-        del.innerHTML = "Delete"
-        del.addEventListener("click", () => alert("Will delete timeline " + doc.id))
-        if (doc.data().type == "M") del.disabled = true
-        options.appendChild(del)
+        var map = document.createElement("button")
+        map.innerHTML = "Map"
+        map.addEventListener("click", () => window.location.href = "../map/map.html?id=" + doc.id)
+        options.appendChild(map)
         row.appendChild(options)
 
         var type = document.createElement("td")
@@ -229,7 +227,8 @@ function genLine() {
 
     // Make red if hovered and orange if not
     if (window["index"] == i + 1) {
-      ctx.strokeStyle = cssVar("--col-red");
+      // Use the fade function with the time hovered to get the color
+      ctx.strokeStyle = cssVar("--col-red-orange");
 
     } else {
       ctx.strokeStyle = cssVar("--col-orange");
@@ -387,7 +386,7 @@ function check(event, e = true) {
       row.style = "";
     }
     else {
-      row.style.backgroundColor = cssVar("--col-orange-hover");
+      row.style.backgroundColor = cssVar("--col-red-orange-hover");
       // Scroll the list so this row is in the middle
       row.scrollIntoView({ block: "center" });
     }
@@ -401,11 +400,11 @@ function trigger(id) {
   // Get the idth row
   let row = table.querySelectorAll("tr")[id + 1];
 
-  // Get the value of the first cell in the row
-  let value = row.querySelectorAll("td")[0].innerHTML;
+  // Get the id of the timeline
+  let timeline = row.getAttribute("data-id");
 
-  // Redirect to the timeline page
-  window.location = `../map/map.html?id=${value}`;
+  // Redirect to the wiki page
+  window.location = `../wiki/wiki.html?id=${timeline}`;
 }
 
 function settingsMenu() {

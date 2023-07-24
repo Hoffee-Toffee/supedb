@@ -53,22 +53,22 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    background-color: var(--col-black-red);
     overflow-y: scroll;
     font-family: "Courier New", Courier, monospace;
     opacity: 0;
 }
 
-#list h1 {
-    font-size: 1.5em;
-    margin: 0;
-    padding: 0.5em;
-    background-color: var(--col-brown-red);
-    color: var(--col-red);
-    position: sticky;
+#list::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--col-orange-hover);
+    position: absolute;
+    opacity: 0.5;
+    pointer-events: none;
     top: 0;
-    text-shadow: 0 0 0.5em var(--col-red-shadow);
-    box-shadow: 0 0 0.5em var(--col-brown-red);;
+    left: 0;
 }
 
 #list table {
@@ -79,7 +79,7 @@
 }
 
 #list table tr:not(:first-child):hover {
-    background-color: var(--col-orange-hover);
+    background-color: var(--col-red-orange-hover);
     cursor: pointer;
 }
 
@@ -95,11 +95,11 @@
 #list table tr td {
     width: 35%;
     height: 100%;
-    color: var(--col-orange);
+    color: var(--col-text);
     text-align: left;
     padding: 0.5em;
     padding-right: 0;
-    text-shadow: 0 0 0.5em var(--col-orange-shadow);
+    text-shadow: 0 0 0.5em var(--col-text);
     white-space: nowrap;
 }
 
@@ -107,9 +107,9 @@
     border-radius: 0.5em;
     color: var(--col-orange);
     background-color: transparent;
-    border: 0.1em solid var(--col-red-orange);
+    border: 0.1em solid var(--col-orange-hover);
     padding: 0.5em;
-    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+    text-shadow: 0 0 0.5em var(--col-orange-shadow);
 }
 
 /* Add a gap between buttons */
@@ -122,6 +122,32 @@
 }
 
 #list table tr td button:not(:disabled):hover {
-    background-color: var(--col-orange-hover);
+    color: var(--col-red-orange);
+    border: 0.1em solid var(--col-red-orange);
+    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+    background-color: var(--col-bg);
     cursor: pointer;
+}
+
+#back {
+    position: absolute;
+    top: 0.5em;
+    left: 0;
+    padding-left: 0.5em;
+    color: var(--col-orange);
+    cursor: pointer;
+    transition: 1s;
+}
+
+#back:hover {
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    color: var(--col-orange-shadow);
+}
+
+#back:active {
+    transition: 0.2s;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    color: var(--col-red);
 }

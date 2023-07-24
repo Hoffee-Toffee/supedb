@@ -286,13 +286,13 @@ textarea {
 }
 
 .notice {
-    pointer-events: visible;
+    pointer-events: none;
     z-index: 10;
-    background-color: var(--col-orange-hover);
-    color: var(--col-orange);
-    text-shadow: 0 0 0.2em var(--col-orange-shadow);
+    background-color: var(--col-red-hover);
+    color: var(--col-text);
+    text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
     border-radius: 0.5em;
-    padding: 0.5em;
+    padding: 1em;
     text-align: center;
     top: 0.5em;
     opacity: 0;
@@ -301,8 +301,7 @@ textarea {
     max-width: calc(100vw - 2em);
     min-width: 10em;
     margin-top: 0.5em;
-    border: solid var(--col-red-orange-hover) 0.1em;
-    display: flex;
+    border: solid var(--col-red-hover) 0.1em;
     transform: translateY(calc(-100% - 0.5em));
 }
 
@@ -315,27 +314,4 @@ textarea {
 .notice.hide {
     transition: 0.2s ease-in-out;
     opacity: 0;
-}
-
-.notice p {
-    margin: 0;
-    background-color: var(--col-bg);
-    border-radius: 0.5em;
-    padding: 0.5em;
-    border: solid var(--col-red-shadow) 0.1em;
-}
-
-.notice i {
-    cursor: pointer;
-    margin-left: 0.5em;
-    margin-top: 0.5em;
-    transition: 0.2s;
-    color: var(--col-red-orange);
-    text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
-}
-
-.notice i:hover {
-    transition: 0.2s;
-    color: var(--col-red);
-    text-shadow: 0 0 0.2em var(--col-red-shadow);
 }

@@ -191,29 +191,15 @@ function notify(message) {
     var notice = document.createElement("div")
     notice.classList.add("notice")
     notice.setAttribute("aria-hidden", "true")
-    
-    var p = document.createElement("p")
-    p.innerText = message
-    notice.appendChild(p)
+    notice.innerText = message
 
-    var close = document.createElement("i")
-    close.classList.add("fa")
-    close.classList.add("fa-times")
-
-    // On click, add the 'hide' class, then remove the element after 0.2 seconds
-    close.onclick = function() {
+    // After 5 seconds, close the notice
+    setTimeout(() => {
         notice.classList.add("hide")
         setTimeout(() => {
             notice.remove()
         }, 200)
-    }
-
-    // After 5 seconds, activate the close button
-    setTimeout(() => {
-        close.click()
     }, 5000)
-
-    notice.appendChild(close)
 
     // Add the notice to the top of the notices div (if there are any other notices)
     if (notices.children.length > 0) notices.insertBefore(notice, notices.children[0])
