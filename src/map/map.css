@@ -225,7 +225,7 @@ input {
     height: 100vh;
     position: absolute;
     top: 0;
-    z-index: 2;
+    z-index: 4;
 }
 
 svg {
