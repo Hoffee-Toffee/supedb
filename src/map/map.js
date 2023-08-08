@@ -4,6 +4,7 @@ window["newArrow"] = false
 window["permissions"] = []
 
 var objects = []
+var oldObjects = []
 
 window["decrypt"] = false
 window["subId"] = null
@@ -57,6 +58,7 @@ function display(all = true, objs = objects, embedEl = null) {
         var objIDs = objs.map(obj => obj.id)
 
         objects = objs
+        oldObjects = JSON.parse(JSON.stringify(objects))
 
         // Add in order of Heads and Eras, then Subs, and finally Links
         headEras = objs.filter(obj => obj.class === "Head" || obj.class === "Era")
@@ -765,7 +767,15 @@ function updateLinks(element, get = false) {
 
 function save(manual = false, reason) {
     var data = JSON.stringify(objects)
-
+    
+    if (data == JSON.stringify(oldObjects)) {
+        console.log("No changes to save: " + reason)
+        return
+    }
+    
+    // Update the old objects
+    oldObjects = JSON.parse(JSON.stringify(objects))
+    
     if (manual) { // Local save
         // Save data to local storage, under the id of the map and the time saved
         localStorage.setItem(window["mapSettings"].id + " " + Date.now(), data)
@@ -914,6 +924,7 @@ function start() {
             }
             else {
                 objects = JSON.parse(map.data().map)
+                oldObjects = JSON.parse(map.data().map)
     
                 if (window["ready"]) {
                     display()
@@ -1471,6 +1482,7 @@ if (!window["embedded"]) {
                 load.onclick = () => {
                     // Set 'objects' to the JSON parsed value of the save
                     objects = JSON.parse(value)
+                    oldObjects = JSON.parse(value)
 
                     // Run the display function
                     display(true, objects)
