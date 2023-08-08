@@ -108,7 +108,6 @@ function displayWiki() {
     history.replaceState(null, null, url)
   }
 
-
   // If 'new' then set pageId to 'newPage'
   // If 'newPage' is taken then keep add -01 and so on until it isn't
   if (url.searchParams.get("new") != undefined && !pageId) {
@@ -714,9 +713,20 @@ function displayWiki() {
     iframe.id = "wikiMap"
     iframe.src = "../map/map.html?id=wikiMap"
 
+    // Create a map editor button
+    var toMap = document.createElement("span")
+    toMap.classList.add("note")
+    var mapLink = document.createElement("a")
+    mapLink.href = `../map/map.html?id=${window["id"]}#${page.title.replaceAll(" ", "_")}`
+    mapLink.innerText = "Open in timeline mode"
+    toMap.appendChild(mapLink)
+
     // Create the top section
     var topSection = document.createElement("div")
     wiki.appendChild(topSection)
+
+    // Append the map editor button
+    topSection.appendChild(toMap)
 
     // Create redirect notice if needed (get the redirect page title)
     var from = objects.find(e => e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))

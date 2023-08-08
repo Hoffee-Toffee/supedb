@@ -38,6 +38,19 @@ function display(all = true, objs = objects, embedEl = null) {
                     scrollX = url.searchParams.get("x")
                     scrollY = url.searchParams.get("y")
                 }
+                // Check if the title of an element is given, not coordinates
+                else if (url.hash) {
+                    var title = url.hash.substring(1).replace(/_/g, " ").toLowerCase()
+                    var obj = objects.find(obj => obj.title && obj.title.toLowerCase() === title)
+                    
+                    // Scroll to the object, at the center of the screen
+                    if (obj) {
+                        console.log(obj.id, document.getElementById(obj.id))
+                        scrollX = obj.position[0] * 16 - (window.innerWidth / 2)
+                        scrollY = obj.position[1] * 16 - (window.innerHeight / 2)
+                    }
+
+                }
             }
         }
 
@@ -1724,6 +1737,11 @@ if (!window["embedded"]) {
                 })
             }
         }
+    }
+}
+else {
+    window.onload = function() {
+        loadTheme()
     }
 }
 
