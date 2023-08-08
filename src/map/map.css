@@ -421,3 +421,15 @@ PRINTING STYLES
         display: none;
     }
 }
+
+#popup .object {
+    position: relative;
+    margin: 0.5em;
+    transform: none;
+    /* Drag and drop */
+    cursor: grab;
+}
+
+#popup .object .title {
+    pointer-events: none;    
+}

@@ -1315,8 +1315,6 @@ if (!window["embedded"]) {
         }
         else if ( event.ctrlKey && ( (event.target.classList && event.target.classList.contains("object") ) || (event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("object") ) ) ) {
             var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
-
-            notify("Editing " + obj.title);
     
             obj.classList.toggle("editing")
             Array.from(obj.children).forEach(child => {
@@ -2120,5 +2118,90 @@ function settingsMenu(visClass) {
                 document.getElementById("newPerm").lastElementChild.insertBefore(row, document.getElementById("newPerm").lastElementChild.lastElementChild)
             })
         })
+    }
+    else if (visClass == "addFromWiki") {
+        var toShow = objects.filter(obj => obj.class == "Info")
+
+        // Get the list of colors
+        var colors = document.getElementById("colors").children
+        colors = Array.from(colors).map(color => color.value)
+        
+        // Loop
+        toShow.forEach(obj => {
+            var el = document.createElement("div")
+            el.classList.add("head", "object")
+            el.id = obj.id
+            
+            // Pick a random color, using the alphanumerical id to help
+            // Id looks something like "lfuf5ibb1lva"
+            // Change it's base so that it's a number (only use the last 5 characters)
+            var id = parseInt(obj.id.slice(-5), 36)
+            var color = colors[id % colors.length]
+
+            el.style.borderColor = color
+            el.style.boxShadow = `black 0 0 0.5em 0.01em, ${color} 0 0 0.5em 0.01em`
+            el.setAttribute("data-color", color)
+            el.draggable = true
+            el.ondragstart = (event) => {
+                event.dataTransfer.setData("text", event.target.id)
+            }
+            
+            var title = document.createElement("input")
+            title.classList.add("title")
+            title.value = obj.title
+            title.type = "text"
+            title.readOnly = true
+            title.size = obj.title.length
+            el.appendChild(title)
+
+            document.getElementById("popup").appendChild(el)
+        })
+    }
+}
+
+document.ondragover = (event) => {
+    event.preventDefault()
+}
+
+document.ondrop = (event) => {
+    event.preventDefault()
+
+    var id = event.dataTransfer.getData("text")
+
+    var el = document.getElementById(id)
+    var obj = objects.find(obj => obj.id == id)
+
+    if (obj && el && obj.class == "Info") {
+        // Get the coordinates of the mouse including the scroll
+        var x = event.clientX + document.scrollingElement.scrollLeft
+        var y = event.clientY + document.scrollingElement.scrollTop
+
+        // Create a blank element
+        var test = document.createElement("div")
+        test.style.width = "1000em"
+        document.body.appendChild(test)
+
+        // Get the width of the element in pixels
+        var em = test.offsetWidth
+
+        // Remove the element
+        test.remove()
+
+        em /= 1000
+
+        // Convert the mouse coordinates to em
+        x /= em
+        y /= em
+
+        // Round the coordinates to the nearest multiple of 5 (must be positive)
+        x = (x <= 0.25) ? 0 : Math.round(x / 5) * 5
+        y = (y <= 0.25) ? 0 : Math.round(y / 5) * 5
+
+        obj.position = [x, y]
+        obj.color = el.getAttribute("data-color").slice(1)
+        obj.class = "Head"
+        el.remove()
+
+        newObj("Head", obj)
     }
 }

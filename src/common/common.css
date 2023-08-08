@@ -169,7 +169,7 @@ body {
     flex-direction: column;
 }
 
-#popup input:not([type="checkbox"]),
+#popup :not(.object) input:not([type="checkbox"]),
 textarea {
     margin-top: 0.5em;
     border: solid var(--col-red-orange) 0.1em;
@@ -186,7 +186,7 @@ textarea {
     margin: 0.25em 0 1em 0;
 }
 
-#popup input[type="text"],
+#popup :not(.object) input[type="text"],
 #popup input[type="password"],
 #popup input[type="email"],
 #popup textarea {
@@ -306,7 +306,7 @@ textarea {
     transform: translateY(calc(-100% - 0.5em));
 }
 
-.notice::after { /* Black background */
+.notice::after { /* Notice background */
     content: "";
     position: absolute;
     width: 100%;

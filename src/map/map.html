@@ -49,6 +49,8 @@
             <i class="fa fa-sign-out" title="Sign Out" onclick="window.location.href = '../login/login.html#logout'"></i>
             <!-- Help -->
             <i class="fa fa-question-circle" title="Help" onclick="help()"></i>
+            <!-- Add from Wiki -->
+            <i class="fa fa-file-text" title="Add from Wiki" onclick="settingsMenu('addFromWiki')"></i>
             <!-- Settings -->
             <i class="fa fa-cog" title="Settings" onclick="settingsMenu('editMenu')"></i>
             <!-- Toggle offline / online mode (auto save) -->
@@ -100,6 +102,11 @@
             <!-- Cancel -->
             <button id="cancel" class="loadMenu" onclick="settingsMenu()">Cancel</button>
 
+            <!-- ADD FROM WIKI MENU -->
+
+            <!-- Grid -->
+            <label class="addFromWiki">Hidden Nodes:</label>
+            <div id="wikiGrid" class="addFromWiki"></div>
         </div>
         <div id="addLink">
             <span id="linkTop"></span>
