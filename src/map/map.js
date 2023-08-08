@@ -1313,8 +1313,10 @@ if (!window["embedded"]) {
     
             save(false, "Edit cancelled - Clicked something else")
         }
-        else if ( (event.target.classList && event.target.classList.contains("object") ) || (event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("object")) ) {
+        else if ( event.ctrlKey && ( (event.target.classList && event.target.classList.contains("object") ) || (event.target.parentElement && event.target.parentElement.classList && event.target.parentElement.classList.contains("object") ) ) ) {
             var obj = (event.target.classList.contains("object")) ? event.target : event.target.parentElement
+
+            notify("Editing " + obj.title);
     
             obj.classList.toggle("editing")
             Array.from(obj.children).forEach(child => {
@@ -1546,6 +1548,13 @@ if (!window["embedded"]) {
                         document.getElementById(node.id).classList.toggle("editing")
                     }
                 })
+
+                // If more than one node is now selected, delete all addLink nodes
+                if (document.querySelectorAll(".editing").length > 1) {
+                    document.querySelectorAll(".addLink").forEach((button) => {
+                        button.remove()
+                    })
+                }
     
                 return
             }
