@@ -95,11 +95,11 @@
 #list table tr td {
     width: 35%;
     height: 100%;
-    color: var(--col-text);
+    color: var(--col-txt);
     text-align: left;
     padding: 0.5em;
     padding-right: 0;
-    text-shadow: 0 0 0.5em var(--col-text);
+    text-shadow: 0 0 0.5em var(--col-txt);
     white-space: nowrap;
 }
 

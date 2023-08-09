@@ -14,6 +14,7 @@ input {
 .addLink {
     padding: 1em;
     background-color: var(--col-txt);
+    color: var(--col-bg);
     position: absolute;
     border-radius: 2em;
     box-shadow: 0 0 0.5em 0.1em grey;
@@ -432,4 +433,27 @@ PRINTING STYLES
 
 #popup .object .title {
     pointer-events: none;    
+}
+
+#dragCanvas {
+    position: fixed;
+    top: 0.5em;
+    left: 0.5em;
+    width: calc(100% - 1em);
+    height: calc(100% - 1em);
+    z-index: 5;
+    user-select: none;
+    opacity: 0.5;
+    display: none;
+    outline: transparent dashed;
+}
+
+#dragCanvas.show {
+    display: block;
+    transition: 0.25s;
+}
+
+#dragCanvas.dragTarget {
+    background-color: var(--col-txt);
+    outline: var(--col-txt) dashed;
 }

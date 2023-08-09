@@ -375,6 +375,10 @@ function newObj(type, obj = null, e = null, headId = null, document = null) {
             text.type = "text"
             text.setAttribute("oninput", "this.size = this.value.length; updateLinks(this.parentElement, true)")
             text.setAttribute("onchange", "updateLinks(this.parentElement)")
+            text.addEventListener("blur", function() {
+                if (window["embedded"]) return
+                updateObj(this, "title")
+            })
 
             if (window["embedded"]) text.readOnly = true
 
@@ -986,6 +990,13 @@ function contextMenu(e) {
                 text: "Change Head",
                 onclick: () => changeHead(el.id)
             },
+            // Hide from timeline
+            {
+                text: "Hide from timeline",
+                onclick: () => {
+                    objects.find(obj => obj.id == el.id).class = "Info"
+                }
+            },
             // Delete
             {
                 text: "Delete",
@@ -1155,6 +1166,67 @@ if (!window["embedded"]) {
                 notify(message)
             }
         }, 1000)
+
+        document.getElementById("dragCanvas").addEventListener("dragover", (event) => {
+            event.preventDefault()
+        })
+
+        document.getElementById("dragCanvas").addEventListener("dragenter", (event) => {
+            document.getElementById("dragCanvas").classList.add("dragTarget")
+        })
+        
+        document.getElementById("dragCanvas").addEventListener("dragleave", (event) => {
+            document.getElementById("dragCanvas").classList.remove("dragTarget")
+        })
+        
+        document.getElementById("dragCanvas").ondrop = (event) => {
+            event.preventDefault()
+            document.getElementById("dragCanvas").classList.remove("dragTarget")
+        
+            var id = event.dataTransfer.getData("text")
+        
+            var el = document.getElementById(id)
+            var obj = objects.find(obj => obj.id == id)
+        
+            if (obj && obj.class == "Info") {
+                // Get the coordinates of the mouse including the scroll
+                var x = event.clientX + document.scrollingElement.scrollLeft
+                var y = event.clientY + document.scrollingElement.scrollTop
+        
+                // Create a blank element
+                var test = document.createElement("div")
+                test.style.width = "1000em"
+                document.body.appendChild(test)
+        
+                // Get the width of the element in pixels
+                var em = test.offsetWidth
+        
+                // Remove the element
+                test.remove()
+        
+                em /= 1000
+        
+                // Convert the mouse coordinates to em
+                x /= em
+                y /= em
+        
+                // Round the coordinates to the nearest multiple of 5 (must be positive)
+                x = (x <= 0.25) ? 0 : Math.round(x / 5) * 5
+                y = (y <= 0.25) ? 0 : Math.round(y / 5) * 5
+        
+                obj.position = [x, y]
+                obj.color = el.getAttribute("data-color").slice(1)
+                obj.class = "Head"
+                el.remove()
+        
+                newObj("Head", obj)
+                save(false, "Info node converted to Head")
+            }
+        }
+
+        document.getElementById("dragCanvas").addEventListener("click", function (event) {
+            settingsMenu();
+        })
     }
 
     window.addEventListener("scroll", function() {
@@ -2064,11 +2136,13 @@ function settingsMenu(visClass) {
     // If the popup is already open, close it.
     if (document.getElementById("popup").style.visibility == "visible") {
         document.getElementById("popup").style.visibility = "hidden";
+        document.getElementById("dragCanvas").classList.remove("show")
         return;
     }
 
     // Set the popup to be visible.
     document.getElementById("popup").style.visibility = "visible";
+    document.getElementById("dragCanvas").classList.add("show")
 
     // Make the 'visClass' elements visible, and all others invisible
     var elements = document.getElementById("popup").children;
@@ -2120,6 +2194,7 @@ function settingsMenu(visClass) {
         })
     }
     else if (visClass == "addFromWiki") {
+
         var toShow = objects.filter(obj => obj.class == "Info")
 
         // Get the list of colors
@@ -2132,11 +2207,11 @@ function settingsMenu(visClass) {
             el.classList.add("head", "object")
             el.id = obj.id
             
-            // Pick a random color, using the alphanumerical id to help
+            // Pick a random color, using the alphanumerical id to help (if it doesn't already have a color)
             // Id looks something like "lfuf5ibb1lva"
             // Change it's base so that it's a number (only use the last 5 characters)
             var id = parseInt(obj.id.slice(-5), 36)
-            var color = colors[id % colors.length]
+            var color = obj.color ? `#${obj.color}` : colors[id % colors.length]
 
             el.style.borderColor = color
             el.style.boxShadow = `black 0 0 0.5em 0.01em, ${color} 0 0 0.5em 0.01em`
@@ -2156,52 +2231,5 @@ function settingsMenu(visClass) {
 
             document.getElementById("popup").appendChild(el)
         })
-    }
-}
-
-document.ondragover = (event) => {
-    event.preventDefault()
-}
-
-document.ondrop = (event) => {
-    event.preventDefault()
-
-    var id = event.dataTransfer.getData("text")
-
-    var el = document.getElementById(id)
-    var obj = objects.find(obj => obj.id == id)
-
-    if (obj && el && obj.class == "Info") {
-        // Get the coordinates of the mouse including the scroll
-        var x = event.clientX + document.scrollingElement.scrollLeft
-        var y = event.clientY + document.scrollingElement.scrollTop
-
-        // Create a blank element
-        var test = document.createElement("div")
-        test.style.width = "1000em"
-        document.body.appendChild(test)
-
-        // Get the width of the element in pixels
-        var em = test.offsetWidth
-
-        // Remove the element
-        test.remove()
-
-        em /= 1000
-
-        // Convert the mouse coordinates to em
-        x /= em
-        y /= em
-
-        // Round the coordinates to the nearest multiple of 5 (must be positive)
-        x = (x <= 0.25) ? 0 : Math.round(x / 5) * 5
-        y = (y <= 0.25) ? 0 : Math.round(y / 5) * 5
-
-        obj.position = [x, y]
-        obj.color = el.getAttribute("data-color").slice(1)
-        obj.class = "Head"
-        el.remove()
-
-        newObj("Head", obj)
     }
 }

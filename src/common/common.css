@@ -120,7 +120,7 @@ body {
     padding-bottom: 7px;
     padding-top: 7px;
     padding-left: 15px;
-    -webkit-user-select: none;
+    user-select: none;
 }
 
 #context-menu li:hover {
@@ -279,7 +279,7 @@ textarea {
     height: 100vh;
     top: 0;
     left: 0;
-    z-index: 10;
+    z-index: 11;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -290,7 +290,7 @@ textarea {
     pointer-events: none;
     z-index: 10;
     background-color: var(--col-red-hover);
-    color: var(--col-text);
+    color: var(--col-txt);
     text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
     border-radius: 0.5em;
     padding: 1em;
