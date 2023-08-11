@@ -50,9 +50,41 @@ body {
     filter: grayscale(0.5);
 }
 
-#wikiPage h1 span ~ a {
+#wikiPage h1 span ~ a,
+#searchIcon {
     position: absolute;
-    right: 1.5em;
+    right: 1.4em;
+    transition: 0.25s;
+}
+
+#searchIcon:hover {
+    cursor: pointer;
+    text-shadow: 0 0 0.5em var(--col-orange);
+}
+
+#wikiPage h1 span ~ a {
+    top: 3.5em;
+    right: 1em;
+}
+
+#searchBox {
+    position: absolute;
+    right: 3.5em;
+    background-color: var(--col-bg);
+    border-radius: 0.25em;
+    border-color: var(--col-orange-hover);
+    border-style: solid;
+    color: var(--col-txt);
+    opacity: 0.75;
+    max-width: calc(50vw - 4em);
+    width: 20em;
+    padding: 0.25em;
+    top: 1.5em;
+}
+
+#searchBox:focus {
+    outline: none;
+    border-color: var(--col-orange-shadow);
 }
 
 #wikiPage h1::after {
@@ -668,7 +700,6 @@ body {
 #wikiPage #talkPage h3 {
     margin-top: 0.5em;
 }
-
 
 @media screen and (max-width: 600px) {
     #wikiPage .infobox {

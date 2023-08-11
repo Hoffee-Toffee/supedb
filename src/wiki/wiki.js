@@ -101,6 +101,9 @@ function displayWiki() {
   var url = new URL(window.location.href)
   var pageId = (url.searchParams.get("page")) ? url.searchParams.get("page").replaceAll("_", " ") : null
 
+  // Get the query (if any)
+  var query = url.searchParams.get("q") || null
+
   // Replace the 'page' in the url with the correctly cased version (unless a category or special page)
   if (pageId != null && !pageId.startsWith("Category:") && !pageId.startsWith("Special:")) {
     url.searchParams.set("page", (objects.find(e => (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || (e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))) || {title: pageId}).title.replaceAll(" ", "_"))
@@ -135,8 +138,32 @@ function displayWiki() {
   titleText.innerText = "\u00A0-\u00A0"
   title.appendChild(titleText)
 
-  // If none is provided, then show links to all heads and all era pages
-  if (pageId == null) {
+  var searchIcon = document.createElement("i")
+  searchIcon.className = "fa fa-search"
+  searchIcon.id = "searchIcon"
+  searchIcon.setAttribute("aria-hidden", "true")
+  searchIcon.addEventListener("click", () => {
+    if (document.getElementById("searchBox").value !== "") {
+      location.href = `wiki.html?id=${window["id"]}&q=${document.getElementById("searchBox").value}`
+    }
+  })
+  title.appendChild(searchIcon)
+
+  var searchBox = document.createElement("input")
+  searchBox.type = "text"
+  searchBox.placeholder = "Search"
+  searchBox.id = "searchBox"
+  // Press enter in the box
+  searchBox.addEventListener("keyup", (event) => {
+    if (event.keyCode === 13) {
+      event.preventDefault()
+      searchIcon.click()
+    }
+  })
+  title.appendChild(searchBox)
+
+  // If none is provided, then show links to all heads and all era pages (unless searching)
+  if (pageId == null && query == null) {
     // Remove the edit button from the page
     document.querySelector("label[for='editMode']").remove()
 
@@ -254,6 +281,40 @@ function displayWiki() {
     newLink.innerText = "Create New Page"
     newLink.setAttribute("link-desc", "Create a new page")
     newTitle.appendChild(newLink)
+  }
+  // If it has a query, search for pages that match the query
+  else if (query != null) {
+    // Add the title
+    titleText.innerText += "Search Results"
+
+    // Create the subtitle
+    var subtitle = document.createElement("h2")
+    subtitle.innerText = `Search Results for "${query}"`
+    wiki.appendChild(subtitle)
+
+    // Search for pages that contain the query in it's title
+    var pages = objects.filter(e => e.title && e.title.toLowerCase().includes(query.toLowerCase())).sort((a, b) => a.title.localeCompare(b.title))
+
+    var numPages = document.createElement("p")
+    numPages.innerText = `${pages.length || "No"} result${pages.length == 1 ? "" : "s"} found.`
+    wiki.appendChild(numPages)
+
+    // Show the pages, if there are any
+    if (pages.length > 0) {
+      // Create the list of pages
+      var pagesList = document.createElement("ul")
+      pages.forEach(page => {
+        var pageItem = document.createElement("li")
+        pagesList.appendChild(pageItem)
+
+        var pageLink = document.createElement("a")
+        pageLink.href = `?id=${window["id"]}&page=${page.title.replaceAll(" ", "_")}`
+        pageLink.innerText = page.title
+        pageLink.setAttribute("link-desc", page.description || "No description")
+        pageItem.appendChild(pageLink)
+      })
+      wiki.appendChild(pagesList)
+    }
   }
   // If it starts with "category:", then show all the pages in that category
   else if (pageId.startsWith("Category:")) {
