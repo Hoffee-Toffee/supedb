@@ -247,10 +247,154 @@ function displayWiki() {
     })
     wiki.appendChild(headList)
 
+    
+    // List the most visited, most recently visited, and most recently edited pages
+    // Each should show only the top 5, with the 6th being and option to show more / show less
+    var popularTitle = document.createElement("h3")
+    popularTitle.innerText = "Popular Pages"
+    wiki.appendChild(popularTitle)
+
+    var popularList = document.createElement("ul")
+    wiki.appendChild(popularList)
+
+    // Pages that don't have a count of 'totalVisits' will be as if they have 0
+    // Sort in order of most to least
+    var popularPages = objects.filter(e => e.title).sort((a, b) => (b.totalVisits || 0) - (a.totalVisits || 0))
+    
+    // The first 5 pages are added as normal
+    // The rest are added as hidden
+    popularPages.forEach((page, i) => {
+      var popularItem = document.createElement("li")
+      popularList.appendChild(popularItem)
+
+      if (i > 4) popularItem.style.display = "none"
+
+      var popularLink = document.createElement("a")
+      popularLink.href = `?id=${window["id"]}&page=${page.title.replaceAll(" ", "_")}`
+      popularLink.innerText = page.title
+      popularLink.setAttribute("link-desc", page.description || "No description")
+      popularItem.appendChild(popularLink)
+    })
+
+    // If more than 5 pages, add a button to show more
+    if (popularPages.length > 5) {
+      var popularButton = document.createElement("li")
+      popularButton.innerText = "Show More"
+      popularButton.classList.add("showMore")
+      popularButton.onclick = () => {
+        // Get the first 5 hidden pages in the list and show them
+        // If no hidden pages remain after that, delete the button
+        var hidden = popularList.querySelectorAll("li[style='display: none;']")
+        var del = true;
+        hidden.forEach((e, i) => {
+          if (i < 4) e.style.display = "revert"
+          else {
+            del = false
+            return
+          }
+        })
+
+        if (del) popularButton.remove()
+      }
+      popularList.appendChild(popularButton)
+    }
+
+    // Do the same for recently visited pages, but in order of 'lastVisited'
+    var recentTitle = document.createElement("h3")
+    recentTitle.innerText = "Recently Visited Pages"
+    wiki.appendChild(recentTitle)
+
+    var recentList = document.createElement("ul")
+    wiki.appendChild(recentList)
+
+    var recentPages = objects.filter(e => e.title).sort((a, b) => (b.lastVisited || 0) - (a.lastVisited || 0))
+    
+    recentPages.forEach((page, i) => {
+      var recentItem = document.createElement("li")
+      recentList.appendChild(recentItem)
+
+      if (i > 4) recentItem.style.display = "none"
+
+      var recentLink = document.createElement("a")
+      recentLink.href = `?id=${window["id"]}&page=${page.title.replaceAll(" ", "_")}`
+      recentLink.innerText = page.title
+      recentLink.setAttribute("link-desc", page.description || "No description")
+      recentItem.appendChild(recentLink)
+    })
+
+    if (recentPages.length > 5) {
+      var recentButton = document.createElement("li")
+      recentButton.innerText = "Show More"
+      recentButton.classList.add("showMore")
+      recentButton.onclick = () => {
+        var hidden = recentList.querySelectorAll("li[style='display: none;']")
+        var del = true;
+        hidden.forEach((e, i) => {
+          if (i < 4) e.style.display = "revert"
+          else {
+            del = false
+            return
+          }
+        })
+
+        if (del) recentButton.remove()
+      }
+      recentList.appendChild(recentButton)
+    }
+
+    // Do the same for recently edited pages, but in order of 'lastEdited'
+    var editedTitle = document.createElement("h3")
+    editedTitle.innerText = "Recently Edited Pages"
+    wiki.appendChild(editedTitle)
+
+    var editedList = document.createElement("ul")
+    wiki.appendChild(editedList)
+
+    var editedPages = objects.filter(e => e.title).sort((a, b) => (b.lastEdited || 0) - (a.lastEdited || 0))
+
+    editedPages.forEach((page, i) => {
+      var editedItem = document.createElement("li")
+      editedList.appendChild(editedItem)
+
+      if (i > 4) editedItem.style.display = "none"
+
+      var editedLink = document.createElement("a")
+      editedLink.href = `?id=${window["id"]}&page=${page.title.replaceAll(" ", "_")}`
+      editedLink.innerText = page.title
+      editedLink.setAttribute("link-desc", page.description || "No description")
+      editedItem.appendChild(editedLink)
+    })
+
+    if (editedPages.length > 5) {
+      var editedButton = document.createElement("li")
+      editedButton.innerText = "Show More"
+      editedButton.classList.add("showMore")
+      editedButton.onclick = () => {
+        var hidden = editedList.querySelectorAll("li[style='display: none;']")
+        var del = true;
+        hidden.forEach((e, i) => {
+          if (i < 4) e.style.display = "revert"
+          else {
+            del = false
+            return
+          }
+        })
+        
+        if (del) editedButton.remove()
+      }
+      editedList.appendChild(editedButton)
+    }
+  
     // Create a list of additional links
     var links = document.createElement("ul")
-    links.setAttribute("headerText", "Additional Links")
-    wiki.appendChild(links)
+    
+    var linksTitle = document.createElement("h3")
+    linksTitle.innerText = "Additional Links"
+    wiki.appendChild(linksTitle)
+
+    var linksDescription = document.createElement("p")
+    linksDescription.innerText = "Quick links to useful pages."
+    wiki.appendChild(linksDescription)
 
     // Show a link to the special pages
     var specialTitle = document.createElement("li")
@@ -281,6 +425,8 @@ function displayWiki() {
     newLink.innerText = "Create New Page"
     newLink.setAttribute("link-desc", "Create a new page")
     newTitle.appendChild(newLink)
+
+    wiki.appendChild(links)
   }
   // If it has a query, search for pages that match the query
   else if (query != null) {
@@ -1433,6 +1579,15 @@ function displayWiki() {
 
     }
 
+    // If it is an existing page, then update it's 'lastVisited' and 'totalVisits' properties
+    // May also need to create these variables
+    // Save afterwards
+    if (page.class != null) {
+      page.lastVisited = new Date().getTime()
+      page.totalVisits = (page.totalVisits || 0) + 1
+      saveObjects()
+    }
+
     // Do the rest of the header content
     page.header && page.header.forEach((e, i) => {
       if (e.type == "infobox" && i == 0) return
@@ -1887,6 +2042,9 @@ function toggleEdit(alert = true) {
         var set = e.innerText
 
         traverseObj(page, e.getAttribute("prop-ref"), set)
+
+        // Update the 'lastEdited' of this page
+        page.lastEdited = new Date().getTime()
 
         saveObjects()
 
