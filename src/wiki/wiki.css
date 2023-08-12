@@ -41,7 +41,7 @@ body {
 #wikiPage h1 {
     font-weight: bold;
     margin: -0.5em;
-    padding-bottom: 0.5em;
+    padding-bottom: 2em;
     font-size: 1em;
     color: #999;
 }
@@ -63,7 +63,7 @@ body {
 }
 
 #wikiPage h1 span ~ a {
-    top: 3.5em;
+    top: 3.75em;
     right: 1em;
 }
 
@@ -247,6 +247,23 @@ body {
     background-color: #222;
     border-radius: 0.25em;
     display: block;
+}
+
+#wikiPage .topBar {
+    margin-top: -1.3em;
+    display: flex;
+    position: absolute;
+}
+
+#wikiPage .topBar :not(:last-child) {
+    margin-right: 1em;
+    padding-right: 0em;
+}
+
+#wikiPage .topBar :not(:last-child)::after {
+    content: "-";
+    position: relative;
+    left: 0.7em;    
 }
 
 #wikiPage .collapsible {

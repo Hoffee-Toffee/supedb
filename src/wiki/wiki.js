@@ -34,9 +34,25 @@ function start() {
 
   // Sync all data from the timeline
   db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
-    // Ignore if the change was made by you (your session id)
-    if (map.data().lastChange == sessionStorage.getItem("ID")) return
+    // Run checks if 'page' is set
+    if (window["page"]) {
+      // Ignore if the change was made by you (your session id)
+      if (map.data().lastChange == sessionStorage.getItem("ID")) return
 
+      var currentPage = JSON.stringify(window["objects"].find(e => e.id == window["page"]))
+
+      var newPage = JSON.stringify(JSON.parse(map.data().map).find(e => e.id == window["page"]))
+
+      // Ignore if the change wasn't made to page you are on, ignoring any stats variables by setting them to null
+      var stats = ["id", "position", "lastVisited", "totalVisits", "lastEdited"]
+
+      stats.forEach(stat => {
+        currentPage[stat] = null
+        newPage[stat] = null
+      })
+
+      if (JSON.stringify(currentPage) == JSON.stringify(newPage)) return
+    }
     // Clear the page
     document.getElementById("wikiPage").innerHTML = ""
 
@@ -925,26 +941,32 @@ function displayWiki() {
     else {
       window["page"] = page.id
     }
-
-    // Create a new document element for the timeline
-    var iframe = document.createElement("iframe")
-    iframe.id = "wikiMap"
-    iframe.src = "../map/map.html?id=wikiMap"
-
-    // Create a map editor button
-    var toMap = document.createElement("span")
-    toMap.classList.add("note")
-    var mapLink = document.createElement("a")
-    mapLink.href = `../map/map.html?id=${window["id"]}#${page.title.replaceAll(" ", "_")}`
-    mapLink.innerText = "Open in timeline mode"
-    toMap.appendChild(mapLink)
-
+    
     // Create the top section
     var topSection = document.createElement("div")
     wiki.appendChild(topSection)
 
-    // Append the map editor button
-    topSection.appendChild(toMap)
+    var topBar = document.createElement("div")
+    topBar.classList.add("topBar")
+    topSection.appendChild(topBar)
+
+    if (["Head", "Era", "Sub"].includes(page.class)) {
+      // Create a new document element for the timeline
+      var iframe = document.createElement("iframe")
+      iframe.id = "wikiMap"
+      iframe.src = "../map/map.html?id=wikiMap"
+
+      // Create a map editor button
+      var toMap = document.createElement("span")
+      toMap.classList.add("note")
+      var mapLink = document.createElement("a")
+      mapLink.href = `../map/map.html?id=${window["id"]}#${page.title.replaceAll(" ", "_")}`
+      mapLink.innerText = "Open in timeline mode"
+      toMap.appendChild(mapLink)
+
+      // Append the map editor button
+      topBar.appendChild(toMap)
+    }
 
     // Create redirect notice if needed (get the redirect page title)
     var from = objects.find(e => e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))
@@ -966,7 +988,7 @@ function displayWiki() {
       
       // Add the main article link to the text and then to the section
       redirectText.appendChild(redirectLink)
-      topSection.appendChild(redirectText)
+      topBar.appendChild(redirectText)
     }
 
     const storage = firebase.storage();
