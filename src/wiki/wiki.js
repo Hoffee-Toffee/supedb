@@ -438,8 +438,19 @@ function displayWiki() {
     subtitle.innerText = `Search Results for "${query}"`
     wiki.appendChild(subtitle)
 
-    // Search for pages that contain the query in it's title
-    var pages = objects.filter(e => e.title && e.title.toLowerCase().includes(query.toLowerCase())).sort((a, b) => a.title.localeCompare(b.title))
+    // Search for pages that contain the query in it's title, or in any of it's redirects (if any)
+    // Sort by total visits, with alphabetical order as a tiebreaker
+    var pages = objects.filter(e => `${e.title} ${e.redirects ? e.redirects.join(" ") : ""}`.toLowerCase().includes(query.toLowerCase())).sort((a, b) => {
+      var aVisits = a.visits || 0
+      var bVisits = b.visits || 0
+
+      if (aVisits == bVisits) {
+        if (a.title < b.title) return -1
+        else if (a.title > b.title) return 1
+        else return 0
+      }
+      else return bVisits - aVisits
+    })
 
     var numPages = document.createElement("p")
     numPages.innerText = `${pages.length || "No"} result${pages.length == 1 ? "" : "s"} found.`
