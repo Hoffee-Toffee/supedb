@@ -180,8 +180,9 @@ function displayWiki() {
 
   // If none is provided, then show links to all heads and all era pages (unless searching)
   if (pageId == null && query == null) {
-    // Remove the edit button from the page
-    document.querySelector("label[for='editMode']").remove()
+    // Remove the edit button from the page (if it exists)
+    var editButt = document.querySelector("label[for='editMode']")
+    if (editButt) editButt.remove()
 
     // Get all eras
     var eras = objects.filter(e => e.class == "Era")
