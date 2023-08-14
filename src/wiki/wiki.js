@@ -34,8 +34,8 @@ function start() {
 
   // Sync all data from the timeline
   db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
-    // Run checks if 'page' is set
-    if (window["page"]) {
+    // Run checks if 'page' is defined, even if null
+    if (window["page"] !== undefined) {
       // Ignore if the change was made by you (your session id)
       if (map.data().lastChange == sessionStorage.getItem("ID")) return
 
@@ -1889,6 +1889,9 @@ function displayWiki() {
     window["editing"] = false
     toggleEdit(false)
   }
+
+  // If page isn't defined, then set it to null
+  if (window["page"] == undefined) window["page"] = null
 }
 
 function helpMenu() {
