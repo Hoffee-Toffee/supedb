@@ -324,7 +324,7 @@ function displayWiki() {
     var recentList = document.createElement("ul")
     wiki.appendChild(recentList)
 
-    var recentPages = objects.filter(e => e.title).sort((a, b) => (b.lastVisited || 0) - (a.lastVisited || 0))
+    var recentPages = objects.filter(e => e.title && e.lastVisited).sort((a, b) => b.lastVisited - a.lastVisited)
     
     recentPages.forEach((page, i) => {
       var recentItem = document.createElement("li")
@@ -367,7 +367,7 @@ function displayWiki() {
     var editedList = document.createElement("ul")
     wiki.appendChild(editedList)
 
-    var editedPages = objects.filter(e => e.title).sort((a, b) => (b.lastEdited || 0) - (a.lastEdited || 0))
+    var editedPages = objects.filter(e => e.title && e.lastEdited).sort((a, b) => b.lastEdited - a.lastEdited)
 
     editedPages.forEach((page, i) => {
       var editedItem = document.createElement("li")
