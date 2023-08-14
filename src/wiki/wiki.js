@@ -38,9 +38,9 @@ function start() {
       // Ignore if the change was made by you (your session id)
       if (map.data().lastChange == sessionStorage.getItem("ID")) return
 
-      var currentPage = JSON.stringify(window["objects"].find(e => e.id == window["page"]))
+      var currentPage = JSON.parse(JSON.stringify(window["objects"].find(e => e.id == window["page"])))
 
-      var newPage = JSON.stringify(JSON.parse(map.data().map).find(e => e.id == window["page"]))
+      var newPage = JSON.parse(map.data().map).find(e => e.id == window["page"])
 
       // Ignore if the change wasn't made to page you are on, ignoring any stats variables by setting them to null
       var stats = ["id", "position", "lastVisited", "totalVisits", "lastEdited"]
@@ -50,37 +50,46 @@ function start() {
         newPage[stat] = null
       })
 
+      console.log(currentPage)
+
       if (JSON.stringify(currentPage) == JSON.stringify(newPage)) return
     }
-    else if (window["page"] == null) return
+    else if (window["page"] === null) return
+
+    // Note the current scroll position
+    window["scroll"] = {
+      x: window.scrollX,
+      y: window.scrollY
+    }
+
     // Clear the page
     document.getElementById("wikiPage").innerHTML = ""
 
-      if (map) {  
-          window["mapSettings"] = {
-              id: map.id,
-              title: map.data().title,
-              description: map.data().description,
-              encrypted: map.data().encrypted,
-              project: map.data().project
-          }
-  
-          objects = JSON.parse(map.data().map)
-  
-          if (window["ready"]) {
-              displayWiki()
-          }
-          else {
-              window["ready"] = true
-          }
-      }})
-  
-      if (window["ready"]) {
-          displayWiki()
-      }
-      else {
-          window["ready"] = true
-      }
+    if (map) {  
+        window["mapSettings"] = {
+            id: map.id,
+            title: map.data().title,
+            description: map.data().description,
+            encrypted: map.data().encrypted,
+            project: map.data().project
+        }
+
+        objects = JSON.parse(map.data().map)
+
+        if (window["ready"]) {
+            displayWiki()
+        }
+        else {
+            window["ready"] = true
+        }
+    }})
+
+    if (window["ready"]) {
+        displayWiki()
+    }
+    else {
+        window["ready"] = true
+    }
 }
 
 function displayWiki() {
@@ -1892,6 +1901,9 @@ function displayWiki() {
 
   // If page isn't defined, then set it to null
   if (window["page"] == undefined) window["page"] = null
+
+  // Finally, scroll to the documented coordinates
+  window.scrollTo(window["scroll"].x, window["scroll"].y)
 }
 
 function helpMenu() {
