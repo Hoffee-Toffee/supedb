@@ -34,8 +34,7 @@ function start() {
 
   // Sync all data from the timeline
   db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
-    // Run checks if 'page' is defined, even if null
-    if (window["page"] !== undefined) {
+    if (window["page"]) {
       // Ignore if the change was made by you (your session id)
       if (map.data().lastChange == sessionStorage.getItem("ID")) return
 
@@ -53,6 +52,7 @@ function start() {
 
       if (JSON.stringify(currentPage) == JSON.stringify(newPage)) return
     }
+    else if (window["page"] == null) return
     // Clear the page
     document.getElementById("wikiPage").innerHTML = ""
 
