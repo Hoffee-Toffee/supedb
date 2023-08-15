@@ -2083,7 +2083,7 @@ function toggleEdit(alert = true) {
 
       e.addEventListener("focus", () => {
         if (e.getAttribute("prop-ref").endsWith("banner.image")) return
-        e.innerText = ["tags", "categories"].includes(e.getAttribute("prop-ref")) ? page[e.getAttribute("prop-ref")].map(e => `[${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref"))
+        e.innerText = ["tags", "categories", "redirects"].includes(e.getAttribute("prop-ref")) ? page[e.getAttribute("prop-ref")].map(e => `[${e}]`).join(", ") : traverseObj(page, e.getAttribute("prop-ref"))
       })
       e.addEventListener("blur", () => {
         if (e.getAttribute("prop-ref").endsWith("banner.image")) return
@@ -2126,7 +2126,7 @@ function textSet(element, text) {
   element.innerHTML = ""
 
   // If the value is empty then set it to "N/A"
-  if (text == "") text = "N/A"
+  if (["", "[]", null].includes(text)) text = "N/A"
 
   // If the value is "N/A" or [] then set the class to 'hidden', if not then remove the class
   // If it's a table cell or has a prop-ref of "categories" or "tags" then add the 'hidden' class to the parent element
@@ -2139,7 +2139,7 @@ function textSet(element, text) {
     else if (element.classList) element.classList.remove("hidden")
   }
 
-  if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "categories") {
+  if (element.getAttribute("prop-ref") && element.getAttribute("prop-ref") == "categories" && text != "N/A") {
     text.split(", ").forEach((category, index) => {
       category = category.slice(1, -1)
       var categoryItem = document.createElement("li")
