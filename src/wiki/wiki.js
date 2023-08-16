@@ -1542,7 +1542,8 @@ function displayWiki() {
           "talk": [],
           "tags": [],
           "categories": [],
-          "redirects": []
+          "redirects": [],
+          "template": template
         }
 
         // If any infoboxes exist in the header, regenerate their IDs
@@ -1730,6 +1731,7 @@ function displayWiki() {
           // Set the contents of the page to the template, removing the reference
           page.header = JSON.parse(JSON.stringify(tempHead))
           page.content = JSON.parse(JSON.stringify(tempContent))
+          page.template = temps.value
 
           // If any infoboxes exist in the header, regenerate their IDs
           if (page.header) {
@@ -1813,6 +1815,32 @@ function displayWiki() {
       redirects.appendChild(redirectsList)
       wiki.appendChild(redirects)
       textSet(redirectsList, page.redirects.map(alt => `[${alt}]`).join(", "))
+    }
+
+    // Add a static 'from template' section if it exists
+    if (page.template) {
+      // Create the template section
+      var template = document.createElement("div")
+      template.classList.add("collapsible", "collapsed")
+
+      // Create the header
+      var templateHeader = document.createElement("h3")
+      templateHeader.innerText = "From Template"
+      template.appendChild(templateHeader)
+
+      // Toggle 'collapsed' class on click
+      templateHeader.addEventListener("click", () => template.classList.toggle("collapsed"))
+
+      // Create the content
+      var templateList = document.createElement("ul")
+      template.appendChild(templateList)
+      
+      var templateLink = document.createElement("a")
+      templateLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == page.template).title.replaceAll(" ", "_")}`
+      templateLink.innerText = objects.find(e => e.id == page.template).title
+      templateLink.setAttribute("link-desc", objects.find(e => e.id == page.template).description || "No description")
+      templateList.appendChild(templateLink)
+      wiki.appendChild(template)
     }
 
     // If not 'new' then add a 'what links here' section
