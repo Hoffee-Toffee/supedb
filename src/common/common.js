@@ -15,19 +15,8 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Run 'start' function after getting user info, after the auth state changes
-auth.onAuthStateChanged(user => {    
-    if (user) {
-        // Get the user's info
-        db.collection("users").doc(user.uid).get().then(doc => {
-            sessionStorage.setItem("name", doc.data().name);
-
-            start();
-        });
-    } else {
-        start();
-    }
-});
+// Run 'start' function after the auth state changes
+auth.onAuthStateChanged(start);
 
 function loadTheme() {
     var themeLink = document.getElementById("themeLink");

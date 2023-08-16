@@ -18,7 +18,7 @@ function start() {
   // Check if the user has any associated permissions
   db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-          window["permissions"].push(doc.data())
+          window["permissions"].push(doc.data().entity)
       })
   })
 
@@ -28,12 +28,17 @@ function start() {
 
   // If they don't have any permissions or no id is provided, redirect them to the dashboard
   if (window["permissions"] == null || window["id"] == null) {
-      console.log(`Permissions: ${window["permissions"]}, ID: ${window["id"]}`)
-      // location.href = "../dash/dash.html"
+      location.href = "../dash/dash.html"
   }
 
   // Sync all data from the timeline
   db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
+    // Leave if the doc id isn't in your permissions, or if it's project id isn't in your permissions
+    if (!window["permissions"].find(e => [window["id"], map.data().project].includes(e))) {
+      // Redirect to dash
+      location.href = "../dash/dash.html"
+    }
+
     if (window["page"]) {
       // Ignore if the change was made by you (your session id)
       if (map.data().lastChange == sessionStorage.getItem("ID")) return
@@ -2170,28 +2175,55 @@ function textSet(element, text) {
       // Get the destination
       var destination = link.split("|")[0]
 
-      // Find the destination object ( {!id} is valid, but not {id}), if invalid then try to get the object with that title
-      var destObj = objects.find(e => e.title && (e.title.toLowerCase() == destination.toLowerCase() || e.redirects.find(r => r.toLowerCase() == destination.toLowerCase())))
+      var isCategory = false
+      var isLocal = true
+      var branchObjs = objects
+      var branchId = window["id"]
 
-      // If it is valid, then set 'destination' to the title of that object (unless it's a redirect)
-      if (destObj) destination = (destObj.redirects.find(r => r.toLowerCase() == destination.toLowerCase())) ? destination : destObj.title
+      // It may have one or two ":", each changing the destination
+      var colons = destination.split(":")
+      destination = colons[colons.length - 1]
 
-      // Get the innerText (if it exists)
-      var innerText = link.split("|")[1] || destination
+      if (colons.length > 1) {
+        // The last colon is the new destination, unless the second to last colon is "Category"
+        if (colons[colons.length - 2] == "Category") isCategory = true
 
-      // Make the link
-      var linkElement = document.createElement("a")
-      linkElement.href = (destObj) ? `?id=${window["id"]}&page=${destObj.title.replaceAll(" ", "_")}` : `?id=${window["id"]}&page=${destination.replaceAll(" ", "_")}`
-      linkElement.innerText = innerText
-      if (destObj && destObj.description) {
-        linkElement.setAttribute("link-desc", destObj.description)
+        // If there are three entries, check the first for the branch/site destination
+        if (colons.length == 3) {
+          // Coming soon
+        }
       }
-      else if (!destObj) {
-        linkElement.classList.add("invalid")
-        linkElement.setAttribute("link-desc", "Non-existent page")
+
+      if (isLocal) {
+        // Find the destination object (if it exists)
+        var destObj = branchObjs.find(e => e.title && (e.title.toLowerCase() == destination.toLowerCase() || e.redirects.find(r => r.toLowerCase() == destination.toLowerCase())))
+
+        // If it is valid, then set 'destination' to the title of that object (unless it's a redirect)
+        if (destObj) destination = (destObj.redirects.find(r => r.toLowerCase() == destination.toLowerCase())) ? destination : destObj.title
+
+        // Get the innerText (if it exists)
+        var innerText = link.split("|")[1] || (isCategory ? "Category:" : "") + destination
+        
+        // Make the link
+        var linkElement = document.createElement("a")
+        linkElement.href = `?id=${branchId}&page=${isCategory ? "Category:" : ""}${destination.replaceAll(" ", "_")}`
+        linkElement.innerText = innerText
+
+        // If it's a category, check if it has any members, setting 'isCategory' to the resulting boolean
+        var isValidCat = isCategory && branchObjs.some(e => e.categories && e.categories.includes(destination))
+
+        console.log(`isCategory: ${isCategory}, isValidCat: ${isValidCat}, destination: ${destination}`)
+
+        if (destObj && destObj.description) {
+          linkElement.setAttribute("link-desc", destObj.description)
+        }
+        else if (!destObj && !isValidCat) {
+          linkElement.classList.add("invalid")
+          linkElement.setAttribute("link-desc", `Non-existent ${isCategory ? "category" : "page"}`)
+        }
+        else linkElement.setAttribute("link-desc", "No description")
+        element.appendChild(linkElement)
       }
-      else linkElement.setAttribute("link-desc", "No description")
-      element.appendChild(linkElement)
 
       // Remove the link from the text
       text = text.substring(text.indexOf("]") + 1 || text.length, text.length)

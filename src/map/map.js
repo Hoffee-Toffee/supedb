@@ -899,6 +899,12 @@ function start() {
 
     // Sync all data from the timeline (don't sync if the user is the one that made the last change unless they are loading for the first time)
     db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
+        // Leave if the doc id isn't in your permissions, or if it's project id isn't in your permissions
+        if (!window["permissions"].find(e => [window["id"], map.data().project].includes(e))) {
+            // Redirect to dash
+            location.href = "../dash/dash.html"
+        }
+        
         if (map.data().lastChange != sessionStorage.getItem("ID")) {
             console.log("Retrieving map data...")
             document.getElementsByTagName("title")[0].innerText = map.data().title

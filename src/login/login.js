@@ -123,6 +123,8 @@ function start() {
                 name: document.getElementById("signup-name-input").value,
                 email: auth.currentUser.email
             }).then(() => {
+                // Set the name in session storage
+                sessionStorage.setItem("name", document.getElementById("signup-name-input").value);
                 window.location.href = (window["redirect"] ? window["redirect"] : "../dash/dash.html")
             }).catch((error) => {
                 console.error("Error writing document: ", error);
