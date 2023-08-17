@@ -109,6 +109,7 @@ function start() {
 }
 
 function displayWiki() {
+  document.getElementById("toProjectSettings").href = `../versions/versions.html?id=${window["mapSettings"].project}#settings`
   if (objects.includes(null)){
       // filter all the nulls and loop through them
       var nulls = objects.filter(e => e == null)

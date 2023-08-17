@@ -16,7 +16,15 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 // Run 'start' function after the auth state changes
-auth.onAuthStateChanged(start);
+auth.onAuthStateChanged(function () {
+    // Open settings menu if that's the hash
+    console.log(settingsMenu != undefined, window.location.hash == "#settings")
+    if (settingsMenu && window.location.hash == "#settings") {
+        // Open the settings menu
+        settingsMenu();
+    }
+    start();
+});
 
 function loadTheme() {
     var themeLink = document.getElementById("themeLink");
