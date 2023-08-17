@@ -16,4 +16,12 @@
 
     --col-bg: #080808;
     --col-txt: #ffffff;
+
+    /* Role titles */
+    --1: "Drone";
+    --2: "Alcove";
+    --3: "Sphere";
+    --4: "Cube";
+    --5: "Unimatrix";
+    --6: "Queen";
 }

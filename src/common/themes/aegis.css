@@ -17,4 +17,12 @@
 
     --col-bg: #080808;
     --col-txt: #ffffff;
+
+    /* Role titles */
+    --1: "Playboy";
+    --2: "Philanthropist";
+    --3: "Engineer";
+    --4: "Billionaire";
+    --5: "Genius";
+    --6: "Avenger";
 }

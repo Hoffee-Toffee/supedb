@@ -64,4 +64,12 @@
 
     --col-bg: #fafafa;
     --col-txt: #000000;
+
+    /* Role titles */
+    --1: "Cadet";
+    --2: "Ensign";
+    --3: "Lieutenant";
+    --4: "Commander";
+    --5: "Captain";
+    --6: "Admiral";
 }

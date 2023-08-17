@@ -17,4 +17,12 @@
 
     --col-bg: #080808;
     --col-txt: #ffffff;
+
+    /* Role titles */
+    --1: "Initiate";
+    --2: "Follower";
+    --3: "Vested";
+    --4: "Overseer";
+    --5: "Paragon";
+    --6: "Enigma";
 }

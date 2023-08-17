@@ -16,4 +16,12 @@
 
     --col-bg: #080808;
     --col-txt: #ffffff;
+
+    /* Role titles */
+    --1: "Minuteman";
+    --2: "Hunter";
+    --3: "Consultant";
+    --4: "Analyst";
+    --5: "Agent";
+    --6: "Judge";
 }
