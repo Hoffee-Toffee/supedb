@@ -878,7 +878,7 @@ function start() {
     // Check if the user has any associated permissions
     db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-            window["permissions"].push(doc.data())
+            window["permissions"].push(doc.data().entity)
         })
     })
 
