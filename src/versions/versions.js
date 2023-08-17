@@ -452,13 +452,16 @@ function settingsMenu() {
               name.innerHTML = `<a href="#link" title="${userData.email}">${userData.name}</a>`
           })
 
+          // Get the roles
+          var roles = Array(6).fill().map((_, i) => document.styleSheets[document.styleSheets.length - 1].cssRules[0].style.getPropertyValue(`--${i + 1}`).replace(/"/g, ""))
+
           role.innerHTML = `<select name="level" id="level">
-              <option ${data.level == "1" ? "selected" : ""} value="1" title="Read only">Minuteman</option>
-              <option ${data.level == "2" ? "selected" : ""} value="2" title="Read and comment">Hunter</option>
-              <option ${data.level == "3" ? "selected" : ""} value="3" title="Read, comment, contribute to drafts">Consultant</option>2
-              <option ${data.level == "4" ? "selected" : ""} value="4" title="Read, comment, contribute to drafts, vote on drafts">Analyst</option>
-              <option ${data.level == "5" ? "selected" : ""} value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">Agent</option>
-              <option ${data.level == "6" ? "selected" : ""} value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">Judge</option>
+              <option ${data.level == "1" ? "selected" : ""} value="1" title="Read only">${roles[0]}</option>
+              <option ${data.level == "2" ? "selected" : ""} value="2" title="Read and comment">${roles[1]}</option>
+              <option ${data.level == "3" ? "selected" : ""} value="3" title="Read, comment, contribute to drafts">${roles[2]}</option>
+              <option ${data.level == "4" ? "selected" : ""} value="4" title="Read, comment, contribute to drafts, vote on drafts">${roles[3]}</option>
+              <option ${data.level == "5" ? "selected" : ""} value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">${roles[4]}</option>
+              <option ${data.level == "6" ? "selected" : ""} value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">${roles[5]}</option>
           </select>`
           options.innerHTML = `<button class="remove">Remove</button>`
           row.setAttribute("user", data.user)
@@ -467,8 +470,14 @@ function settingsMenu() {
           row.appendChild(role)
           row.appendChild(options)
 
-          // add row before the last in the table body
+          // Add row before the last in the table body
           document.getElementById("newPerm").lastElementChild.insertBefore(row, document.getElementById("newPerm").lastElementChild.lastElementChild)
+
+          // Edit the dropdown values of the options in the last row, to contain the same roles
+          Array.from(document.getElementById("newPerm").lastElementChild.lastElementChild.children[1].children[0].children).forEach((option, i) => {
+              option.innerHTML = roles[i]
+          })
+
       })
   })
 

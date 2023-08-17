@@ -1,30 +1,30 @@
-*::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 10px;
     height: 10px;
     background-color: transparent;
-    transition: 0.5s;
+    transition: all 0.5s ease 0s;
 }
 
-*::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     background-color: var(--col-orange-hover);
 }
 
-*::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: var(--col-orange);
 }
 
-*::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
     background-color: var(--col-orange-shadow);
 }
 
-*::-webkit-scrollbar-corner {
+::-webkit-scrollbar-corner {
     background: var(--col-orange-hover);
 }
 
 body {
     margin: 1em 0em 0em 1em;
     height: calc(100vh - 3em);
-    width:  calc(100vw - 2em);
+    width: calc(100vw - 2em);
     background-color: var(--col-bg);
     font-family: arial;
     color: var(--col-txt);
@@ -37,18 +37,17 @@ body {
 
 #mapSettings {
     z-index: 10;
-    transition: 0.25s;
-    padding: 0.2em 0.1em 0.2em 0.1em;
+    transition: all 0.25s ease 0s;
+    padding: 0.2em 0.1em 1em;
     position: fixed;
     right: 1em;
     bottom: calc(100% - 1em);
     color: var(--col-txt);
     background: var(--col-txt);
     border-radius: 0em 0em 0.25em 0.25em;
-    outline: 0.15em solid var(--col-orange);
+    outline: 0.2em solid var(--col-orange);
     width: 1.5em;
     opacity: 0.25;
-    padding-bottom: 1em;
 }
 
 #mapSettings:hover {
@@ -75,7 +74,7 @@ body {
     text-align: center;
     width: 100%;
     line-height: 1.5em;
-    transition: transform 0.1s;
+    transition: transform 0.1s ease 0s;
 }
 
 #mapSettings i:hover {
@@ -84,11 +83,11 @@ body {
     color: var(--col-orange);
 }
 
-#mapSettings input[type=checkbox] {
+#mapSettings input[type="checkbox"] {
     display: none;
 }
 
-#mapSettings:hover input[type=checkbox]:not(:checked) + i::after {
+#mapSettings:hover input[type="checkbox"]:not(:checked) + i::after {
     content: "";
     position: absolute;
     width: 75%;
@@ -99,17 +98,88 @@ body {
     transform: rotate(-45deg);
 }
 
-#mapSettings:hover input[type=checkbox]:not(:checked) + i:hover::after {
+#mapSettings:hover input[type="checkbox"]:not(:checked) + i:hover::after {
     transform: scale(1.1) rotate(-45deg);
+}
+
+#popup {
+    visibility: hidden;
+    pointer-events: visible;
+    z-index: 10;
+    background-color: var(--col-bg);
+    position: fixed;
+    color: var(--col-orange);
+    text-shadow: 0 0 0.5em var(--col-orange-shadow);
+    box-shadow: 0 0 1em 0.25em var(--col-orange-hover);
+    border: solid;
+    padding: 1em;
+    inset: 0px;
+    height: min-content;
+    max-height: 25em;
+    overflow-y: scroll;
+    min-width: 10em;
+    max-width: 25em;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#popup p,
+#popup label {
+    color: var(--col-red);
+    text-shadow: 0 0 0.5em var(--col-red-shadow);
+}
+
+a:not(.project), #wikiPage .showMore {
+    color: var(--col-orange);
+    border-radius: 0.25em;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.25s ease 0s;
+    text-shadow: 0 0 0.1em var(--col-orange-shadow);
+}
+
+a:not(.project)::after, #wikiPage .showMore::after {
+    content: "";
+    display: block;
+    margin-left: 100%;
+    width: 0px;
+    height: 2px;
+    transition: all 0.25s ease 0s;
+    background-color: var(--col-orange);
+    box-shadow: 0 0 0.05em var(--col-orange-shadow);
+}
+
+a:not(.project).invalid {
+    color: var(--col-red);
+    text-shadow: 0 0 0.5em var(--col-red-shadow);
+}
+
+a:not(.project).invalid::after {
+    background-color: var(--col-red);
+    box-shadow: 0 0 0.1em var(--col-red-shadow);
+}
+
+a:not(.project):hover, #wikiPage .showMore:hover {
+    color: var(--col-red-orange);
+    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+}
+
+a:not(.project):hover::after, #wikiPage .showMore:hover::after {
+    width: 100%;
+    transition: width 0.25s ease 0s, background-color 0.25s ease 0s;
+    margin-left: 0%;
+    background-color: var(--col-red-orange);
+    box-shadow: 0 0 0.1em var(--col-red-orange-shadow);
 }
 
 #context-menu {
     z-index: 10;
     position: absolute;
-    background: #333;
+    background: rgb(51, 51, 51);
     color: var(--col-txt);
     border-radius: 0.5em;
-    padding: 0.5em 0;
+    padding: 0.5em 0px;
     margin: 0px;
     min-width: 150px;
     list-style: none;
@@ -124,7 +194,7 @@ body {
 }
 
 #context-menu li:hover {
-    background: #555;
+    background: rgb(85, 85, 85);
     cursor: pointer;
 }
 
@@ -133,7 +203,7 @@ body {
     content: attr(data-key);
     float: right;
     margin-right: 10px;
-    background-color: #222;
+    background-color: rgb(34, 34, 34);
     padding: 2px 5px;
     border-radius: 3px;
     top: -2px;
@@ -141,36 +211,10 @@ body {
 }
 
 #context-menu li[data-key]:hover::after {
-    background-color: #333;
+    background-color: rgb(51, 51, 51);
 }
 
-#popup {
-    visibility: hidden;
-    pointer-events: visible;
-    z-index: 10;
-    background-color: var(--col-bg);
-    position: fixed;
-    color: var(--col-orange);
-    text-shadow: 0 0 0.5em var(--col-orange-shadow);
-    box-shadow: 0 0 1em 0.25em var(--col-orange-hover);
-    border: solid;
-    padding: 1em;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: min-content;
-    max-height: 25em;
-    overflow-y: scroll;
-    min-width: 10em;
-    max-width: 25em;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-#popup :not(.object) input:not([type="checkbox"]),
-textarea {
+#popup input:not(.object[type="checkbox"]), textarea {
     margin-top: 0.5em;
     border: solid var(--col-red-orange) 0.1em;
     border-radius: 0.5em;
@@ -183,30 +227,27 @@ textarea {
 
 #popup input[type="checkbox"] {
     align-self: flex-start;
-    margin: 0.25em 0 1em 0;
+    margin: 0.25em 0px 1em;
 }
 
-#popup :not(.object) input[type="text"],
-#popup input[type="password"],
-#popup input[type="email"],
-#popup textarea {
+#popup input[type="text"]:not(.object), #popup input[type="password"], #popup input[type="email"], #popup textarea {
     margin-top: 0.75em;
     border: solid var(--col-red-orange-shadow) 0.1em;
     background-color: var(--col-bg);
     border-radius: 0.1em;
-    cursor: text;
     font-size: 0.75em;
     margin-bottom: 1em;
+    cursor: text !important;
 }
 
-#popup button,
-#popup select {
-    transition: 0.2s;
+#popup button, #popup select {
+    transition: all 0.2s ease 0s;
     background-color: var(--col-orange-hover);
     color: var(--col-orange);
     border-radius: 0.5em;
     border-width: 0.1em;
     border-style: solid;
+    cursor: pointer;
 }
 
 #popup select {
@@ -214,20 +255,18 @@ textarea {
 }
 
 #popup #save {
-    padding: 0.5em 1em 0.5em 1em;
+    padding: 0.5em 1em;
     border-width: 0.2em;
 }
 
-#popup button:hover,
-#popup select:hover,
-#popup #save:hover {
-    transition: 0.2s;
+#popup button:hover, #popup select:hover, #popup #save:hover {
+    transition: all 0.2s ease 0s;
     border-color: var(--col-red);
     color: var(--col-red-orange);
 }
 
 #popup table {
-    margin: 0.5em 0 1em 0;
+    margin: 0.5em 0px 1em;
     border-collapse: collapse;
     width: 100%;
     border: solid var(--col-red-orange-shadow) 0.1em;
@@ -261,24 +300,12 @@ textarea {
     border-bottom: none;
 }
 
-#popup table tr td:first-child a {
-    transition: 0.2s;
-    color: var(--col-red);
-    text-shadow: 0 0 0.2em var(--col-red-shadow);
-}
-
-#popup table tr td:first-child a:hover {
-    transition: 0.2s;
-    color: var(--col-red-orange);
-    text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
-}
-
 #notices {
     position: fixed;
     width: 100vw;
     height: 100vh;
-    top: 0;
-    left: 0;
+    top: 0px;
+    left: 0px;
     z-index: 11;
     display: flex;
     flex-direction: column;
@@ -297,7 +324,7 @@ textarea {
     text-align: center;
     top: 0.5em;
     opacity: 0;
-    transition: 0.2s;
+    transition: all 0.2s ease 0s;
     width: max-content;
     max-width: calc(100vw - 2em);
     min-width: 10em;
@@ -306,13 +333,13 @@ textarea {
     transform: translateY(calc(-100% - 0.5em));
 }
 
-.notice::after { /* Notice background */
+.notice::after {
     content: "";
     position: absolute;
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
+    top: 0px;
+    left: 0px;
     z-index: -1;
     background-color: var(--col-bg);
     opacity: 0.5;
@@ -320,12 +347,12 @@ textarea {
 }
 
 .notice.show {
-    transition: 0.2s;
+    transition: all 0.2s ease 0s;
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0px);
 }
 
 .notice.hide {
-    transition: 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out 0s;
     opacity: 0;
 }
