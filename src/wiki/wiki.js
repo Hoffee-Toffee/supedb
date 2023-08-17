@@ -1,6 +1,7 @@
 window["ready"] = false
 window["permissions"] = []
 window["editing"] = false
+window["sources"] = {}
 
 var objects = []
 
@@ -81,20 +82,30 @@ function start() {
 
         objects = JSON.parse(map.data().map)
 
-        if (window["ready"]) {
-            displayWiki()
-        }
-        else {
-            window["ready"] = true
-        }
-    }})
+        // Fill sources if empty
+        if (JSON.stringify(window["sources"]) == "{}") {
+          // Get this document's parent
+          db.collection("projects").doc(window["mapSettings"].project).get().then((project) => {
+            // Get the sources, make the keys uppercase, and set it to the sources variable
+            // e.g. will be {"wp": "https://en.wikipedia.org/wiki/"} -> {"WP": "https://en.wikipedia.org/wiki/"}
+            window["sources"] = Object.fromEntries(Object.entries(JSON.parse(project.data().sources)).map(([k, v]) => [k.toUpperCase(), v]))
 
-    if (window["ready"]) {
-        displayWiki()
-    }
-    else {
-        window["ready"] = true
-    }
+            // Get all timelines in the project, minus the current one
+            db.collection("timelines").where("project", "==", window["mapSettings"].project).get().then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                if (doc.id != window["id"]) {
+                  window["sources"][doc.data().title.toUpperCase()] = {
+                    id: doc.id,
+                    objs: JSON.parse(doc.data().map)
+                  }
+                }
+              })
+              displayWiki()
+            })
+          })
+        }
+        else displayWiki()
+    }})
 }
 
 function displayWiki() {
@@ -1041,38 +1052,38 @@ function displayWiki() {
       image.src = ""
 
       storage.ref().child(ib.id).getDownloadURL().then((url) => {
-        image.src = url
-        // Show the image in full if clicked
-        image.addEventListener("click", () => {
-          // If any images are showing, then hide them
-          var el = document.getElementById("imageFull")
-          if (el) el.remove();
-          
-          // Create the image, container, and buttons
-          var imageContainer = document.createElement("div")
-          var imageBackdrop = document.createElement("div")
-          var imageFull = document.createElement("img")
-          var imageClose = document.createElement("span")
+          image.src = url
+          // Show the image in full if clicked
+          image.addEventListener("click", () => {
+            // If any images are showing, then hide them
+            var el = document.getElementById("imageFull")
+            if (el) el.remove();
+            
+            // Create the image, container, and buttons
+            var imageContainer = document.createElement("div")
+            var imageBackdrop = document.createElement("div")
+            var imageFull = document.createElement("img")
+            var imageClose = document.createElement("span")
 
-          // Coming soon
-          var imagePrev = document.createElement("span")
-          var imageNext = document.createElement("span")
+            // Coming soon
+            var imagePrev = document.createElement("span")
+            var imageNext = document.createElement("span")
 
-          imageContainer.id = "imageFull"
-          imageFull.src = url
+            imageContainer.id = "imageFull"
+            imageFull.src = url
 
-          // If the cross is clicked, then remove the image
-          imageClose.addEventListener("click", () => { imageContainer.remove() })
+            // If the cross is clicked, then remove the image
+            imageClose.addEventListener("click", () => { imageContainer.remove() })
 
-          // If the backdrop is clicked, then open the image in a new tab
-          imageBackdrop.addEventListener("click", () => { window.open(url) })
+            // If the backdrop is clicked, then open the image in a new tab
+            imageBackdrop.addEventListener("click", () => { window.open(url) })
 
-          // Add everything to the page
-          imageBackdrop.appendChild(imageFull)
-          imageContainer.appendChild(imageBackdrop)
-          imageContainer.appendChild(imageClose)
-          document.getElementById("wikiPage").appendChild(imageContainer)
-        })
+            // Add everything to the page
+            imageBackdrop.appendChild(imageFull)
+            imageContainer.appendChild(imageBackdrop)
+            imageContainer.appendChild(imageClose)
+            document.getElementById("wikiPage").appendChild(imageContainer)
+          })
       }).catch(() => {})
 
       caption.appendChild(image)
@@ -2214,14 +2225,32 @@ function textSet(element, text) {
 
       if (colons.length > 1) {
         // The last colon is the new destination, unless the second to last colon is "Category"
-        if (colons[colons.length - 2] == "Category") isCategory = true
+        if (colons[colons.length - 2] == "Category") {
+          isCategory = true
+          // Remove it from colons
+          colons.pop()
+        }
 
-        // If there are three entries, check the first for the branch/site destination
-        if (colons.length == 3) {
-          // Coming soon
+        // If there are still two entries, check the first for the branch/site destination
+        if (colons.length == 2) {
+          // Extract the branch/site destination
+          var branch = colons[0].toUpperCase()
+          
+          switch (typeof window["sources"][branch]) {
+            case "string": // Is a link to another site
+              isLocal = false
+              branchId = window["sources"][branch]
+              break
+            case "object": // Is a branch
+              branchObjs = window["sources"][branch].objs
+              branchId = window["sources"][branch].id
+              break
+            default: // Is invalid
+              // Ignore for now
+          }
         }
       }
-
+        
       if (isLocal) {
         // Find the destination object (if it exists)
         var destObj = branchObjs.find(e => e.title && (e.title.toLowerCase() == destination.toLowerCase() || e.redirects.find(r => r.toLowerCase() == destination.toLowerCase())))
@@ -2240,8 +2269,6 @@ function textSet(element, text) {
         // If it's a category, check if it has any members, setting 'isCategory' to the resulting boolean
         var isValidCat = isCategory && branchObjs.some(e => e.categories && e.categories.includes(destination))
 
-        console.log(`isCategory: ${isCategory}, isValidCat: ${isValidCat}, destination: ${destination}`)
-
         if (destObj && destObj.description) {
           linkElement.setAttribute("link-desc", destObj.description)
         }
@@ -2250,6 +2277,14 @@ function textSet(element, text) {
           linkElement.setAttribute("link-desc", `Non-existent ${isCategory ? "category" : "page"}`)
         }
         else linkElement.setAttribute("link-desc", "No description")
+        element.appendChild(linkElement)
+      }
+      else {
+        // Make the link
+        var linkElement = document.createElement("a")
+        linkElement.href = branchId + destination
+        linkElement.innerText = link.split("|")[1] || destination
+        linkElement.setAttribute("link-desc", "External link")
         element.appendChild(linkElement)
       }
 
