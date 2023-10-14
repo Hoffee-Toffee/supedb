@@ -8,17 +8,17 @@ Functions, Tests
 
 >Changes theme to the theme stored in the Cookies
 
-#### Parameters: `none`
+**Parameters:** `none`
 
-#### Side Effects: `Get's the value of the 'theme' cookie, linking to a stylesheet of the same name`
+**Side Effects:** `Get's the value of the 'theme' cookie, linking to a stylesheet of the same name`
 
-#### Return Value: `none`
+**Return Value:** `none`
 
 ### genContextMenu(`e, attr, hoverOnly = false`)
 
 >Creates context menu with given data
 
-#### Parameters:
+**Parameters:**
 * `e`: mouseEvent used to place the menu at the point of click
 * `attr`: An array of objects, representing the menu's options, e.g.
   ```js
@@ -34,9 +34,9 @@ Functions, Tests
 * `hoverOnly`: bool with default value of `false`\
   if set to `true` then the menu will close when the mouse is no longer hovering over the menu
 
-#### Side Effects: `Creates the menu and click events`
+**Side Effects:** `Creates the menu and click events`
 
-#### Return Value: `none`
+**Return Value:** `none`
 
 ### toogleContextMenu(`e`)
 
