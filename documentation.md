@@ -8,19 +8,21 @@ Functions, Tests
 
 >Changes theme to the theme stored in the Cookies
 
-**Parameters:** `none`
+**Parameters:** none
 
-**Side Effects:** `Get's the value of the 'theme' cookie, linking to a stylesheet of the same name`
+**Side Effects:** Get's the value of the `theme` cookie, linking to a stylesheet of the same name
 
-**Return Value:** `none`
+**Return Value:** none
 
-### genContextMenu(`e, attr, hoverOnly = false`)
+### genContextMenu(*e, attr, hoverOnly = false*)
 
 >Creates context menu with given data
 
 **Parameters:**
+
 * `e`: mouseEvent used to place the menu at the point of click
 * `attr`: An array of objects, representing the menu's options, e.g.
+
   ```js
     [
       {
@@ -31,28 +33,53 @@ Functions, Tests
       ...
     ]
   ```
+
 * `hoverOnly`: bool with default value of `false`\
   if set to `true` then the menu will close when the mouse is no longer hovering over the menu
 
-**Side Effects:** `Creates the menu and click events`
+**Side Effects:** Creates the menu and click events
 
-**Return Value:** `none`
+**Return Value:** none
 
-### toogleContextMenu(`e`)
+### toogleContextMenu(*e*)
 
 >Decides whether to close the current menu, or open a new one on click
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ### redir()
 
 >Returns a redirect url
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ### notify()
 
 >Creates a notification at the top of the screen
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ### genID()
 
 >Returns a randomly generated id using the current date and time
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ## help.js
 
@@ -60,9 +87,21 @@ Functions, Tests
 
 >Toggles the help/tutorial menu for this page
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ### scrollCheck()
 
 >Handles scrolling in the help menus
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ## dash.js
 
@@ -70,92 +109,357 @@ Functions, Tests
 
 >Checks auth, reloads on data change
 
-### contextMenu(`e`)
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### contextMenu(*e*)
 
 >Returns the context menu data for this page
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ### settingsMenu()
 
 >Toggles the theme change settings menu
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ## login.js
 
 ### start()
 
+> Shows login screen if cookies indicate an account has been made before, otherwise will show the sign up page
+
+**Parameters:** none
+
+**Side Effects:** `Shows the login/signup page`
+
+**Return Value:** none
+
 ### tryLogin()
+
+> Attempts to sign in using the user's credentials from the form
+
+**Parameters:** none
+
+**Side Effects:** `Logs in if possible, or will show an error`
+
+**Return Value:** none
 
 ### switchToLogin()
 
+> Switches the page from signup to login
+
+**Parameters:** none
+
+**Side Effects:** `Hides all fields for signup, and shows all fields for login`
+
+**Return Value:** none
+
 ### switchToSignup()
+
+> Switches the page from login to signup
+
+**Parameters:** none
+
+**Side Effects:** `Hides all fields for login, and shows all fields for signup`
+
+**Return Value:** none
 
 ### forgotPassword()
 
-### errorChanged()
+> Currently a placeholder function
+> In the future will send an email allowing a password reset
+
+**Parameters:** none
+
+**Side Effects:** `none (yet)`
+
+**Return Value:** none
+
+### errorChanged(*element*)
+
+> Removes the error message once a button is pressed or user resubmits the form
+
+**Parameters:**
+
+* `element`: The element where the error is displayed
+
+**Side Effects:** `Clears the error message`
+
+**Return Value:** none
 
 ## map.js
 
 ### start()
 
-### contextMenu(`e`)
+> Checks users permissions, gets data, puts it on the screen
+
+**Parameters:** none
+
+**Side Effects:** `Checks if user can access the data, and shows it if so`
+
+**Return Value:** none
+
+### contextMenu(*e*)
+
+> Returns the appropriate contextMenu for the element clicked
+
+**Parameters:**
+
+* `e`: mouseEvent, used to know what was right clicked and where
+
+**Side Effects:** `generates different options, such as 'New Sub' for head nodes and 'Flip Direction' for links`
+
+**Return Value:** `An array of objects, representing each button in the context menu`
 
 ### helpMenu()
 
-### settingsMenu(`visClass`)
+> Toggles the display of the help menu for this page
 
-### display(`all = true, objs = objects, embedEl = null`)
+**Parameters:** none
 
-### newObj(`type, obj = null, e = null, headId = null, document = null`)
+**Side Effects:** `Creates/deletes the help page`
 
-### updateObj(`el, attr, toSave = true`)
+**Return Value:** none
 
-### updateColor(`color`)
+### settingsMenu(*visClass*)
 
-### updateLinks(`element, get = false`)
+> Shows the settings menu of the given class
 
-### save(`manual = false, reason`)
+**Parameters:**
 
-### moveObj(`obj`)
+* `visClass`: A string; The class of fields to make visible, or will close the menu if this class is already showing
 
-### linkPoints(`button, *obj*, points`)
+**Side Effects:** `Opens the menu page specified by the visClass, or closes it`
 
-### deleteObj(`toDel`)
+**Return Value:** none
 
-### changeHead(`id`)
+### display(*all = true, objs = objects, embedEl = null*)
 
-### checkStatus(`event`)
+> Shows entires of the wiki as nodes
 
-### modeToggled(`initialDelay = true`)
+**Parameters:** 
+
+* `all`: Bool set to 
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### newObj(*type, obj = null, e = null, headId = null, document = null*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### updateObj(*el, attr, toSave = true*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### updateColor(*color*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### updateLinks(*element, get = false*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### save(*manual = false, reason*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### moveObj(*obj*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### linkPoints(*button, *obj*, points*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### deleteObj(*toDel*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### changeHead(*id*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### checkStatus(*event*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### modeToggled(*initialDelay = true*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ## versions.js
 
 ### start()
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ### settingsMenu()
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ### genLine()
 
-### check(`event, e = true`)
+**Parameters:** none
 
-### trigger(`id`)
+**Side Effects:** none
 
-### cssVar(`name`)
+**Return Value:** none
+
+### check(*event, e = true*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### trigger(*id*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### cssVar(*name*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ## wiki.js
 
 ### start()
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ### displayWiki()
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
 
 ### helpMenu()
 
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
 ### settingsMenu()
 
-### saveObjects(`callback = null`)
+**Parameters:** none
 
-### toggleEdit(`alert = true`)
+**Side Effects:** none
 
-### textSet(`element, text`)
+**Return Value:** none
 
-### traverseObj(`obj, path, set = null`)
+### saveObjects(*callback = null*)
 
-### genContent(`parent, info, path, depth = 2`)
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### toggleEdit(*alert = true*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### textSet(*element, text*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### traverseObj(*obj, path, set = null*)
+
+**Parameters:** none
+
+**Side Effects:** none
+
+**Return Value:** none
+
+### genContent(*parent, info, path, depth = 2*)
