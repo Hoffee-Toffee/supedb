@@ -2,6 +2,67 @@
 
 Functions, Tests
 
+## Table of Contents
+
+- [Documentation](#documentation)
+  - [Table of Contents](#table-of-contents)
+  - [common.js](#commonjs)
+    - [loadTheme()](#loadtheme)
+    - [genContextMenu(*e, attr, hoverOnly = false*)](#gencontextmenue-attr-hoveronly--false)
+    - [toogleContextMenu(*e*)](#tooglecontextmenue)
+    - [redir()](#redir)
+    - [notify()](#notify)
+    - [genID()](#genid)
+  - [help.js](#helpjs)
+    - [help()](#help)
+    - [scrollCheck()](#scrollcheck)
+  - [dash.js](#dashjs)
+    - [start()](#start)
+    - [contextMenu(*e*)](#contextmenue)
+    - [settingsMenu()](#settingsmenu)
+  - [login.js](#loginjs)
+    - [start()](#start-1)
+    - [tryLogin()](#trylogin)
+    - [switchToLogin()](#switchtologin)
+    - [switchToSignup()](#switchtosignup)
+    - [forgotPassword()](#forgotpassword)
+    - [errorChanged(*element*)](#errorchangedelement)
+  - [map.js](#mapjs)
+    - [start()](#start-2)
+    - [contextMenu(*e*)](#contextmenue-1)
+    - [helpMenu()](#helpmenu)
+    - [settingsMenu(*visClass*)](#settingsmenuvisclass)
+    - [display(*all = true, objs = objects, embedEl = null*)](#displayall--true-objs--objects-embedel--null)
+    - [newObj(*type, obj = null, e = null, headId = null, document = null*)](#newobjtype-obj--null-e--null-headid--null-document--null)
+    - [updateObj(*el, attr, toSave = true*)](#updateobjel-attr-tosave--true)
+    - [updateColor(*color*)](#updatecolorcolor)
+    - [updateLinks(*element, get = false*)](#updatelinkselement-get--false)
+    - [save(*manual = false, reason*)](#savemanual--false-reason)
+    - [moveObj(*obj*)](#moveobjobj)
+    - [linkPoints(*button, *obj*, points*)](#linkpointsbutton-obj-points)
+    - [deleteObj(*toDel*)](#deleteobjtodel)
+    - [changeHead(*id*)](#changeheadid)
+    - [checkStatus(*event*)](#checkstatusevent)
+    - [modeToggled(*initialDelay = true*)](#modetoggledinitialdelay--true)
+  - [versions.js](#versionsjs)
+    - [start()](#start-3)
+    - [settingsMenu()](#settingsmenu-1)
+    - [genLine()](#genline)
+    - [check(*event, e = true*)](#checkevent-e--true)
+    - [trigger(*id*)](#triggerid)
+    - [cssVar(*name*)](#cssvarname)
+  - [wiki.js](#wikijs)
+    - [start()](#start-4)
+    - [displayWiki()](#displaywiki)
+    - [helpMenu()](#helpmenu-1)
+    - [settingsMenu()](#settingsmenu-2)
+    - [saveObjects(*callback = null*)](#saveobjectscallback--null)
+    - [toggleEdit(*alert = true*)](#toggleeditalert--true)
+    - [textSet(*element, text*)](#textsetelement-text)
+    - [traverseObj(*obj, path, set = null*)](#traverseobjobj-path-set--null)
+    - [genContent(*parent, info, path, depth = 2*)](#gencontentparent-info-path-depth--2)
+
+
 ## common.js
 
 ### loadTheme()
@@ -16,6 +77,9 @@ Functions, Tests
   * Link to a stylesheet of the same name
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### genContextMenu(*e, attr, hoverOnly = false*)
@@ -48,6 +112,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### toogleContextMenu(*e*)
 
 >Decides whether to close the current menu, or open a new one on click
@@ -59,6 +126,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### redir()
@@ -74,6 +144,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### notify()
 
 >Creates a notification at the top of the screen
@@ -87,6 +160,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### genID()
 
 >Returns a randomly generated id using the current date and time
@@ -98,6 +174,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ## help.js
@@ -115,6 +194,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### scrollCheck()
 
 >Handles scrolling in the help menus
@@ -126,6 +208,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ## dash.js
@@ -143,6 +228,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### contextMenu(*e*)
 
 >Returns the context menu data for this page
@@ -156,6 +244,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### settingsMenu()
 
 >Toggles the theme change settings menu
@@ -167,6 +258,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ## login.js
@@ -184,6 +278,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### tryLogin()
 
 > Attempts to sign in using the user's credentials from the form
@@ -191,11 +288,14 @@ Functions, Tests
 * **Parameters:**
   * None
 
-* **Side Effects:** 
+* **Side Effects:**
   * Logs in if possible
   * Show an error if failed
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### switchToLogin()
@@ -205,11 +305,14 @@ Functions, Tests
 * **Parameters:**
   * None
 
-* **Side Effects:** 
+* **Side Effects:**
   * Hides all fields for signup
   * Shows all fields for login
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### switchToSignup()
@@ -226,6 +329,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### forgotPassword()
 
 > Currently a placeholder function
@@ -240,6 +346,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### errorChanged(*element*)
 
 > Removes the error message once a button is pressed or user resubmits the form
@@ -248,10 +357,13 @@ Functions, Tests
 
   * `element`: The element where the error is displayed
 
-* **Side Effects:** 
+* **Side Effects:**
   * Clears the error message
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ## map.js
@@ -263,10 +375,13 @@ Functions, Tests
 * **Parameters:**
   * None
 
-* **Side Effects:** 
+* **Side Effects:**
   * Checks if user can access the data, and shows it if so
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### contextMenu(*e*)
@@ -277,11 +392,14 @@ Functions, Tests
 
   * `e`: mouseEvent, used to know what was right clicked and where
 
-* **Side Effects:** 
+* **Side Effects:**
   * generates different options, such as 'New Sub' for head nodes and 'Flip Direction' for links
 
-* **Return Value:** 
+* **Return Value:**
   * An array of objects, representing each button in the context menu
+  
+* **Tests**
+  * None
 
 ### helpMenu()
 
@@ -290,10 +408,13 @@ Functions, Tests
 * **Parameters:**
   * None
 
-* **Side Effects:** 
+* **Side Effects:**
   * Creates/deletes the help page
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### settingsMenu(*visClass*)
@@ -310,6 +431,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### display(*all = true, objs = objects, embedEl = null*)
 
 > Shows entires of the wiki as nodes
@@ -323,6 +447,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### newObj(*type, obj = null, e = null, headId = null, document = null*)
 
 * **Parameters:**
@@ -332,6 +459,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### updateObj(*el, attr, toSave = true*)
@@ -345,6 +475,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### updateColor(*color*)
 
 * **Parameters:**
@@ -354,6 +487,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### updateLinks(*element, get = false*)
@@ -367,6 +503,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### save(*manual = false, reason*)
 
 * **Parameters:**
@@ -376,6 +515,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### moveObj(*obj*)
@@ -389,6 +531,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### linkPoints(*button, *obj*, points*)
 
 * **Parameters:**
@@ -398,6 +543,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### deleteObj(*toDel*)
@@ -411,6 +559,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### changeHead(*id*)
 
 * **Parameters:**
@@ -420,6 +571,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### checkStatus(*event*)
@@ -433,6 +587,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### modeToggled(*initialDelay = true*)
 
 * **Parameters:**
@@ -442,6 +599,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ## versions.js
@@ -457,6 +617,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### settingsMenu()
 
 * **Parameters:**
@@ -466,6 +629,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### genLine()
@@ -479,6 +645,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### check(*event, e = true*)
 
 * **Parameters:**
@@ -488,6 +657,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### trigger(*id*)
@@ -501,6 +673,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### cssVar(*name*)
 
 * **Parameters:**
@@ -510,6 +685,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ## wiki.js
@@ -525,6 +703,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### displayWiki()
 
 * **Parameters:**
@@ -534,6 +715,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### helpMenu()
@@ -547,6 +731,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### settingsMenu()
 
 * **Parameters:**
@@ -556,6 +743,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### saveObjects(*callback = null*)
@@ -569,6 +759,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### toggleEdit(*alert = true*)
 
 * **Parameters:**
@@ -578,6 +771,9 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None
 
 ### textSet(*element, text*)
@@ -591,6 +787,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### traverseObj(*obj, path, set = null*)
 
 * **Parameters:**
@@ -602,6 +801,9 @@ Functions, Tests
 * **Return Value:**
   * None
 
+* **Tests**
+  * None
+
 ### genContent(*parent, info, path, depth = 2*)
 
 * **Parameters:**
@@ -611,4 +813,7 @@ Functions, Tests
   * None
 
 * **Return Value:**
+  * None
+
+* **Tests**
   * None

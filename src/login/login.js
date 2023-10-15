@@ -1,10 +1,10 @@
 function tryLogin() {
   // Get the email and password from the form
   var email = document.getElementById("login-email-input").value;
-  var pw = document.getElementById("login-password-input").value;
+  var password = document.getElementById("login-password-input").value;
 
   // Sign in with email and password
-  auth.signInWithEmailAndPassword(email, pw).then((userCredential) => {
+  auth.signInWithEmailAndPassword(email, password).then(async (userCredential) => {
     // Create a cookie that the user has an account (if it doesn't exist)
     if (!document.cookie.includes('account')) {
       var d = new Date();
@@ -12,6 +12,8 @@ function tryLogin() {
       var expires = "expires=" + d.toUTCString();
       document.cookie = "account=true;" + expires + ";path=/";
     }
+
+    window.sessionStorage.setItem("access", await passToKey(password))
 
     // Redirect to dashboard or window["redirect"] if it exists
     console.log("Try login")
@@ -28,12 +30,14 @@ function trySignup() {
   var email = document.getElementById("signup-email-input").value;
   var password = document.getElementById("signup-password-input").value;
 
-  auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
+  auth.createUserWithEmailAndPassword(email, password).then(async (userCredential) => {
     // Create a cookie that the user has an account
     var d = new Date();
     d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toUTCString();
     document.cookie = "account=true;" + expires + ";path=/";
+
+    window.sessionStorage.setItem("access", await passToKey(password))
 
   }).catch((error) => {
     // Display error message
@@ -108,6 +112,8 @@ function start() {
     auth.signOut().then(() => {
       // Redirect to login page
       console.log("Logged out")
+      window.sessionStorage.removeItem("access")
+
       window.location.href = "../login/login.html";
     })
   }

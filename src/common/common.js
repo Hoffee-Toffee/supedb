@@ -15,6 +15,189 @@ firebase.initializeApp(firebaseConfig)
 const db = firebase.firestore()
 const auth = firebase.auth()
 
+window.encryption = {
+  generateKey: async () => {
+    return window.crypto.subtle.generateKey(
+      {
+        name: 'AES-GCM',
+        length: 256,
+      },
+      true,
+      ['encrypt', 'decrypt']
+    )
+  },
+  toKey: async (base64Key) => {
+    const rawKey = window.encryption.toBuffer(base64Key)
+    const key = await crypto.subtle.importKey(
+      'jwk',
+      rawKey,
+      { name: 'AES-CBC', length: 256 },
+      false,
+      ['decrypt']
+    )
+    return key
+  },
+  toBuffer: async (base64) => {
+    const binaryString = atob(base64)
+    const len = binaryString.length
+    const bytes = new Uint8Array(len)
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i)
+    }
+    return bytes.buffer
+  },
+
+  encode: (data) => {
+    const encoder = new TextEncoder()
+    return encoder.encode(data)
+  },
+
+  generateIv: () => {
+    return window.crypto.getRandomValues(new Uint8Array(12))
+  },
+
+  importKey: async (key) => {
+    return await window.crypto.subtle.importKey(
+      'jwk', //can be 'jwk' or 'raw'
+      {
+        //this is an example jwk key, 'raw' would be an ArrayBuffer
+        kty: 'oct',
+        k: key,
+        alg: 'A256GCM',
+        ext: true,
+      },
+      {
+        //this is the algorithm options
+        name: 'AES-GCM',
+      },
+      false, //whether the key is extractable (i.e. can be used in exportKey)
+      ['encrypt', 'decrypt'] //can 'encrypt', 'decrypt', 'wrapKey', or 'unwrapKey'
+    )
+  },
+  exportKey: async (key) => {
+    return await window.crypto.subtle.exportKey(
+      'jwk', //can be 'jwk' or 'raw'
+      key //extractable must be true
+    )
+  },
+
+  encrypt: async (data, key) => {
+    const encoded = window.encryption.encode(data)
+    const iv = window.encryption.generateIv()
+    const cipher = await window.crypto.subtle.encrypt(
+      {
+        name: 'AES-GCM',
+        iv: iv,
+      },
+      key,
+      encoded
+    )
+    return {
+      cipher,
+      iv,
+    }
+  },
+
+  pack: (buffer) => {
+    return window.btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)))
+  },
+
+  unpack: (packed) => {
+    const string = window.atob(packed)
+    const buffer = new ArrayBuffer(string.length)
+    const bufferView = new Uint8Array(buffer)
+    for (let i = 0; i < string.length; i++) {
+      bufferView[i] = string.charCodeAt(i)
+    }
+    return buffer
+  },
+
+  decode: (bytestream) => {
+    const decoder = new TextDecoder()
+    return decoder.decode(bytestream)
+  },
+
+  decrypt: async (cipher, key, iv) => {
+    const encoded = await window.crypto.subtle.decrypt(
+      {
+        name: 'AES-GCM',
+        iv: iv,
+      },
+      key,
+      cipher
+    )
+    return window.encryption.decode(encoded)
+  },
+
+  getKeyMaterial: async (password) => {
+    const enc = new TextEncoder()
+    return window.crypto.subtle.importKey(
+      'raw',
+      enc.encode(password),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveBits', 'deriveKey']
+    )
+  },
+
+  deriveKey: async (password) => {
+    const buffer = await window.encryption.toBuffer(password)
+    const key = await crypto.subtle.importKey(
+      'raw',
+      buffer,
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+    )
+    const privateKey = crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        hash: { name: 'SHA-256' },
+        iterations: 1000,
+        salt: await window.encryption.toBuffer('Supe Salt'),
+      },
+      key,
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt', 'decrypt']
+    )
+
+    return privateKey
+  }
+}
+
+const passToKey = async (password) => {
+  let key = await window.encryption.exportKey(
+    await window.encryption.deriveKey(password)
+  )
+  return key.k
+}
+const newKey = async () => {
+  return await window.encryption.exportKey(
+    await window.encryption.generateKey()
+  )
+}
+const lock = async (key, data) => {
+  const { cipher, iv } = await window.encryption.encrypt(data, await window.encryption.importKey(key))
+
+  // pack and transmit
+  package = JSON.stringify({
+    cipher: window.encryption.pack(cipher),
+    iv: window.encryption.pack(iv),
+  })
+  return package
+}
+
+const unlock = async (key, data) => {
+  data = JSON.parse(data)
+  // unpack and decrypt message
+  return await window.encryption.decrypt(
+    window.encryption.unpack(data.cipher),
+    await window.encryption.importKey(key),
+    window.encryption.unpack(data.iv)
+  )
+}
+
 // Run 'start' function after the auth state changes
 auth.onAuthStateChanged(function () {
   try {

@@ -1,72 +1,85 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Login or Sign Up</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Login or Sign Up</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Add firebase JS files here -->
-        <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-firestore.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-auth.js"></script>
+    <!-- Add firebase JS files here -->
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-auth.js"></script>
 
-        <!-- Add unique CSS and JS files here -->
-        <link rel="stylesheet" href="login.css">
-        <script src="login.js"></script>
+    <!-- Add unique CSS and JS files here -->
+    <link rel="stylesheet" href="login.css" />
+    <script src="login.js"></script>
 
-        <!-- Add common CSS and JS files here -->
-        <link rel="stylesheet" href="../common/common.css">
-        <link rel="stylesheet" href="../common/help.css">
-        <script src="../common/common.js"></script>
-        <script src="../common/help.js"></script>
+    <!-- Add common CSS and JS files here -->
+    <link rel="stylesheet" href="../common/common.css" />
+    <link rel="stylesheet" href="../common/help.css" />
+    <script src="../common/common.js"></script>
+    <script src="../common/help.js"></script>
 
-        <!-- Font Awesome -->
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <div id="helpScreen"></div>
-        <div id="login">
-            <div id="login-title">Login</div>
-            <div id="login-form">
-                <div id="login-email">
-                    <div class="login-label">Email</div>
-                    <input type="email" id="login-email-input" class="login-input">
-                </div>
-                <div id="login-password">
-                    <div class="login-label">Password</div>
-                    <input type="password" id="login-password-input" class="login-input">
-                </div>
-                <div id="login-button" onclick="try_login()">Login</div>
-                <div id="login-error"></div>
-                <div id="login-bottom">
-                    <p>Don't have an account? <a onclick="switch_to_signup()">Sign up</a></p>
-                </div>
-            </div>
+    <!-- Font Awesome -->
+    <link
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="helpScreen"></div>
+    <div id="login">
+      <div id="login-title">Login</div>
+      <div id="login-form">
+        <div id="login-email">
+          <div class="login-label">Email</div>
+          <input type="email" id="login-email-input" class="login-input" />
         </div>
-
-        <div id="signup">
-            <div id="signup-title">Sign Up</div>
-            <div id="signup-form">
-                <div id="signup-name">
-                    <div class="signup-label">Name</div>
-                    <input type="text" id="signup-name-input" class="signup-input">
-                </div>
-                <div id="signup-email">
-                    <div class="signup-label">Email</div>
-                    <input type="email" id="signup-email-input" class="signup-input">
-                </div>
-                <div id="signup-password">
-                    <div class="signup-label">Password</div>
-                    <input type="password" id="signup-password-input" class="signup-input">
-                </div>
-                <div id="signup-button" onclick="try_signup()">Sign Up</div>
-                <div id="signup-error"></div>
-                <div id="signup-bottom">
-                    <p>Already have an account? <a onclick="switch_to_login()">Login</a></p>
-                </div>
-            </div>
+        <div id="login-password">
+          <div class="login-label">Password</div>
+          <input
+            type="password"
+            id="login-password-input"
+            class="login-input"
+          />
         </div>
-    </body>
+        <div id="login-button" onclick="tryLogin()">Login</div>
+        <div id="login-error"></div>
+        <div id="login-bottom">
+          <p>
+            Don't have an account? <a onclick="switchToSignup()">Sign up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="signup">
+      <div id="signup-title">Sign Up</div>
+      <div id="signup-form">
+        <div id="signup-name">
+          <div class="signup-label">Name</div>
+          <input type="text" id="signup-name-input" class="signup-input" />
+        </div>
+        <div id="signup-email">
+          <div class="signup-label">Email</div>
+          <input type="email" id="signup-email-input" class="signup-input" />
+        </div>
+        <div id="signup-password">
+          <div class="signup-label">Password</div>
+          <input
+            type="password"
+            id="signup-password-input"
+            class="signup-input"
+          />
+        </div>
+        <div id="signup-button" onclick="trySignup()">Sign Up</div>
+        <div id="signup-error"></div>
+        <div id="signup-bottom">
+          <p>Already have an account? <a onclick="switchToLogin()">Login</a></p>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
