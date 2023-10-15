@@ -32,6 +32,8 @@ async function start() {
     location.href = '../dash/dash.html'
   }
 
+
+
   // Get or set project info
   if (isNew) {
     // Create project
@@ -46,7 +48,6 @@ async function start() {
 
     // Generate a key for encrypting this info
     let key = await newKey()
-    key = key.k
 
     let data = JSON.stringify({
       title: 'Main',
@@ -101,8 +102,32 @@ async function start() {
       }
 
       let key = querySnapshot.docs[0].data().access
+
+      // Check if pending...
+      let perms = window["permissions"].find(e => window["projectSettings"].id == e.entity)
+      while (perms.pending) {
+        let code = prompt('Enter your 6 letter code here:');
+
+        try {
+          let access = await unlock(await passToKey(code), perms.access)
+          access = await lock(sessionStorage.getItem("access"), access)
+
+          perms = {
+            ...perms,
+            access: access,
+            pending: false
+          }
+
+          key = access
+
+          db.collection("permissions").doc(querySnapshot.docs[0].id).update(perms)
+        }
+        catch (err) {
+          console.error(err)
+        }
+      }
+
       key = await unlock(sessionStorage.getItem("access"), key)
-      console.log(key)
 
       // Get all the timelines under this project ID
       db.collection('timelines')
@@ -690,4 +715,51 @@ function cssVar(name) {
 
 window.onload = function () {
   loadTheme()
+}
+
+function sendInvite() {
+  let email = document.getElementById("email").value
+  let level = parseInt(document.getElementById("email").parentElement.parentElement.children[1].children[0].value)
+
+  // Check if a user exists with the given email
+  db.collection('users')
+    .where('email', '==', email)
+    .get()
+    .then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        notify("No account exists under this email address.")
+        return
+      }
+
+      // Check that they are not already a member
+      db.collection('permissions')
+        .where('user', '==', email).where('entity', '==', window["projectSettings"].id)
+        .get()
+        .then(async (querySnapshot) => {
+          if (!querySnapshot.empty) {
+            notify("Account already invited.")
+            return
+          }
+          notify("Sending invite...")
+
+          // Generate a 6 letter code
+          let code = Math.floor(Math.random() * 2114588555 + 62193781).toString(36).toUpperCase()
+          alert(`Share this access code to the invitee: ${code}`)
+
+          let key = window["permissions"].find(e => window["projectSettings"].id == e.entity).access
+
+          let access = await unlock(sessionStorage.getItem("access"), key)
+          access = await lock(await passToKey(code), access)
+
+          db.collection('permissions').add({
+            access: access,
+            entity: window["projectSettings"].id,
+            type: "P",
+            level: level,
+            user: email,
+            pending: true
+          })
+          notify("Sent!")
+        })
+    })
 }

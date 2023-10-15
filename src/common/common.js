@@ -99,7 +99,9 @@ window.encryption = {
   },
 
   pack: (buffer) => {
-    return window.btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)))
+    return btoa(new Uint8Array(buffer).reduce(function (data, byte) {
+      return data + String.fromCharCode(byte);
+    }, ''));
   },
 
   unpack: (packed) => {
@@ -173,9 +175,10 @@ const passToKey = async (password) => {
   return key.k
 }
 const newKey = async () => {
-  return await window.encryption.exportKey(
+  let key = await window.encryption.exportKey(
     await window.encryption.generateKey()
   )
+  return key.k
 }
 const lock = async (key, data) => {
   const { cipher, iv } = await window.encryption.encrypt(data, await window.encryption.importKey(key))

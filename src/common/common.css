@@ -1,358 +1,373 @@
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-    background-color: transparent;
-    transition: all 0.5s ease 0s;
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  transition: all 0.5s ease 0s;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: var(--col-orange-hover);
+  background-color: var(--col-orange-hover);
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--col-orange);
+  background-color: var(--col-orange);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--col-orange-shadow);
+  background-color: var(--col-orange-shadow);
 }
 
 ::-webkit-scrollbar-corner {
-    background: var(--col-orange-hover);
+  background: var(--col-orange-hover);
 }
 
 body {
-    margin: 1em 0em 0em 1em;
-    height: calc(100vh - 3em);
-    width: calc(100vw - 2em);
-    background-color: var(--col-bg);
-    font-family: arial;
-    color: var(--col-txt);
+  margin: 1em 0em 0em 1em;
+  height: calc(100vh - 3em);
+  width: calc(100vw - 2em);
+  background-color: var(--col-bg);
+  font-family: arial;
+  color: var(--col-txt);
 }
 
 .help body::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
+  width: 0px;
+  height: 0px;
 }
 
 #mapSettings {
-    z-index: 10;
-    transition: all 0.25s ease 0s;
-    padding: 0.2em 0.1em 1em;
-    position: fixed;
-    right: 1em;
-    bottom: calc(100% - 1em);
-    color: var(--col-txt);
-    background: var(--col-txt);
-    border-radius: 0em 0em 0.25em 0.25em;
-    outline: 0.2em solid var(--col-orange);
-    width: 1.5em;
-    opacity: 0.25;
+  z-index: 10;
+  transition: all 0.25s ease 0s;
+  padding: 0.2em 0.1em 1em;
+  position: fixed;
+  right: 1em;
+  bottom: calc(100% - 1em);
+  color: var(--col-txt);
+  background: var(--col-txt);
+  border-radius: 0em 0em 0.25em 0.25em;
+  outline: 0.2em solid var(--col-orange);
+  width: 1.5em;
+  opacity: 0.25;
 }
 
 #mapSettings:hover {
-    bottom: calc(100% + 0.15em);
-    color: var(--col-bg);
-    transform: translateY(100%);
-    opacity: 1;
-    outline-color: var(--col-red-orange);
-    padding-bottom: 0.25em;
+  bottom: calc(100% + 0.15em);
+  color: var(--col-bg);
+  transform: translateY(100%);
+  opacity: 1;
+  outline-color: var(--col-red-orange);
+  padding-bottom: 0.25em;
 }
 
 #mapSettings::after {
-    content: "";
-    position: absolute;
-    width: calc(100% + 1.5em);
-    height: calc(100% + 1.5em);
-    top: -0.75em;
-    left: -0.75em;
-    z-index: -1;
+  content: '';
+  position: absolute;
+  width: calc(100% + 1.5em);
+  height: calc(100% + 1.5em);
+  top: -0.75em;
+  left: -0.75em;
+  z-index: -1;
 }
 
 #mapSettings i {
-    display: inline-block;
-    text-align: center;
-    width: 100%;
-    line-height: 1.5em;
-    transition: transform 0.1s ease 0s;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  line-height: 1.5em;
+  transition: transform 0.1s ease 0s;
 }
 
 #mapSettings i:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-    color: var(--col-orange);
+  transform: scale(1.1);
+  cursor: pointer;
+  color: var(--col-orange);
 }
 
-#mapSettings input[type="checkbox"] {
-    display: none;
+#mapSettings input[type='checkbox'] {
+  display: none;
 }
 
-#mapSettings:hover input[type="checkbox"]:not(:checked) + i::after {
-    content: "";
-    position: absolute;
-    width: 75%;
-    height: 2px;
-    background-color: var(--col-red);
-    margin-top: 0.75em;
-    left: 12.5%;
-    transform: rotate(-45deg);
+#mapSettings:hover input[type='checkbox']:not(:checked) + i::after {
+  content: '';
+  position: absolute;
+  width: 75%;
+  height: 2px;
+  background-color: var(--col-red);
+  margin-top: 0.75em;
+  left: 12.5%;
+  transform: rotate(-45deg);
 }
 
-#mapSettings:hover input[type="checkbox"]:not(:checked) + i:hover::after {
-    transform: scale(1.1) rotate(-45deg);
+#mapSettings:hover input[type='checkbox']:not(:checked) + i:hover::after {
+  transform: scale(1.1) rotate(-45deg);
 }
 
 #popup {
-    visibility: hidden;
-    pointer-events: visible;
-    z-index: 10;
-    background-color: var(--col-bg);
-    position: fixed;
-    color: var(--col-orange);
-    text-shadow: 0 0 0.5em var(--col-orange-shadow);
-    box-shadow: 0 0 1em 0.25em var(--col-orange-hover);
-    border: solid;
-    padding: 1em;
-    inset: 0px;
-    height: min-content;
-    max-height: 25em;
-    overflow-y: scroll;
-    min-width: 10em;
-    max-width: 25em;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
+  visibility: hidden;
+  pointer-events: visible;
+  z-index: 10;
+  background-color: var(--col-bg);
+  position: fixed;
+  color: var(--col-orange);
+  text-shadow: 0 0 0.5em var(--col-orange-shadow);
+  box-shadow: 0 0 1em 0.25em var(--col-orange-hover);
+  border: solid;
+  padding: 1em;
+  inset: 0px;
+  height: min-content;
+  max-height: 25em;
+  overflow-y: scroll;
+  min-width: 10em;
+  max-width: 25em;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 #popup p,
 #popup label {
-    color: var(--col-red);
-    text-shadow: 0 0 0.5em var(--col-red-shadow);
+  color: var(--col-red);
+  text-shadow: 0 0 0.5em var(--col-red-shadow);
 }
 
-a:not(.project), #wikiPage .showMore {
-    color: var(--col-orange);
-    border-radius: 0.25em;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.25s ease 0s;
-    text-shadow: 0 0 0.1em var(--col-orange-shadow);
+a:not(.project),
+#wikiPage .showMore {
+  color: var(--col-orange);
+  border-radius: 0.25em;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.25s ease 0s;
+  text-shadow: 0 0 0.1em var(--col-orange-shadow);
 }
 
-a:not(.project)::after, #wikiPage .showMore::after {
-    content: "";
-    display: block;
-    margin-left: 100%;
-    width: 0px;
-    height: 2px;
-    transition: all 0.25s ease 0s;
-    background-color: var(--col-orange);
-    box-shadow: 0 0 0.05em var(--col-orange-shadow);
+a:not(.project)::after,
+#wikiPage .showMore::after {
+  content: '';
+  display: block;
+  margin-left: 100%;
+  width: 0px;
+  height: 2px;
+  transition: all 0.25s ease 0s;
+  background-color: var(--col-orange);
+  box-shadow: 0 0 0.05em var(--col-orange-shadow);
 }
 
 a:not(.project).invalid {
-    color: var(--col-red);
-    text-shadow: 0 0 0.5em var(--col-red-shadow);
+  color: var(--col-red);
+  text-shadow: 0 0 0.5em var(--col-red-shadow);
 }
 
 a:not(.project).invalid::after {
-    background-color: var(--col-red);
-    box-shadow: 0 0 0.1em var(--col-red-shadow);
+  background-color: var(--col-red);
+  box-shadow: 0 0 0.1em var(--col-red-shadow);
 }
 
-a:not(.project):hover, #wikiPage .showMore:hover {
-    color: var(--col-red-orange);
-    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+a:not(.project):hover,
+#wikiPage .showMore:hover {
+  color: var(--col-red-orange);
+  text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
 }
 
-a:not(.project):hover::after, #wikiPage .showMore:hover::after {
-    width: 100%;
-    transition: width 0.25s ease 0s, background-color 0.25s ease 0s;
-    margin-left: 0%;
-    background-color: var(--col-red-orange);
-    box-shadow: 0 0 0.1em var(--col-red-orange-shadow);
+a:not(.project):hover::after,
+#wikiPage .showMore:hover::after {
+  width: 100%;
+  transition: width 0.25s ease 0s, background-color 0.25s ease 0s;
+  margin-left: 0%;
+  background-color: var(--col-red-orange);
+  box-shadow: 0 0 0.1em var(--col-red-orange-shadow);
 }
 
 #context-menu {
-    z-index: 10;
-    position: absolute;
-    background: rgb(51, 51, 51);
-    color: var(--col-txt);
-    border-radius: 0.5em;
-    padding: 0.5em 0px;
-    margin: 0px;
-    min-width: 150px;
-    list-style: none;
-    font-size: 0.75em;
+  z-index: 10;
+  position: absolute;
+  background: rgb(51, 51, 51);
+  color: var(--col-txt);
+  border-radius: 0.5em;
+  padding: 0.5em 0px;
+  margin: 0px;
+  min-width: 150px;
+  list-style: none;
+  font-size: 0.75em;
 }
 
 #context-menu li {
-    padding-bottom: 7px;
-    padding-top: 7px;
-    padding-left: 15px;
-    user-select: none;
+  padding-bottom: 7px;
+  padding-top: 7px;
+  padding-left: 15px;
+  user-select: none;
 }
 
 #context-menu li:hover {
-    background: rgb(85, 85, 85);
-    cursor: pointer;
+  background: rgb(85, 85, 85);
+  cursor: pointer;
 }
 
 #context-menu li[data-key]::after {
-    position: relative;
-    content: attr(data-key);
-    float: right;
-    margin-right: 10px;
-    background-color: rgb(34, 34, 34);
-    padding: 2px 5px;
-    border-radius: 3px;
-    top: -2px;
-    font-weight: bold;
+  position: relative;
+  content: attr(data-key);
+  float: right;
+  margin-right: 10px;
+  background-color: rgb(34, 34, 34);
+  padding: 2px 5px;
+  border-radius: 3px;
+  top: -2px;
+  font-weight: bold;
 }
 
 #context-menu li[data-key]:hover::after {
-    background-color: rgb(51, 51, 51);
+  background-color: rgb(51, 51, 51);
 }
 
-#popup input:not(.object[type="checkbox"]), textarea {
-    margin-top: 0.5em;
-    border: solid var(--col-red-orange) 0.1em;
-    border-radius: 0.5em;
-    color: var(--col-txt);
-    text-shadow: 0 0 0.2em var(--col-txt);
-    background-color: var(--col-dark-red);
-    cursor: pointer;
-    padding: 0.25em;
+#popup input:not(.object[type='checkbox']),
+textarea {
+  margin-top: 0.5em;
+  border: solid var(--col-red-orange) 0.1em;
+  border-radius: 0.5em;
+  color: var(--col-txt);
+  text-shadow: 0 0 0.2em var(--col-txt);
+  background-color: var(--col-dark-red);
+  cursor: pointer;
+  padding: 0.25em;
 }
 
-#popup input[type="checkbox"] {
-    align-self: flex-start;
-    margin: 0.25em 0px 1em;
+#popup input[type='checkbox'] {
+  align-self: flex-start;
+  margin: 0.25em 0px 1em;
 }
 
-#popup input[type="text"]:not(.object), #popup input[type="password"], #popup input[type="email"], #popup textarea {
-    margin-top: 0.75em;
-    border: solid var(--col-red-orange-shadow) 0.1em;
-    background-color: var(--col-bg);
-    border-radius: 0.1em;
-    font-size: 0.75em;
-    margin-bottom: 1em;
-    cursor: text !important;
+#popup input[type='text']:not(.object),
+#popup input[type='password'],
+#popup input[type='email'],
+#popup textarea {
+  margin-top: 0.75em;
+  border: solid var(--col-red-orange-shadow) 0.1em;
+  background-color: var(--col-bg);
+  border-radius: 0.1em;
+  font-size: 0.75em;
+  margin-bottom: 1em;
+  cursor: text !important;
 }
 
-#popup button, #popup select {
-    transition: all 0.2s ease 0s;
-    background-color: var(--col-orange-hover);
-    color: var(--col-orange);
-    border-radius: 0.5em;
-    border-width: 0.1em;
-    border-style: solid;
-    cursor: pointer;
+#popup button,
+#popup select {
+  transition: all 0.2s ease 0s;
+  background-color: var(--col-orange-hover);
+  color: var(--col-orange);
+  border-radius: 0.5em;
+  border-width: 0.1em;
+  border-style: solid;
+  cursor: pointer;
 }
 
 #popup select {
-    border: none;
+  border: none;
 }
 
 #popup #save {
-    padding: 0.5em 1em;
-    border-width: 0.2em;
+  padding: 0.5em 1em;
+  border-width: 0.2em;
 }
 
-#popup button:hover, #popup select:hover, #popup #save:hover {
-    transition: all 0.2s ease 0s;
-    border-color: var(--col-red);
-    color: var(--col-red-orange);
+#popup button:hover,
+#popup select:hover,
+#popup #save:hover {
+  transition: all 0.2s ease 0s;
+  border-color: var(--col-red);
+  color: var(--col-red-orange);
 }
 
 #popup table {
-    margin: 0.5em 0px 1em;
-    border-collapse: collapse;
-    width: 100%;
-    border: solid var(--col-red-orange-shadow) 0.1em;
+  margin: 0.5em 0px 1em;
+  border-collapse: collapse;
+  width: 100%;
+  border: solid var(--col-red-orange-shadow) 0.1em;
 }
 
 #popup table th {
-    text-align: center;
-    border-right: solid var(--col-red-orange-shadow) 0.1em;
-    border-bottom: solid var(--col-red-orange-shadow) 0.1em;
-    width: 100vw;
-    padding: 0.5em;
+  text-align: center;
+  border-right: solid var(--col-red-orange-shadow) 0.1em;
+  border-bottom: solid var(--col-red-orange-shadow) 0.1em;
+  width: 100vw;
+  padding: 0.5em;
 }
 
 #popup table th:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 #popup table td {
-    text-align: center;
-    border-right: solid var(--col-red-orange-shadow) 0.1em;
-    border-bottom: solid var(--col-red-orange-shadow) 0.1em;
-    width: 100vw;
-    padding: 0.25em;
+  text-align: center;
+  border-right: solid var(--col-red-orange-shadow) 0.1em;
+  border-bottom: solid var(--col-red-orange-shadow) 0.1em;
+  width: 100vw;
+  padding: 0.25em;
 }
 
 #popup table td:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 #popup table tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 
+#popup table tr.pending {
+  border: solid 1px var(--col-red);
+  background: var(--col-red-orange-hover);
+}
 #notices {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    top: 0px;
-    left: 0px;
-    z-index: 11;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    pointer-events: none;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
 }
 
 .notice {
-    pointer-events: none;
-    z-index: 10;
-    background-color: var(--col-red-hover);
-    color: var(--col-txt);
-    text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
-    border-radius: 0.5em;
-    padding: 1em;
-    text-align: center;
-    top: 0.5em;
-    opacity: 0;
-    transition: all 0.2s ease 0s;
-    width: max-content;
-    max-width: calc(100vw - 2em);
-    min-width: 10em;
-    margin-top: 0.5em;
-    border: solid var(--col-red-hover) 0.1em;
-    transform: translateY(calc(-100% - 0.5em));
+  pointer-events: none;
+  z-index: 10;
+  background-color: var(--col-red-hover);
+  color: var(--col-txt);
+  text-shadow: 0 0 0.2em var(--col-red-orange-shadow);
+  border-radius: 0.5em;
+  padding: 1em;
+  text-align: center;
+  top: 0.5em;
+  opacity: 0;
+  transition: all 0.2s ease 0s;
+  width: max-content;
+  max-width: calc(100vw - 2em);
+  min-width: 10em;
+  margin-top: 0.5em;
+  border: solid var(--col-red-hover) 0.1em;
+  transform: translateY(calc(-100% - 0.5em));
 }
 
 .notice::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-    z-index: -1;
-    background-color: var(--col-bg);
-    opacity: 0.5;
-    border-radius: 0.5em;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+  background-color: var(--col-bg);
+  opacity: 0.5;
+  border-radius: 0.5em;
 }
 
 .notice.show {
-    transition: all 0.2s ease 0s;
-    opacity: 1;
-    transform: translateY(0px);
+  transition: all 0.2s ease 0s;
+  opacity: 1;
+  transform: translateY(0px);
 }
 
 .notice.hide {
-    transition: all 0.2s ease-in-out 0s;
-    opacity: 0;
+  transition: all 0.2s ease-in-out 0s;
+  opacity: 0;
 }

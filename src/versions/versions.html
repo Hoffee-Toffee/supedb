@@ -1,113 +1,149 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Versions</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Versions</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Add firebase JS files here -->
-        <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-firestore.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-auth.js"></script>
+    <!-- Add firebase JS files here -->
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.2/firebase-auth.js"></script>
 
-        <!-- Add unique CSS and JS files here -->
-        <link rel="stylesheet" href="versions.css">
-        <script src="versions.js"></script>
+    <!-- Add unique CSS and JS files here -->
+    <link rel="stylesheet" href="versions.css" />
+    <script src="versions.js"></script>
 
-        <!-- Add common CSS and JS files here -->
-        <link rel="stylesheet" href="../common/common.css">
-        <link rel="stylesheet" href="../common/help.css">
-        <script src="../common/common.js"></script>
-        <script src="../common/help.js"></script>
+    <!-- Add common CSS and JS files here -->
+    <link rel="stylesheet" href="../common/common.css" />
+    <link rel="stylesheet" href="../common/help.css" />
+    <script src="../common/common.js"></script>
+    <script src="../common/help.js"></script>
 
-        <!-- Font Awesome -->
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <div id="helpScreen"></div>
-        <div id="mapSettings" aria-hidden="true">
-            <i class="fa fa-sign-out" onclick="window.location.href = '../login/login.html#logout'"></i>
-            <i class="fa fa-question-circle" onclick="help()"></i>
-            <i class="fa fa-cog" onclick="settingsMenu()"></i>
-        </div>
-        <div id="popup">
-            <p>See Also: <a href="../dash/dash.html#settings">User Settings</a></p>
-            <!-- Title -->
-            <label for="newTitle" class="editMenu">Title:</label>
-            <input id="newTitle" class="editMenu" type="text">
+    <!-- Font Awesome -->
+    <link
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="helpScreen"></div>
+    <div id="notices" aria-hidden="true"></div>
+    <div id="mapSettings" aria-hidden="true">
+      <i
+        class="fa fa-sign-out"
+        onclick="window.location.href = '../login/login.html#logout'"
+      ></i>
+      <i class="fa fa-question-circle" onclick="help()"></i>
+      <i class="fa fa-cog" onclick="settingsMenu()"></i>
+    </div>
+    <div id="popup">
+      <p>See Also: <a href="../dash/dash.html#settings">User Settings</a></p>
+      <!-- Title -->
+      <label for="newTitle" class="editMenu">Title:</label>
+      <input id="newTitle" class="editMenu" type="text" />
 
-            <!-- Description -->
-            <label for="newDesc" class="editMenu">Description:</label>
-            <textarea id="newDesc" class="editMenu" cols="30" rows="10" style="resize: none;display: table;"></textarea>
+      <!-- Description -->
+      <label for="newDesc" class="editMenu">Description:</label>
+      <textarea
+        id="newDesc"
+        class="editMenu"
+        cols="30"
+        rows="10"
+        style="resize: none; display: table"
+      ></textarea>
 
-            <!-- Permissions -->
-            <label for="newPerm" class="editMenu">Permissions:</label>
-            <table id="newPerm" class="editMenu">
-                <tr>
-                    <th>Name</th> <!-- Hover for email, click for user page -->
-                    <th>Role</th>
-                    <th>Options</th>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="email" name="email" id="email">
-                    </td>
-                    <td>
-                        <select name="level" id="level">
-                            <!-- Must have int value, name text, and hover description of the permissions with the level -->
-                            <option value="1" title="Read only">Minuteman</option>
-                            <option value="2" title="Read and comment">Hunter</option>
-                            <option value="3" title="Read, comment, contribute to drafts">Consultant</option>
-                            <option value="4" title="Read, comment, contribute to drafts, vote on drafts">Analyst</option>
-                            <option value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">Agent</option>
-                            <option value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">Judge</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button class="invite">Invite</button>
-                    </td>
-                </tr>
-            </table>
+      <!-- Permissions -->
+      <label for="newPerm" class="editMenu">Permissions:</label>
+      <table id="newPerm" class="editMenu">
+        <tr>
+          <th>Name</th>
+          <!-- Hover for email, click for user page -->
+          <th>Role</th>
+          <th>Options</th>
+        </tr>
+        <tr>
+          <td>
+            <input type="email" name="email" id="email" />
+          </td>
+          <td>
+            <select name="level" id="level">
+              <!-- Must have int value, name text, and hover description of the permissions with the level -->
+              <option value="1" title="Read only">Minuteman</option>
+              <option value="2" title="Read and comment">Hunter</option>
+              <option value="3" title="Read, comment, contribute to drafts">
+                Consultant
+              </option>
+              <option
+                value="4"
+                title="Read, comment, contribute to drafts, vote on drafts"
+              >
+                Analyst
+              </option>
+              <option
+                value="5"
+                title="Read, comment, contribute to drafts, vote on drafts, edit documents"
+              >
+                Agent
+              </option>
+              <option
+                value="6"
+                title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more"
+              >
+                Judge
+              </option>
+            </select>
+          </td>
+          <td>
+            <button class="invite" onclick="sendInvite()">Invite</button>
+          </td>
+        </tr>
+      </table>
 
-            <!-- Link Sources -->
-            <label for="newLink" class="editMenu">Link Sources:</label>
-            <table id="newLink" class="editMenu">
-                <tr>
-                    <th>Abbr.</th>
-                    <th>Source</th>
-                    <th>Options</th>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="text" name="abbr" id="abbr">
-                    </td>
-                    <td>
-                        <input type="text" name="source" id="source">
-                    </td>
-                    <td>
-                        <button class="add">Add</button>
-                    </td>
-                </tr>
-            </table>
+      <!-- Link Sources -->
+      <label for="newLink" class="editMenu">Link Sources:</label>
+      <table id="newLink" class="editMenu">
+        <tr>
+          <th>Abbr.</th>
+          <th>Source</th>
+          <th>Options</th>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" name="abbr" id="abbr" />
+          </td>
+          <td>
+            <input type="text" name="source" id="source" />
+          </td>
+          <td>
+            <button class="add">Add</button>
+          </td>
+        </tr>
+      </table>
 
-            <!-- Save -->
-            <button id="save" class="editMenu">Save</button>
-        </div>
-        <!-- Chevron -->
-        <i id="back" class="fa fa-chevron-left" onclick="window.location.href = '../dash/dash.html'" title="Back to Dashboard"></i>
-        <canvas id="canvas"></canvas>
-        <div id="list">
-            <table id="versionsTable">
-                <tbody>
-                    <tr>
-                        <th>Branch</th>
-                        <th>Options</th>
-                        <th>Type</th>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </body>
+      <!-- Save -->
+      <button id="save" class="editMenu">Save</button>
+    </div>
+    <!-- Chevron -->
+    <i
+      id="back"
+      class="fa fa-chevron-left"
+      onclick="window.location.href = '../dash/dash.html'"
+      title="Back to Dashboard"
+    ></i>
+    <canvas id="canvas"></canvas>
+    <div id="list">
+      <table id="versionsTable">
+        <tbody>
+          <tr>
+            <th>Branch</th>
+            <th>Options</th>
+            <th>Type</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
 </html>
