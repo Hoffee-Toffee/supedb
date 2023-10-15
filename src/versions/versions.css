@@ -1,153 +1,152 @@
 #canvas {
-    width: calc(100% + 2em);
-    height: calc(100% + 3em);
-    margin: -1em;
-    background:
-        repeating-linear-gradient(
-            to right,
-            transparent 0px,
-            transparent 20px,
-            var(--col-orange-hover) 20px,
-            var(--col-orange-hover) 22px
-        ),
-        linear-gradient(
-            to bottom,
-            black 0%,
-            var(--col-orange-hover) 25%,
-            black 50%,
-            black 100%
-        ),
-        #00000080;
-    background-repeat: repeat-x;
-    background-blend-mode: multiply;
-    animation: bg-shift 10s alternate infinite ease-in-out;
+  width: calc(100% + 2em);
+  height: calc(100% + 3em);
+  margin: -1em;
+  background: repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 20px,
+      var(--col-orange-hover) 20px,
+      var(--col-orange-hover) 22px
+    ),
+    linear-gradient(
+      to bottom,
+      black 0%,
+      var(--col-orange-hover) 25%,
+      black 50%,
+      black 100%
+    ),
+    #00000080;
+  background-repeat: repeat-x;
+  background-blend-mode: multiply;
+  animation: bg-shift 10s alternate infinite ease-in-out;
 }
 
 @keyframes bg-shift {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 11px 0;
-    }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 11px 0;
+  }
 }
 
-#popup td input[type="text"],
-#popup td input[type="email"] {
-    width: calc(100% - 3em);
-    text-align: center;
+#popup td input[type='text'],
+#popup td input[type='email'] {
+  width: calc(100% - 3em);
+  text-align: center;
 }
 
-#newLink td:nth-child(1) input[type="text"] {
-    width: 3.5em;
-    text-transform: uppercase;
+#newLink td:nth-child(1) input[type='text'] {
+  width: 3.5em;
+  text-transform: uppercase;
 }
 
 #newLink th:nth-child(2) {
-    width: 100%;
+  width: 100%;
 }
 
 #list {
-    width: 100vw;
-    height: calc(100vh / 2);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    overflow-y: scroll;
-    font-family: "Courier New", Courier, monospace;
-    opacity: 0;
+  width: 100vw;
+  height: calc(100vh / 2);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  overflow-y: scroll;
+  font-family: 'Courier New', Courier, monospace;
+  opacity: 0;
 }
 
 #list::before {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: var(--col-orange-hover);
-    position: absolute;
-    opacity: 0.5;
-    pointer-events: none;
-    top: 0;
-    left: 0;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--col-orange-hover);
+  position: absolute;
+  opacity: 0.5;
+  pointer-events: none;
+  top: 0;
+  left: 0;
 }
 
 #list table {
-    width: calc(100% - 2em);
-    max-height: 50vh;
-    border-collapse: collapse;
-    margin: 1em;
+  width: calc(100% - 2em);
+  max-height: 50vh;
+  border-collapse: collapse;
+  margin: 1em;
 }
 
 #list table tr:not(:first-child):hover {
-    background-color: var(--col-red-orange-hover);
-    cursor: pointer;
+  background-color: var(--col-red-orange-hover);
+  cursor: pointer;
 }
 
 #list table tr th {
-    width: 35%;
-    height: 100%;
-    color: var(--col-red-orange);
-    text-align: left;
-    font-size: 1.5em;
-    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+  width: 35%;
+  height: 100%;
+  color: var(--col-red-orange);
+  text-align: left;
+  font-size: 1.5em;
+  text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
 }
 
 #list table tr td {
-    width: 35%;
-    height: 100%;
-    color: var(--col-txt);
-    text-align: left;
-    padding: 0.5em;
-    padding-right: 0;
-    text-shadow: 0 0 0.5em var(--col-txt);
-    white-space: nowrap;
+  width: 35%;
+  height: 100%;
+  color: var(--col-txt);
+  text-align: left;
+  padding: 0.5em;
+  padding-right: 0;
+  text-shadow: 0 0 0.5em var(--col-txt);
+  white-space: nowrap;
 }
 
 #list table tr td button {
-    border-radius: 0.5em;
-    color: var(--col-orange);
-    background-color: transparent;
-    border: 0.1em solid var(--col-orange-hover);
-    padding: 0.5em;
-    text-shadow: 0 0 0.5em var(--col-orange-shadow);
+  border-radius: 0.5em;
+  color: var(--col-orange);
+  background-color: transparent;
+  border: 0.1em solid var(--col-orange-hover);
+  padding: 0.5em;
+  text-shadow: 0 0 0.5em var(--col-orange-shadow);
 }
 
 /* Add a gap between buttons */
 #list table tr td button:not(:first-child) {
-    margin-left: 0.5em;
+  margin-left: 0.5em;
 }
 
 #list table tr td button:disabled {
-    filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 
 #list table tr td button:not(:disabled):hover {
-    color: var(--col-red-orange);
-    border: 0.1em solid var(--col-red-orange);
-    text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
-    background-color: var(--col-bg);
-    cursor: pointer;
+  color: var(--col-red-orange);
+  border: 0.1em solid var(--col-red-orange);
+  text-shadow: 0 0 0.5em var(--col-red-orange-shadow);
+  background-color: var(--col-bg);
+  cursor: pointer;
 }
 
 #back {
-    position: absolute;
-    top: 0.5em;
-    left: 0;
-    padding-left: 0.5em;
-    color: var(--col-orange);
-    cursor: pointer;
-    transition: 1s;
+  position: absolute;
+  top: 0.5em;
+  left: 0;
+  padding-left: 0.5em;
+  color: var(--col-orange);
+  cursor: pointer;
+  transition: 1s;
 }
 
 #back:hover {
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-    color: var(--col-orange-shadow);
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+  color: var(--col-orange-shadow);
 }
 
 #back:active {
-    transition: 0.2s;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-    color: var(--col-red);
+  transition: 0.2s;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+  color: var(--col-red);
 }

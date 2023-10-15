@@ -528,6 +528,16 @@ function settingsMenu() {
       querySnapshot.forEach((doc) => {
         let data = doc.data()
         let row = document.createElement('tr')
+
+        // Check if pending
+        if (doc.data().pending) {
+          row.classList = "pending"
+          row.title = "Pending"
+        }
+        else {
+          row.classList = ""
+        }
+
         let name = document.createElement('td')
         let role = document.createElement('td')
         let options = document.createElement('td')
