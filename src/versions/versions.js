@@ -44,14 +44,21 @@ async function start() {
     window['id'] = ref.id
     console.log(ref)
 
-    // Create timeline
-    await db.collection('timelines').add({
+    // Generate a key for encrypting this info
+    let key = await newKey()
+    key = key.k
+
+    let data = JSON.stringify({
       title: 'Main',
       description: 'Main',
       type: 'M',
+      map: '[]'
+    })
+
+    // Create timeline
+    await db.collection('timelines').add({
       project: window['id'],
-      map: '[]',
-      encrypted: false,
+      data: await lock(key, data)
     })
 
     // Create permissions
@@ -60,6 +67,7 @@ async function start() {
       level: 6,
       type: 'P',
       user: auth.currentUser.email,
+      access: await lock(sessionStorage.getItem("access"), key)
     })
 
     // Redirect to created project, on the settings screen
@@ -81,16 +89,20 @@ async function start() {
   }
 
   // Check if the user has access to the project
-  db.collection('permissions')
+  await db.collection('permissions')
     .where('user', '==', auth.currentUser.email)
     .where('type', '==', 'P')
     .where('entity', '==', window['id'])
     .get()
-    .then((querySnapshot) => {
-      if (querySnapshot.empty) {
+    .then(async (querySnapshot) => {
+      if (querySnapshot.size != 1) {
         // Redirect to the dashboard
         location.href = '../dash/dash.html'
       }
+
+      let key = querySnapshot.docs[0].data().access
+      key = await unlock(sessionStorage.getItem("access"), key)
+      console.log(key)
 
       // Get all the timelines under this project ID
       db.collection('timelines')
@@ -106,7 +118,12 @@ async function start() {
           window['offshoots'] = querySnapshot.size - 1
 
           // Loop through each timeline
-          querySnapshot.forEach((doc) => {
+          querySnapshot.forEach(async (doc, index) => {
+            // Decrypt the data
+            let data = await unlock(key, doc.data().data)
+            data = JSON.parse(data)
+
+            // let data = encryption. 
             let types = {
               M: 'Main',
               D: 'Draft',
@@ -123,7 +140,7 @@ async function start() {
 
             // Give the row three cells for the title, options, and type
             var title = document.createElement('td')
-            title.innerHTML = doc.data().title
+            title.innerHTML = data.title
             row.appendChild(title)
 
             var options = document.createElement('td')
@@ -145,46 +162,39 @@ async function start() {
             row.appendChild(options)
 
             var type = document.createElement('td')
-            type.innerHTML = types[doc.data().type]
+            type.innerHTML = types[data.type]
             row.appendChild(type)
 
             // If it's the main timeline, and the table already has a row, add this to the top
-            if (doc.data().type == 'M' && table.childNodes.length > 1) {
+            if (data.type == 'M' && table.childNodes.length > 1) {
               table.insertBefore(row, table.rows[1])
             } else {
               // Otherwise, add it to the bottom
               table.appendChild(row)
             }
-          })
 
-          // Add a event listeners for each table row
-          document
-            .querySelectorAll('#versionsTable tr')
-            .forEach((row, index) => {
-              // Ignore the first row
-              if (index == 0) return
 
-              // Mouseover
-              row.addEventListener('mouseover', () => {
-                // Set the index
-                window['index'] = index - 1
-              })
-
-              // Mouseout
-              row.addEventListener('mouseout', () => {
-                // Set the index
-                window['index'] = -1
-              })
-
-              // Click
-              row.addEventListener('click', (e) => {
-                // Trigger that index unless they clicked a button
-                if (e.target.tagName != 'BUTTON') trigger(index - 1)
-              })
-
-              // Show the table
-              document.getElementById('list').style.opacity = 1
+            // Mouseover
+            row.addEventListener('mouseover', () => {
+              // Set the index
+              window['index'] = index - 1
             })
+
+            // Mouseout
+            row.addEventListener('mouseout', () => {
+              // Set the index
+              window['index'] = -1
+            })
+
+            // Click
+            row.addEventListener('click', (e) => {
+              // Trigger that index unless they clicked a button
+              if (e.target.tagName != 'BUTTON') trigger(index - 1)
+            })
+
+            // Show the table
+            document.getElementById('list').style.opacity = 1
+          })
         })
     })
 
@@ -277,8 +287,8 @@ function genLine() {
     // Get the index of the coordinate to start from
     let coord =
       coords[
-        (i * Math.round(coords.length / window['offshoots']) + 30) %
-          (coords.length - 15)
+      (i * Math.round(coords.length / window['offshoots']) + 30) %
+      (coords.length - 15)
       ]
 
     // Get the x and y values
@@ -544,32 +554,22 @@ function settingsMenu() {
           )
 
         role.innerHTML = `<select name="level" id="level">
-              <option ${
-                data.level == '1' ? 'selected' : ''
-              } value="1" title="Read only">${roles[0]}</option>
-              <option ${
-                data.level == '2' ? 'selected' : ''
-              } value="2" title="Read and comment">${roles[1]}</option>
-              <option ${
-                data.level == '3' ? 'selected' : ''
-              } value="3" title="Read, comment, contribute to drafts">${
-          roles[2]
-        }</option>
-              <option ${
-                data.level == '4' ? 'selected' : ''
-              } value="4" title="Read, comment, contribute to drafts, vote on drafts">${
-          roles[3]
-        }</option>
-              <option ${
-                data.level == '5' ? 'selected' : ''
-              } value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">${
-          roles[4]
-        }</option>
-              <option ${
-                data.level == '6' ? 'selected' : ''
-              } value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">${
-          roles[5]
-        }</option>
+              <option ${data.level == '1' ? 'selected' : ''
+          } value="1" title="Read only">${roles[0]}</option>
+              <option ${data.level == '2' ? 'selected' : ''
+          } value="2" title="Read and comment">${roles[1]}</option>
+              <option ${data.level == '3' ? 'selected' : ''
+          } value="3" title="Read, comment, contribute to drafts">${roles[2]
+          }</option>
+              <option ${data.level == '4' ? 'selected' : ''
+          } value="4" title="Read, comment, contribute to drafts, vote on drafts">${roles[3]
+          }</option>
+              <option ${data.level == '5' ? 'selected' : ''
+          } value="5" title="Read, comment, contribute to drafts, vote on drafts, edit documents">${roles[4]
+          }</option>
+              <option ${data.level == '6' ? 'selected' : ''
+          } value="6" title="Read, comment, contribute to drafts, vote on drafts, edit documents, change permissions, project settings, and more">${roles[5]
+          }</option>
           </select>`
         options.innerHTML = `<button class="remove">Remove</button>`
         row.setAttribute('user', data.user)

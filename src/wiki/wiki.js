@@ -8,19 +8,19 @@ var objects = []
 function start() {
   // Check if the user isn't logged in
   if (!auth.currentUser) {
-      // Redirect to the login page with redirect params
-      location.href = "../login/login.html?redirect=" + redir()
+    // Redirect to the login page with redirect params
+    location.href = "../login/login.html?redirect=" + redir()
   }
-  
+
   var dateString = new Date().toLocaleString("en-GB", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
 
   sessionStorage.setItem("ID", `USER: ${auth.currentUser.email}, INITIATED: ${dateString}, TOKEN: ${Math.random().toString(36).toUpperCase().slice(2)}`)
 
   // Check if the user has any associated permissions
   db.collection("permissions").where("user", "==", auth.currentUser.email).get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-          window["permissions"].push(doc.data().entity)
-      })
+    querySnapshot.forEach((doc) => {
+      window["permissions"].push(doc.data())
+    })
   })
 
   // Get the map ID from the URL
@@ -29,24 +29,33 @@ function start() {
 
   // If they don't have any permissions or no id is provided, redirect them to the dashboard
   if (window["permissions"] == null || window["id"] == null) {
-      location.href = "../dash/dash.html"
+    location.href = "../dash/dash.html"
   }
 
   // Sync all data from the timeline
-  db.collection("timelines").doc(window["id"]).onSnapshot((map) => {
+  db.collection("timelines").doc(window["id"]).onSnapshot(async (map) => {
     // Leave if the doc id isn't in your permissions, or if it's project id isn't in your permissions
-    if (!window["permissions"].find(e => [window["id"], map.data().project].includes(e))) {
+    let key = window["permissions"].find(e => [window["id"], map.data().project].includes(e.entity))
+
+    if (!key) {
       // Redirect to dash
       location.href = "../dash/dash.html"
     }
 
+    key = key.access
+    key = await unlock(sessionStorage.getItem("access"), key)
+
+    let data = await unlock(key, map.data().data)
+    data = JSON.parse(data)
+
+
     if (window["page"]) {
       // Ignore if the change was made by you (your session id)
-      if (map.data().lastChange == sessionStorage.getItem("ID")) return
+      if (data.lastChange == sessionStorage.getItem("ID")) return
 
       var currentPage = JSON.parse(JSON.stringify(window["objects"].find(e => e.id == window["page"])))
 
-      var newPage = JSON.parse(map.data().map).find(e => e.id == window["page"])
+      var newPage = JSON.parse(data.map).find(e => e.id == window["page"])
 
       // Ignore if the change wasn't made to page you are on, ignoring any stats variables by setting them to null
       var stats = ["id", "position", "lastVisited", "totalVisits", "lastEdited"]
@@ -71,72 +80,87 @@ function start() {
     // Clear the page
     document.getElementById("wikiPage").innerHTML = ""
 
-    if (map) {  
-        window["mapSettings"] = {
-            id: map.id,
-            title: map.data().title,
-            description: map.data().description,
-            encrypted: map.data().encrypted,
-            project: map.data().project
-        }
+    if (map) {
+      window["mapSettings"] = {
+        id: map.id,
+        title: data.title,
+        description: data.description,
+        encrypted: data.encrypted,
+        project: map.data().project
+      }
 
-        objects = JSON.parse(map.data().map)
+      objects = JSON.parse(data.map)
 
-        // Fill sources if empty
-        if (JSON.stringify(window["sources"]) == "{}") {
-          // Get this document's parent
-          db.collection("projects").doc(window["mapSettings"].project).get().then((project) => {
-            // Get the sources, make the keys uppercase, and set it to the sources variable
-            // e.g. will be {"wp": "https://en.wikipedia.org/wiki/"} -> {"WP": "https://en.wikipedia.org/wiki/"}
-            window["sources"] = Object.fromEntries(Object.entries(JSON.parse(project.data().sources)).map(([k, v]) => [k.toUpperCase(), v]))
+      // Fill sources if empty
+      if (JSON.stringify(window["sources"]) == "{}") {
+        // Get this document's parent
+        db.collection("projects").doc(window["mapSettings"].project).get().then((project) => {
+          // Get the sources, make the keys uppercase, and set it to the sources variable
+          // e.g. will be {"wp": "https://en.wikipedia.org/wiki/"} -> {"WP": "https://en.wikipedia.org/wiki/"}
+          window["sources"] = Object.fromEntries(Object.entries(JSON.parse(project.data().sources)).map(([k, v]) => [k.toUpperCase(), v]))
 
-            // Get all timelines in the project, minus the current one
-            db.collection("timelines").where("project", "==", window["mapSettings"].project).get().then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                if (doc.id != window["id"]) {
-                  window["sources"][doc.data().title.toUpperCase()] = {
-                    id: doc.id,
-                    objs: JSON.parse(doc.data().map)
-                  }
+          // Get all timelines in the project, minus the current one
+          db.collection("timelines").where("project", "==", window["mapSettings"].project).get().then((querySnapshot) => {
+            querySnapshot.forEach(async (doc) => {
+              if (doc.id != window["id"]) {
+                // Leave if the doc id isn't in your permissions, or if it's project id isn't in your permissions
+                let key = window["permissions"].find(e => [window["id"], doc.data().project].includes(e.entity))
+
+                if (!key) {
+                  // Redirect to dash
+                  location.href = "../dash/dash.html"
                 }
-              })
-              displayWiki()
+
+                key = key.access
+                key = await unlock(sessionStorage.getItem("access"), key)
+
+                let data = await unlock(key, map.data().data)
+                data = JSON.parse(data)
+
+                window["sources"][data.title.toUpperCase()] = {
+                  id: doc.id,
+                  objs: JSON.parse(data.map)
+                }
+              }
             })
+            displayWiki()
           })
-        }
-        else displayWiki()
-    }})
+        })
+      }
+      else displayWiki()
+    }
+  })
 }
 
 function displayWiki() {
   document.getElementById("toProjectSettings").href = `../versions/versions.html?id=${window["mapSettings"].project}#settings`
-  if (objects.includes(null)){
-      // filter all the nulls and loop through them
-      var nulls = objects.filter(e => e == null)
-      nulls.forEach(obj => {
-          var pos = objects.indexOf(obj)
+  if (objects.includes(null)) {
+    // filter all the nulls and loop through them
+    var nulls = objects.filter(e => e == null)
+    nulls.forEach(obj => {
+      var pos = objects.indexOf(obj)
 
-          objects.forEach(e => {
-              if (e !== null) {
-                  e.id -= (e.id > pos) ? 1 : 0
+      objects.forEach(e => {
+        if (e !== null) {
+          e.id -= (e.id > pos) ? 1 : 0
 
-                  if (e.class == "Sub") {
-                      e.headId -= (e.headId > pos) ? 1 : 0
-                      e.headId = (e.headId == pos) ? null : e.headId
-                  }
+          if (e.class == "Sub") {
+            e.headId -= (e.headId > pos) ? 1 : 0
+            e.headId = (e.headId == pos) ? null : e.headId
+          }
 
-                  if (e.class == "Link") {
-                      e.line.forEach(point => {
-                          point[0] -= (point[0] > pos) ? 1 : 0
-                          point[2] -= (point[1] > pos) ? 1 : 0
-                      })
-                      e.parentId -= (e.parentId > pos) ? 1 : 0
-                      e.childId -= (e.childId > pos) ? 1 : 0
-                  }
-              }
-          })
-          objects.splice(pos, 1)
+          if (e.class == "Link") {
+            e.line.forEach(point => {
+              point[0] -= (point[0] > pos) ? 1 : 0
+              point[2] -= (point[1] > pos) ? 1 : 0
+            })
+            e.parentId -= (e.parentId > pos) ? 1 : 0
+            e.childId -= (e.childId > pos) ? 1 : 0
+          }
+        }
       })
+      objects.splice(pos, 1)
+    })
   }
 
   // Get page ID from URL
@@ -148,7 +172,7 @@ function displayWiki() {
 
   // Replace the 'page' in the url with the correctly cased version (unless a category or special page)
   if (pageId != null && !pageId.startsWith("Category:") && !pageId.startsWith("Special:")) {
-    url.searchParams.set("page", (objects.find(e => (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || (e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))) || {title: pageId}).title.replaceAll(" ", "_"))
+    url.searchParams.set("page", (objects.find(e => (e.title && e.title.toLowerCase() == pageId.toLowerCase()) || (e.redirects && e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase()))) || { title: pageId }).title.replaceAll(" ", "_"))
     console.log(url)
     history.replaceState(null, null, url)
   }
@@ -156,11 +180,11 @@ function displayWiki() {
   // If 'new' then set pageId to 'newPage'
   // If 'newPage' is taken then keep add -01 and so on until it isn't
   if (url.searchParams.get("new") != undefined && !pageId) {
-      pageId = "New Page"
-      var i = 0
+    pageId = "New Page"
+    var i = 0
 
-      while(objects.find(e => e.title && (e.title.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}` || e.redirects.find(r => r.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`))) != undefined) i++
-      pageId = `${pageId}${i == 0 ? "" : " - " + (i < 10 ? "0" + i : i)}`
+    while (objects.find(e => e.title && (e.title.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}` || e.redirects.find(r => r.toLowerCase() == `${pageId.toLowerCase()}${i == 0 ? "" : " " + (i < 10 ? "0" + i : i)}`))) != undefined) i++
+    pageId = `${pageId}${i == 0 ? "" : " - " + (i < 10 ? "0" + i : i)}`
   }
 
   // Get the wiki
@@ -290,7 +314,7 @@ function displayWiki() {
     })
     wiki.appendChild(headList)
 
-    
+
     // List the most visited, most recently visited, and most recently edited pages
     // Each should show only the top 5, with the 6th being and option to show more / show less
     var popularTitle = document.createElement("h3")
@@ -303,7 +327,7 @@ function displayWiki() {
     // Pages that don't have a count of 'totalVisits' will be as if they have 0
     // Sort in order of most to least
     var popularPages = objects.filter(e => e.title).sort((a, b) => (b.totalVisits || 0) - (a.totalVisits || 0))
-    
+
     // The first 5 pages are added as normal
     // The rest are added as hidden
     popularPages.forEach((page, i) => {
@@ -351,7 +375,7 @@ function displayWiki() {
     wiki.appendChild(recentList)
 
     var recentPages = objects.filter(e => e.title && e.lastVisited).sort((a, b) => b.lastVisited - a.lastVisited)
-    
+
     recentPages.forEach((page, i) => {
       var recentItem = document.createElement("li")
       recentList.appendChild(recentItem)
@@ -422,15 +446,15 @@ function displayWiki() {
             return
           }
         })
-        
+
         if (del) editedButton.remove()
       }
       editedList.appendChild(editedButton)
     }
-  
+
     // Create a list of additional links
     var links = document.createElement("ul")
-    
+
     var linksTitle = document.createElement("h3")
     linksTitle.innerText = "Additional Links"
     wiki.appendChild(linksTitle)
@@ -893,14 +917,14 @@ function displayWiki() {
       }
       title.appendChild(titleMenuButton)
     }
-    catch (e) {}
-    
+    catch (e) { }
+
     // If a page ID is provided, then get that object
     var page = objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())))
 
     // If that id doesn't exist, then set 'page.class' to null
     if (page == undefined) {
-      page = {class: null}
+      page = { class: null }
     }
     // Check if this is the 'talk' page
     else if (url.searchParams.get("talk") !== null) {
@@ -926,7 +950,7 @@ function displayWiki() {
       var topicHeader = document.createElement("h3")
       topicHeader.innerText = "Add Topic/Message"
       topicDiv.appendChild(topicHeader)
-      
+
       var topicTitle = document.createElement("input")
       topicTitle.placeholder = "Topic Title"
       topicDiv.appendChild(topicTitle)
@@ -937,7 +961,7 @@ function displayWiki() {
 
       var addBtn = document.createElement("button")
       addBtn.innerText = "Add Topic"
-      addBtn.addEventListener("click", () => { 
+      addBtn.addEventListener("click", () => {
         page.talk.push({
           id: genID(),
           title: topicTitle.value,
@@ -948,14 +972,14 @@ function displayWiki() {
         })
 
         // Save and reload
-        saveObjects(function() {
+        saveObjects(function () {
           window.location.reload();
         })
       })
       topicDiv.appendChild(addBtn)
 
       // Add the content
-      page.talk.forEach((t, i) => { genContent(talkPage, {...t, type: "talk"}, `talk[${i}]`) })
+      page.talk.forEach((t, i) => { genContent(talkPage, { ...t, type: "talk" }, `talk[${i}]`) })
 
       // Set the title of the tab
       var titleVar = `${document.querySelector("h2").innerText} | ${window["mapSettings"].title}`
@@ -964,11 +988,11 @@ function displayWiki() {
       document.querySelector('meta[property="og:description"]').setAttribute("content", `Talk page for ${pageId} on ${window["mapSettings"].title}`)
 
       return
-    }   
+    }
     else {
       window["page"] = page.id
     }
-    
+
     // Create the top section
     var topSection = document.createElement("div")
     wiki.appendChild(topSection)
@@ -1012,7 +1036,7 @@ function displayWiki() {
       var redirectText = document.createElement("span")
       redirectText.classList.add("note")
       redirectText.innerText = "Redirected from: "
-      
+
       // Add the main article link to the text and then to the section
       redirectText.appendChild(redirectLink)
       topBar.appendChild(redirectText)
@@ -1053,39 +1077,39 @@ function displayWiki() {
       image.src = ""
 
       storage.ref().child(ib.id).getDownloadURL().then((url) => {
-          image.src = url
-          // Show the image in full if clicked
-          image.addEventListener("click", () => {
-            // If any images are showing, then hide them
-            var el = document.getElementById("imageFull")
-            if (el) el.remove();
-            
-            // Create the image, container, and buttons
-            var imageContainer = document.createElement("div")
-            var imageBackdrop = document.createElement("div")
-            var imageFull = document.createElement("img")
-            var imageClose = document.createElement("span")
+        image.src = url
+        // Show the image in full if clicked
+        image.addEventListener("click", () => {
+          // If any images are showing, then hide them
+          var el = document.getElementById("imageFull")
+          if (el) el.remove();
 
-            // Coming soon
-            var imagePrev = document.createElement("span")
-            var imageNext = document.createElement("span")
+          // Create the image, container, and buttons
+          var imageContainer = document.createElement("div")
+          var imageBackdrop = document.createElement("div")
+          var imageFull = document.createElement("img")
+          var imageClose = document.createElement("span")
 
-            imageContainer.id = "imageFull"
-            imageFull.src = url
+          // Coming soon
+          var imagePrev = document.createElement("span")
+          var imageNext = document.createElement("span")
 
-            // If the cross is clicked, then remove the image
-            imageClose.addEventListener("click", () => { imageContainer.remove() })
+          imageContainer.id = "imageFull"
+          imageFull.src = url
 
-            // If the backdrop is clicked, then open the image in a new tab
-            imageBackdrop.addEventListener("click", () => { window.open(url) })
+          // If the cross is clicked, then remove the image
+          imageClose.addEventListener("click", () => { imageContainer.remove() })
 
-            // Add everything to the page
-            imageBackdrop.appendChild(imageFull)
-            imageContainer.appendChild(imageBackdrop)
-            imageContainer.appendChild(imageClose)
-            document.getElementById("wikiPage").appendChild(imageContainer)
-          })
-      }).catch(() => {})
+          // If the backdrop is clicked, then open the image in a new tab
+          imageBackdrop.addEventListener("click", () => { window.open(url) })
+
+          // Add everything to the page
+          imageBackdrop.appendChild(imageFull)
+          imageContainer.appendChild(imageBackdrop)
+          imageContainer.appendChild(imageClose)
+          document.getElementById("wikiPage").appendChild(imageContainer)
+        })
+      }).catch(() => { })
 
       caption.appendChild(image)
 
@@ -1213,7 +1237,7 @@ function displayWiki() {
         var headPageText = document.createElement("span")
         headPageText.classList.add("note")
         headPageText.innerText = "See Main Page: "
-        
+
         // Add the head page link to the text and then to the section
         headPageText.appendChild(headPage)
         section.appendChild(headPageText)
@@ -1230,7 +1254,7 @@ function displayWiki() {
           var mainArticleText = document.createElement("span")
           mainArticleText.classList.add("note")
           mainArticleText.innerText = "See Main Article: "
-          
+
           // Add the main article link to the text and then to the section
           mainArticleText.appendChild(mainArticleLink)
           section.appendChild(mainArticleText)
@@ -1263,7 +1287,7 @@ function displayWiki() {
             var mainArticleText = document.createElement("span")
             mainArticleText.classList.add("note")
             mainArticleText.innerText = "See Main Article: "
-            
+
             // Add the main article link to the text and then to the section
             mainArticleText.appendChild(mainArticleLink)
             section.appendChild(mainArticleText)
@@ -1374,7 +1398,7 @@ function displayWiki() {
         var subPageText = document.createElement("span")
         subPageText.classList.add("note")
         subPageText.innerText = "See Main Page: "
-        
+
         // Add the sub page link to the text and then to the section
         subPageText.appendChild(subPage)
         wiki.appendChild(subPageText)
@@ -1387,7 +1411,7 @@ function displayWiki() {
           mainArticleLink.href = `?id=${window["id"]}&page=${article.title.replaceAll(" ", "_")}`
           mainArticleLink.innerText = article.title
           mainArticleLink.setAttribute("link-desc", article.description || "No description")
-          
+
           // Create the main article text
           var mainArticleText = document.createElement("span")
           mainArticleText.classList.add("note")
@@ -1525,7 +1549,7 @@ function displayWiki() {
       form.appendChild(create)
 
       // Configure the submit event
-      form.onsubmit = function(e) {
+      form.onsubmit = function (e) {
         e.preventDefault()
 
         // Get the title
@@ -1568,7 +1592,7 @@ function displayWiki() {
         }
 
         // Add the object to the list
-        objects.push(obj)        
+        objects.push(obj)
 
         // Save the list of objects (with callback)
         saveObjects(function () {
@@ -1599,7 +1623,7 @@ function displayWiki() {
 
       // Add the other options (all pages with titles)
       var options = objects.filter(e => e.title).sort((a, b) => a.title.localeCompare(b.title))
-      
+
       options.forEach(e => {
         var option = document.createElement("option")
         option.value = e.id
@@ -1614,7 +1638,7 @@ function displayWiki() {
       redirectForm.appendChild(create)
 
       // Configure the submit event
-      redirectForm.onsubmit = function(e) {
+      redirectForm.onsubmit = function (e) {
         e.preventDefault()
 
         // Get the redirect
@@ -1726,7 +1750,7 @@ function displayWiki() {
         form.appendChild(create)
 
         // Configure the submit event
-        form.onsubmit = function(e) {
+        form.onsubmit = function (e) {
           // Prevent the default action
           e.preventDefault()
 
@@ -1758,7 +1782,7 @@ function displayWiki() {
           saveObjects(function () {
             window.location.href = `?id=${window["id"]}&edit&page=${page.title.replaceAll(" ", "_")}`
           })
-        } 
+        }
       }
 
       wiki.appendChild(raw)
@@ -1846,7 +1870,7 @@ function displayWiki() {
       // Create the content
       var templateList = document.createElement("ul")
       template.appendChild(templateList)
-      
+
       var templateLink = document.createElement("a")
       templateLink.href = `?id=${window["id"]}&page=${objects.find(e => e.id == page.template).title.replaceAll(" ", "_")}`
       templateLink.innerText = objects.find(e => e.id == page.template).title
@@ -1874,7 +1898,7 @@ function displayWiki() {
       refsSection.appendChild(refsList)
 
       // Get all pages with this in their tags (will be a string)
-      var pageRefs = Array.from(new Set (objects.filter(e => e.tags && e.tags.find(t => t.toLowerCase() == pageId.toLowerCase() || objects.find(o => o.title == pageId && o.redirects.find(r => r.toLowerCase() == t.toLowerCase())))).map(e => e.title)))
+      var pageRefs = Array.from(new Set(objects.filter(e => e.tags && e.tags.find(t => t.toLowerCase() == pageId.toLowerCase() || objects.find(o => o.title == pageId && o.redirects.find(r => r.toLowerCase() == t.toLowerCase())))).map(e => e.title)))
 
       // var id = objects.find(e => e.title && e.title.toLowerCase() == pageId.toLowerCase())
       var id = objects.find(e => e.title && (e.title.toLowerCase() == pageId.toLowerCase() || e.redirects.find(r => r.toLowerCase() == pageId.toLowerCase())))
@@ -1992,18 +2016,18 @@ function settingsMenu() {
   // Show the raw objects data (formatted at the least), (don't include 'hidden' and 'toggle' attributes within each object)
   var raw = document.createElement("textarea");
   raw.id = "raw";
-  raw.value = JSON.stringify(objects.map(e => Object.keys(e).reduce((obj, key) => (key != "hidden" && key != "toggle") ? {...obj, [key]: e[key]} : obj, {})), null, 2);
-  
+  raw.value = JSON.stringify(objects.map(e => Object.keys(e).reduce((obj, key) => (key != "hidden" && key != "toggle") ? { ...obj, [key]: e[key] } : obj, {})), null, 2);
+
   raw.style.height = "40em";
   popup.appendChild(raw);
 
   // Create the save button
   var save = document.createElement("button");
   save.innerText = "Save";
-  save.onclick = function() {
+  save.onclick = function () {
     // Save the objects
     objects = JSON.parse(document.getElementById("raw").value);
-    saveObjects(function() {
+    saveObjects(function () {
       // Refresh the page
       window.location.reload();
     })
@@ -2011,14 +2035,29 @@ function settingsMenu() {
   popup.appendChild(save);
 }
 
-function saveObjects(callback = null) {
-  var data = JSON.stringify(objects)
+async function saveObjects(callback = null) {
+  let data = JSON.stringify({
+    ...window["mapSettings"],
+    map: JSON.stringify(objects),
+    project: undefined,
+    lastChange: sessionStorage.getItem("ID")
+  })
+
+  // Leave if the doc id isn't in your permissions, or if it's project id isn't in your permissions
+  let key = window["permissions"].find(e => [window["id"], window["mapSettings"].project].includes(e.entity))
+
+  key = key.access
+  key = await unlock(sessionStorage.getItem("access"), key)
+
+  data = await lock(key, data)
+
+  var toPush = {
+    project: window["mapSettings"].project,
+    data: data
+  }
 
   // Update firestore document
-  db.collection("timelines").doc(window["mapSettings"].id).update({
-      map: data,
-      lastChange: sessionStorage.getItem("ID")
-  }).then(() => {
+  db.collection("timelines").doc(window["mapSettings"].id).update(toPush).then(() => {
     // If callback exists then call it
     if (callback) callback()
   })
@@ -2026,12 +2065,12 @@ function saveObjects(callback = null) {
 
 function toggleEdit(alert = true) {
   const storage = firebase.storage();
-  
+
   // Toggle the edit mode
   window["editing"] = !window["editing"]
 
   var url = new URL(window.location.href)
-  
+
   // Show message stating the toggle
   if (window["editing"] && window["page"]) {
     var page = objects.find(e => e.id == window["page"])
@@ -2050,7 +2089,7 @@ function toggleEdit(alert = true) {
       e.contentEditable = true
 
 
-      if (!["title", "description"].includes(e.getAttribute("prop-ref")) && !e.getAttribute("prop-ref").includes("banner") && e.getAttribute("prop-ref").endsWith("key") && false ) {
+      if (!["title", "description"].includes(e.getAttribute("prop-ref")) && !e.getAttribute("prop-ref").includes("banner") && e.getAttribute("prop-ref").endsWith("key") && false) {
         // Make the edit menu (only seen in edit mode)
         var editMenu = document.createElement("td")
         editMenu.classList.add("new")
@@ -2095,7 +2134,7 @@ function toggleEdit(alert = true) {
         upload.type = "file"
         upload.classList = "new"
         upload.accept = "image/*"
-        upload.onchange = function() {
+        upload.onchange = function () {
           notify("Uploading image...")
           setTimeout(() => {
             notify("Do not close this tab until the image has finished uploading.")
@@ -2108,15 +2147,15 @@ function toggleEdit(alert = true) {
           // Turn it into a base64 string, replacing the old image with the new one
           var reader = new FileReader()
           reader.readAsDataURL(file)
-          reader.onload = function() {
+          reader.onload = function () {
             e.src = reader.result
 
             // Save the new image as '{infobox id}.{file extension}' in the firestore storage
             var fileName = e.parentNode.parentNode.getAttribute("id")
 
-            storage.ref().child(fileName).putString(reader.result, 'data_url').then(function(snapshot) {
+            storage.ref().child(fileName).putString(reader.result, 'data_url').then(function (snapshot) {
               // Get the download URL
-              snapshot.ref.getDownloadURL().then(function(url) {
+              snapshot.ref.getDownloadURL().then(function (url) {
                 notify("Image upload complete!")
               });
             });
@@ -2193,7 +2232,7 @@ function textSet(element, text) {
       var categoryLink = document.createElement("a")
       categoryLink.href = `?id=${window["id"]}&page=Category:${category.replaceAll(" ", "_")}`
       categoryLink.innerText = category
-      categoryLink.setAttribute("link-desc", (objects.find(e => e.title && (e.title.toLowerCase() == `Category:${category.toLowerCase()}`)) || {description: "No description"}).description)
+      categoryLink.setAttribute("link-desc", (objects.find(e => e.title && (e.title.toLowerCase() == `Category:${category.toLowerCase()}`)) || { description: "No description" }).description)
       categoryItem.appendChild(categoryLink)
 
       // If the category is not the last one, add a comma and space
@@ -2236,7 +2275,7 @@ function textSet(element, text) {
         if (colons.length == 2) {
           // Extract the branch/site destination
           var branch = colons[0].toUpperCase()
-          
+
           switch (typeof window["sources"][branch]) {
             case "string": // Is a link to another site
               isLocal = false
@@ -2247,11 +2286,11 @@ function textSet(element, text) {
               branchId = window["sources"][branch].id
               break
             default: // Is invalid
-              // Ignore for now
+            // Ignore for now
           }
         }
       }
-        
+
       if (isLocal) {
         // Find the destination object (if it exists)
         var destObj = branchObjs.find(e => e.title && (e.title.toLowerCase() == destination.toLowerCase() || e.redirects.find(r => r.toLowerCase() == destination.toLowerCase())))
@@ -2261,7 +2300,7 @@ function textSet(element, text) {
 
         // Get the innerText (if it exists)
         var innerText = link.split("|")[1] || (isCategory ? "Category:" : "") + destination
-        
+
         // Make the link
         var linkElement = document.createElement("a")
         linkElement.href = `?id=${branchId}&page=${isCategory ? "Category:" : ""}${destination.replaceAll(" ", "_")}`
@@ -2488,7 +2527,7 @@ function genContent(parent, info, path, depth = 2) {
       replies.appendChild(reply)
       var replyBtn = document.createElement("button")
       replyBtn.innerText = "Reply"
-      replyBtn.addEventListener("click", () => { 
+      replyBtn.addEventListener("click", () => {
         info.talk.push({
           id: genID(),
           text: reply.value,
@@ -2498,14 +2537,14 @@ function genContent(parent, info, path, depth = 2) {
         })
 
         // Save and reload
-        saveObjects(function() {
+        saveObjects(function () {
           window.location.reload();
         })
       })
 
       replies.appendChild(replyBtn)
 
-      info.talk.forEach((e, i) => { genContent(replies, {...e, type: "talk"}, `${path}.talk[${i}]`, depth) })
+      info.talk.forEach((e, i) => { genContent(replies, { ...e, type: "talk" }, `${path}.talk[${i}]`, depth) })
 
       break
   }
