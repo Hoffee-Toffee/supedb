@@ -13,6 +13,10 @@ Functions, Tests
     - [redir()](#redir)
     - [notify()](#notify)
     - [genID()](#genid)
+    - [passToKey(*password*)](#passtokeypassword)
+    - [newKey()](#newkey)
+    - [lock(key, data)](#lockkey-data)
+    - [unlock(key, data)](#unlockkey-data)
   - [help.js](#helpjs)
     - [help()](#help)
     - [scrollCheck()](#scrollcheck)
@@ -175,6 +179,74 @@ Functions, Tests
 
 * **Return Value:**
   * None
+
+* **Tests**
+  * None
+
+### passToKey(*password*)
+
+>Generates an encryption key from the given password
+>This key will be used to decrypt other access keys for this user
+
+* **Parameters:**
+  * `password`: A string, being the password of the user
+
+* **Side Effects:**
+  * None
+
+* **Return Value:**
+  * Returns the generated key
+
+* **Tests**
+  * None
+
+### newKey()
+
+>Returns a randomly generated encryption key
+>Used to generate a key for use in a new encryptable project/timeline
+
+* **Parameters:**
+  * None
+
+* **Side Effects:**
+  * None
+
+* **Return Value:**
+  * A randomly generated key
+
+* **Tests**
+  * None
+
+### lock(key, data)
+
+>Runs the full encryption scheme, with the given key on the provided data
+
+* **Parameters:**
+  * `key`: The key used to encrypt the data
+  * `data`: The data to encrypt
+
+* **Side Effects:**
+  * None
+
+* **Return Value:**
+  * Returns the encrypted data
+
+* **Tests**
+  * None
+
+### unlock(key, data)
+
+>Runs the full decryption scheme, with the given key on the provided data
+
+* **Parameters:**
+  * `key`: The key used to decrypt the data
+  * `data`: The data to decrypt
+
+* **Side Effects:**
+  * None
+
+* **Return Value:**
+  * Returns the decrypted data
 
 * **Tests**
   * None
