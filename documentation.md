@@ -78,8 +78,8 @@ Functions, Tests
 
 * **Side Effects:**
   * Get's the value of the `theme` cookie
-  * Link to a stylesheet of the same name
-
+  * Adds a link to a stylesheet of the same name
+  * e.g. a theme cookie of `'aegis'` would add a link to `'../common/themes/aegis.css'`.
 * **Return Value:**
   * None
 
@@ -121,13 +121,19 @@ Functions, Tests
 
 ### toogleContextMenu(*e*)
 
->Decides whether to close the current menu, or open a new one on click
+>Decides whether to close the current menu, or open a new one on mouse event
 
 * **Parameters:**
-  * None
+  * `e`: MouseEvent, contains information on the action that initiated this function
+    * `e.type`: Whether it was a click or a move of the mouse
+    * `e.target`: The element that was clicked, can use the `id` or `classList` to determine what to do with it
+    * `e.button`: Will be a `2` if the user right-clicked
 
 * **Side Effects:**
-  * None
+  * Uses the above information to decide whether to open/close/replace a context menu
+    * If you moved off an existing context menu with a class of `hoverOnly`, then remove that menu
+    * If you click (not just right-click) something outside of an existing context menu, then remove that menu
+    * Lastly, if the user has right-clicked anything, then try to make a new menu using that info by running `genContextMenu(e, contextMenu(e))`
 
 * **Return Value:**
   * None
@@ -146,7 +152,7 @@ Functions, Tests
   * None
 
 * **Return Value:**
-  * None
+  * Returns a link to the current page, minus the host, but including all query data
 
 * **Tests**
   * None
@@ -156,10 +162,11 @@ Functions, Tests
 >Creates a notification at the top of the screen
 
 * **Parameters:**
-  * None
+  * `message`: A string of text to display
 
 * **Side Effects:**
-  * None
+  * Displays the notice, at the top of the screen
+  * After 5 seconds it will be dismissed, using a closing animation before being deleted
 
 * **Return Value:**
   * None
@@ -178,7 +185,7 @@ Functions, Tests
   * None
 
 * **Return Value:**
-  * None
+  * Returns a string formed using the current time, and a random number to further avoid duplicates
 
 * **Tests**
   * None
