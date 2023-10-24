@@ -80,6 +80,7 @@ Functions, Tests
   * Get's the value of the `theme` cookie
   * Adds a link to a stylesheet of the same name
   * e.g. a theme cookie of `'aegis'` would add a link to `'../common/themes/aegis.css'`.
+
 * **Return Value:**
   * None
 
@@ -91,7 +92,6 @@ Functions, Tests
 >Creates context menu with given data
 
 * **Parameters:**
-
   * `e`: mouseEvent used to place the menu at the point of click
   * `attr`: An array of objects, representing the menu's options, e.g.
 
@@ -433,7 +433,6 @@ Functions, Tests
 > Removes the error message once a button is pressed or user resubmits the form
 
 * **Parameters:**
-
   * `element`: The element where the error is displayed
 
 * **Side Effects:**
@@ -468,7 +467,6 @@ Functions, Tests
 > Returns the appropriate contextMenu for the element clicked
 
 * **Parameters:**
-
   * `e`: mouseEvent, used to know what was right clicked and where
 
 * **Side Effects:**
@@ -501,7 +499,6 @@ Functions, Tests
 > Shows the settings menu of the given class
 
 * **Parameters:**
-
   * `visClass`: A string; The class of fields to make visible, or will close the menu if this class is already showing
 
 * **Side Effects:**
