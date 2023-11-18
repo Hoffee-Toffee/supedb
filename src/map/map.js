@@ -930,7 +930,8 @@ function start() {
 
       window["mapSettings"] = {
         id: map.id,
-        ...data
+        ...data,
+        project: map.data().project
       }
 
       if (window["mapSettings"].encrypted) {
