@@ -930,9 +930,7 @@ function start() {
 
       window["mapSettings"] = {
         id: map.id,
-        title: data.title,
-        description: data.description,
-        encrypted: data.encrypted
+        ...data
       }
 
       if (window["mapSettings"].encrypted) {
